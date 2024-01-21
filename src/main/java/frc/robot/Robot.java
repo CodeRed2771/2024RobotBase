@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,6 +25,7 @@ public class Robot extends TimedRobot {
   private int dvv;
   private static double cmb; 
   XboxController gamepad1;
+  private RobotContainer myRobot;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,6 +41,9 @@ public class Robot extends TimedRobot {
     // DriveAuto.init();
     gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
+
+    /* Replace this with the robot selection from pin strapping */
+    myRobot = new DummyRobot("Dummy Robot");
   }
 
   /**
@@ -49,10 +55,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // block in order for anything in the Command-based framework to work.
+    CommandScheduler.getInstance().run();
+    // NOTE: If there are no commands registered, this calls the subsystems().periodic() function
+
     // DriveAuto.tick();
     SmartDashboard.updateValues();
     DriveTrain.smartDashboardOutputABSRotations();
     DriveTrain.showTurnEncodersOnDash();
+
+    
   }
 
   /**
@@ -70,6 +85,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    myRobot.arm();
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -89,6 +107,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    myRobot.arm();
     RobotGyro.reset();
         
     DriveTrain.stopDriveAndTurnMotors();
@@ -109,12 +128,14 @@ public class Robot extends TimedRobot {
           DriveTrain.setAllTurnOrientation(0, false);
       }
       DriveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
+    /* read gamepad and map inputs to robot functions*/
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
     Calibration.initializeSmartDashboard(); 
+    myRobot.disarm();
   }
 
   /** This function is called periodically when disabled. */
@@ -133,7 +154,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+        myRobot.arm();
+  }
 
   /** This function is called periodically during test mode. */
   @Override
