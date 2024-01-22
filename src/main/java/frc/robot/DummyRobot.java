@@ -5,7 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.launcher.DummyLauncher;
+import frc.robot.subsystems.nav.DummyNav;
 
 public class DummyRobot extends RobotContainer {
 
@@ -25,7 +28,9 @@ public class DummyRobot extends RobotContainer {
   private void createRobot() {
     /* Set all of the subsystems */
     intake = new DummyIntake("Fake Intake");
-
+    drive = new DummyDrive();
+    launcher = new DummyLauncher();
+    nav = new DummyNav();
     registerSubsystems();
   }
 
@@ -34,7 +39,7 @@ public class DummyRobot extends RobotContainer {
     intake.arm();
   }
 
-  public void disarm(){
+  public void disarm() {
     intake.disarm();
   }
 

@@ -5,12 +5,18 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.launcher.LauncherSubsystem;
+import frc.robot.subsystems.nav.NavSubsystem;
 
 public abstract class RobotContainer extends SubsystemBase {
 
   /* Be sure to register all subsystems after they are created */
+  protected DriveSubsystem drive;
   protected IntakeSubsystem intake;
+  protected LauncherSubsystem launcher;
+  protected NavSubsystem nav;
 
   /** Creates a new RobotContainer and registers the subsystems. */
   protected RobotContainer(String name) {
@@ -22,7 +28,10 @@ public abstract class RobotContainer extends SubsystemBase {
   }
 
   protected void registerSubsystems() {
+    this.addChild(drive.getName(), drive);
     this.addChild(intake.getName(), intake);
+    this.addChild(launcher.getName(), launcher);
+    this.addChild(nav.getName(), nav);
   }
 
   /** arm should initialize the robot for motion */
