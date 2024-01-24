@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,15 +21,23 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private int dvv;
+  private static double cmb; 
+  XboxController gamepad1;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    Calibration.loadSwerveCalibration();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    RobotGyro.init();
+    DriveTrain.init();
+    // DriveAuto.init();
+    gamepad1 = new XboxController(0);
+    // SmartDashboard.putNumber("Mod A ABS", moduleA.)
   }
 
   /**
@@ -39,7 +48,12 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    // DriveAuto.tick();
+    SmartDashboard.updateValues();
+    DriveTrain.smartDashboardOutputABSRotations();
+    DriveTrain.showTurnEncodersOnDash();
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -74,19 +88,48 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    RobotGyro.reset();
+        
+    DriveTrain.stopDriveAndTurnMotors();
+    DriveTrain.allowTurnEncoderReset();
+    DriveTrain.resetTurnEncoders();
+    DriveTrain.setAllTurnOrientation(0, false);
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+      if (gamepad1.getStartButton()) {
+          RobotGyro.reset();
+          
+          DriveTrain.allowTurnEncoderReset();
+          DriveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions
+
+          DriveTrain.setAllTurnOrientation(0, false);
+      }
+      DriveTrain.fieldCentricDrive(-gamepad1.getRightX(), -gamepad1.getLeftY(), -gamepad1.getLeftX());
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    Calibration.initializeSmartDashboard(); 
+  }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (Calibration.shouldCalibrateSwerve()) {
+      double[] pos = DriveTrain.getAllAbsoluteTurnOrientations();
+      Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
+  }
+
+  // see if we want to reset the calibration to whatever is in the program
+  // basically setting "Delete Swerve Calibration" to true will trigger
+  // this, which deletes the calibration file.
+  Calibration.checkIfShouldDeleteCalibration();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
