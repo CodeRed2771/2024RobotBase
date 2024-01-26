@@ -13,10 +13,10 @@ public class Wiring {
 	 * DIO ID PORTS
 	 */
 	
-	public static final int TURN_ABS_ENC_A = 1;
-	public static final int TURN_ABS_ENC_B = 2;
-	public static final int TURN_ABS_ENC_C = 3;
-	public static final int TURN_ABS_ENC_D = 0;
+	public static final int TURN_ABS_ENC_A = 3;
+	public static final int TURN_ABS_ENC_B = 0;
+	public static final int TURN_ABS_ENC_C = 2;
+	public static final int TURN_ABS_ENC_D = 1;
 	public static final int PRACTICE_BOT_INDICATOR = 9;
 	
 	// Analog Inputs

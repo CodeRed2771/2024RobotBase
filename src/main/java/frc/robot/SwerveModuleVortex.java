@@ -13,8 +13,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleVortex implements SwerveModule {
     public CANSparkFlex drive;
@@ -80,6 +80,7 @@ public class SwerveModuleVortex implements SwerveModule {
 
 		turn = new CANSparkMax(turnMotorID, MotorType.kBrushless);
 		turn.restoreFactoryDefaults();
+		
        // turn.setOpenLoopRampRate(.5);
         turn.setSmartCurrentLimit(30);
 
@@ -91,7 +92,7 @@ public class SwerveModuleVortex implements SwerveModule {
 		// turnEncoder.setInverted(true);
 		turnPID = turn.getPIDController();
 		turnPID.setFeedbackDevice(turnEncoder);
-
+		
 		TURN_P = Calibration.getTurnP();
 		TURN_I = Calibration.getTurnI();
 		TURN_D = Calibration.getTurnD();
@@ -218,7 +219,7 @@ public class SwerveModuleVortex implements SwerveModule {
 		currentPos = getTurnAbsolutePosition();
 		
 		positionToSet = calculatePositionDifference(currentPos, turnZeroPos);
-		setEncPos(100 + positionToSet);
+		setEncPos(positionToSet);
 		// setEncPos(0.95);
 	}
 
@@ -329,7 +330,7 @@ public class SwerveModuleVortex implements SwerveModule {
         boolean invertDrive = false;
         double nearestPosInRotation = 0;
         double newTargetPosition = 0;
-		double currentPosition = turnEncoder.getPosition();
+		// double currentPosition = turnEncoder.getPosition();
 
 		// I think it would be best to adjust our requested position first so that it  
 		// is compatible with our modules zero offset.  Then all calculations after that
@@ -392,16 +393,17 @@ public class SwerveModuleVortex implements SwerveModule {
             } 
         }
 
-        newTargetPosition = (newRevolutions >= 0 ? newRevolutions + nearestPosInRotation : newRevolutions - nearestPosInRotation);
-        
+        // newTargetPosition = (newRevolutions >= 0 ? newRevolutions + nearestPosInRotation : newRevolutions - nearestPosInRotation);
+        newTargetPosition = nearestPosInRotation;
 		// newTargetPosition = round(newTargetPosition,3);  round was crashing occasionally
 
 		// Set drive inversion if needed
 		isReversed = invertDrive; // invert
-
+		
+		newTargetPosition = newTargetPosition*12.8; 
         // TURN
-        turnPID.setReference(newTargetPosition, ControlType.kPosition );
-
+        turnPID.setReference(newTargetPosition, ControlType.kPosition);
+		SmartDashboard.putNumber(mModuleID + " Target Position", newTargetPosition);
 		// if (mModuleID=='C') {
 		// 	SmartDashboard.putString("MC Cur Pos", String.format("%.3f", turnEncoder.getPosition()));
 		// 	SmartDashboard.putString("MC Req Pos", String.format("%.3f", reqPosition));

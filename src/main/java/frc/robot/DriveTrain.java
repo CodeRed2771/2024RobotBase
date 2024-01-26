@@ -97,10 +97,10 @@ public class DriveTrain {
         moduleC.setTurnOrientation(modCPosition, optimizeTurn);
         moduleD.setTurnOrientation(modDPosition, optimizeTurn);
 
-        // SmartDashboard.putNumber("A pos call", round(modAPosition,3));
-        // SmartDashboard.putNumber("B pos call", round(modBPosition,3));
-        // SmartDashboard.putNumber("C pos call", round(modCPosition,3));
-        // SmartDashboard.putNumber("D pos call", round(modDPosition,3));
+        SmartDashboard.putNumber("A pos call", round(modAPosition,3));
+        SmartDashboard.putNumber("B pos call", round(modBPosition,3));
+        SmartDashboard.putNumber("C pos call", round(modCPosition,3));
+        SmartDashboard.putNumber("D pos call", round(modDPosition,3));
         // SmartDashboard.putNumber("Mod A ABS Rotations", moduleA.getABSRotations());
         // SmartDashboard.putNumber("Mod B ABS Rotations", moduleB.getABSRotations());
         // SmartDashboard.putNumber("Mod C ABS Rotations", moduleC.getABSRotations());
@@ -331,6 +331,7 @@ public class DriveTrain {
         SmartDashboard.putNumber("TURN D ZERO", moduleD.getTurnZero());
 		
 		//SmartDashboard.putNumber("TURN A SETPOINT", moduleA.getTurnSetpoint());
+        SmartDashboard.putNumber("C Encoder Raw Value", moduleC.getTurnRelativePosition());
     }
 
     public static void humanDrive(double fwd, double str, double rot) {

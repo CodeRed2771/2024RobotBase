@@ -37,10 +37,10 @@ public class Calibration {
     private final static double DT_PRACT_D_ABS_ZERO_INITIAL = .098; 
     
     // COMPETITION
-    public final static double DT_COMP_A_ABS_ZERO_INITIAL = .548; // COMPETITION BOT
-    public final static double DT_COMP_B_ABS_ZERO_INITIAL = .230; 
-    public final static double DT_COMP_C_ABS_ZERO_INITIAL = .187; 
-    public final static double DT_COMP_D_ABS_ZERO_INITIAL = .332; 
+    public final static double DT_COMP_A_ABS_ZERO_INITIAL = .015; // COMPETITION BOT
+    public final static double DT_COMP_B_ABS_ZERO_INITIAL = .405; 
+    public final static double DT_COMP_C_ABS_ZERO_INITIAL = .724; 
+    public final static double DT_COMP_D_ABS_ZERO_INITIAL = .882; 
 
     public static final double AUTO_ROT_P = 0.08; 
     public static final double AUTO_ROT_I = 0.001;
@@ -129,7 +129,7 @@ public class Calibration {
         if (isPracticeBot())
             return 8;  // zuni
         else    
-            return 1;  // competition
+            return 3;  // competition
     }
     public static double getTurnI() { 
         if (isPracticeBot())
