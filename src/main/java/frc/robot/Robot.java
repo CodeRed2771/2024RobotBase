@@ -11,11 +11,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
 
+import frc.robot.libs.HID.Gamepad;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
+ * 
+ * 
  */
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
@@ -24,8 +28,11 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private int dvv;
   private static double cmb; 
-  XboxController gamepad1;
+  //XboxController gamepad1;
   private RobotContainer myRobot;
+
+  private Gamepad gamepad1;
+  private Gamepad gamepad2;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -39,11 +46,13 @@ public class Robot extends TimedRobot {
     RobotGyro.init();
     DriveTrain.init();
     // DriveAuto.init();
-    gamepad1 = new XboxController(0);
+    //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
     myRobot = new IntakeTestRobot();
+    gamepad1 = new Gamepad(0);
+    gamepad2 = new Gamepad(1);
   }
 
   /**
@@ -129,6 +138,13 @@ public class Robot extends TimedRobot {
       }
       DriveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
     /* read gamepad and map inputs to robot functions*/
+    if(gamepad2.getXButton()) {
+      myRobot.intake.load();
+    } else if(gamepad2.getYButton()){
+      myRobot.intake.unload();
+    } else {
+      myRobot.intake.stop();
+    }
   }
 
   /** This function is called once when the robot is disabled. */
