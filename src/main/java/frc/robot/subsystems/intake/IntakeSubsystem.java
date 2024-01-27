@@ -20,11 +20,17 @@ public abstract class IntakeSubsystem extends ArmedSubsystem {
     super();
   }
 
+  public void deploy(){}
+  public void stow(){}
+  public boolean isDeployed(){return true;}
+
   /** request that the intake perform the operations to try and load a new element into the robot */
-  public abstract void load();
+  public void load(){}
   /** request that the intake perform the operations to try and remove an element from the robot */
-  public abstract void unload();
+  public void unload(){}
   /** request that the stop performing any motions */
-  public abstract void stop();
+  public void stop(){}
+
+  public boolean hasElement(){return false;}
 
 }

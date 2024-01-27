@@ -12,7 +12,7 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
   }
 
   /** request that the intake perform the operations to try and load a new element into the robot */
-  public abstract void load();
+  public void load(){}
 
-  public abstract void fire(double power);
+  public void fire(double power){}
 }
