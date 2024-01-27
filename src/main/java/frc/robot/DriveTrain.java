@@ -282,8 +282,10 @@ public class DriveTrain {
             ws4 /= max;
         }
 
+        // DriveTrain.setTurnOrientation(angleToPosition(wa4), angleToPosition(wa2), angleToPosition(wa1),
+        //         angleToPosition(wa3), true);
         DriveTrain.setTurnOrientation(angleToPosition(wa4), angleToPosition(wa2), angleToPosition(wa1),
-                angleToPosition(wa3), true);
+            angleToPosition(wa3), true);
         DriveTrain.setDrivePower(ws4, ws2, ws1, ws3);
     }
 
@@ -331,7 +333,10 @@ public class DriveTrain {
         SmartDashboard.putNumber("TURN D ZERO", moduleD.getTurnZero());
 		
 		//SmartDashboard.putNumber("TURN A SETPOINT", moduleA.getTurnSetpoint());
+        SmartDashboard.putNumber("A Encoder Raw Value", moduleA.getTurnRelativePosition());
+        SmartDashboard.putNumber("B Encoder Raw Value", moduleB.getTurnRelativePosition());
         SmartDashboard.putNumber("C Encoder Raw Value", moduleC.getTurnRelativePosition());
+        SmartDashboard.putNumber("D Encoder Raw Value", moduleD.getTurnRelativePosition());
     }
 
     public static void humanDrive(double fwd, double str, double rot) {

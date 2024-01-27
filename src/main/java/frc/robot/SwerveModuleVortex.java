@@ -89,6 +89,8 @@ public class SwerveModuleVortex implements SwerveModule {
 
 		// turnEncoder = turn.getAlternateEncoder(8192);
 		turnEncoder = turn.getEncoder();
+		turnEncoder.setPositionConversionFactor(.083333333);
+		// turnEncoder.setVelocityConversionFactor(1/5);
 		// turnEncoder.setInverted(true);
 		turnPID = turn.getPIDController();
 		turnPID.setFeedbackDevice(turnEncoder);
@@ -399,8 +401,7 @@ public class SwerveModuleVortex implements SwerveModule {
 
 		// Set drive inversion if needed
 		isReversed = invertDrive; // invert
-		
-		newTargetPosition = newTargetPosition*12.8; 
+		 
         // TURN
         turnPID.setReference(newTargetPosition, ControlType.kPosition);
 		SmartDashboard.putNumber(mModuleID + " Target Position", newTargetPosition);

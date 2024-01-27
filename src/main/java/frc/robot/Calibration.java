@@ -37,10 +37,10 @@ public class Calibration {
     private final static double DT_PRACT_D_ABS_ZERO_INITIAL = .098; 
     
     // COMPETITION
-    public final static double DT_COMP_A_ABS_ZERO_INITIAL = .015; // COMPETITION BOT
-    public final static double DT_COMP_B_ABS_ZERO_INITIAL = .405; 
-    public final static double DT_COMP_C_ABS_ZERO_INITIAL = .724; 
-    public final static double DT_COMP_D_ABS_ZERO_INITIAL = .882; 
+    public final static double DT_COMP_A_ABS_ZERO_INITIAL = .492; // COMPETITION BOT
+    public final static double DT_COMP_B_ABS_ZERO_INITIAL = .851; 
+    public final static double DT_COMP_C_ABS_ZERO_INITIAL = .224; 
+    public final static double DT_COMP_D_ABS_ZERO_INITIAL = .394; 
 
     public static final double AUTO_ROT_P = 0.08; 
     public static final double AUTO_ROT_I = 0.001;
@@ -52,22 +52,26 @@ public class Calibration {
     public static final DigitalInput botIndicator = new DigitalInput(Wiring.PRACTICE_BOT_INDICATOR);
 
     // Physical Module - A
-    public final static int DT_A_DRIVE_ID = 3;
-    public final static int DT_A_TURN_ID = 4;
-    private static double DT_A_ABS_ZERO = getInitialTurnZeroPos('A');
+    public final static int DT_D_DRIVE_ID = 3;
+    public final static int DT_D_TURN_ID = 4;
+    private static double DT_D_ABS_ZERO = getInitialTurnZeroPos('A');
     // Physical Module - B
-    public final static int DT_B_DRIVE_ID = 5;
-    public final static int DT_B_TURN_ID = 6;
-    private static double DT_B_ABS_ZERO = getInitialTurnZeroPos('B');
+    public final static int DT_C_DRIVE_ID = 5;
+    public final static int DT_C_TURN_ID = 6;
+    private static double DT_C_ABS_ZERO = getInitialTurnZeroPos('B');
     // Physical Module - C
-    public final static int DT_C_DRIVE_ID = 7;
-    public final static int DT_C_TURN_ID = 8;
-    private static double DT_C_ABS_ZERO = getInitialTurnZeroPos('C');
+    public final static int DT_B_DRIVE_ID = 7;
+    public final static int DT_B_TURN_ID = 8;
+    private static double DT_B_ABS_ZERO = getInitialTurnZeroPos('C');
     // Physical Module - D
-    public final static int DT_D_DRIVE_ID = 1;
-    public final static int DT_D_TURN_ID = 2;
-    private static double DT_D_ABS_ZERO = getInitialTurnZeroPos('D');
+    public final static int DT_A_DRIVE_ID = 1;
+    public final static int DT_A_TURN_ID = 2;
+    private static double DT_A_ABS_ZERO = getInitialTurnZeroPos('D');
 	
+    // public static final double GEAR_RATIO = 12;
+    // public static final double ENCODER_RESOLUTION = 1;
+    // public static final double ANGLE_CONVERSION_FACTOR = 360/(GEAR_RATIO * ENCODER_RESOLUTION);
+
     public static double getInitialTurnZeroPos(char moduleLetter) {
         double zeroPos = 0;
         if (isPracticeBot()) {
@@ -129,7 +133,7 @@ public class Calibration {
         if (isPracticeBot())
             return 8;  // zuni
         else    
-            return 3;  // competition
+            return 03;  // competition
     }
     public static double getTurnI() { 
         if (isPracticeBot())

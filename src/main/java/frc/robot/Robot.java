@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
 
           DriveTrain.setAllTurnOrientation(0, false);
       }
-      // DriveTrain.fieldCentricDrive(-gamepad1.getLeftX(), -gamepad1.getLeftY(), -gamepad1.getRightX());
+      DriveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
   }
 
   /** This function is called once when the robot is disabled. */
