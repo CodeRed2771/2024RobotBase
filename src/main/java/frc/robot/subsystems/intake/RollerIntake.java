@@ -4,14 +4,29 @@
 
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 /** This class creates an empty class so that robots do no have to implement all subsystems. */
 public class RollerIntake extends IntakeSubsystem {
-    public RollerIntake() {
+    
+    private CANSparkMax driveMotor;
+    private boolean armed;
+    
+    
+    public RollerIntake(int motorId) {
         super();
+        CreateIntake(motorId);
     }
 
-    public RollerIntake(String name) {
+    public RollerIntake(String name, int motorId) {
         super(name);
+        CreateIntake(motorId);
+    }
+
+    private void CreateIntake(int motorId){
+        driveMotor = new CANSparkMax(motorId, MotorType.kBrushless);
+        armed = false;
     }
 
     private void log(String text){
@@ -19,23 +34,33 @@ public class RollerIntake extends IntakeSubsystem {
     }
 
     public void arm() {
-        log("Armed");
+        armed = true;
     }
 
     public void disarm() {
-        log("Disarmed");
+        stop();
+        armed = false;
     }
 
     public void load() {
-        log("Running load actuators");
+        if(!armed){
+            return;
+        }
+        driveMotor.set(1.0);
     }
 
     public void stop() {
-        log("stop motions");
+        if(!armed){
+            return;
+        }
+        driveMotor.set(0);
     }
 
     public void unload() {
-        log("Unloading element");
+        if(!armed){
+            return;
+        }
+        driveMotor.set(-1.0);
     }
 
 }

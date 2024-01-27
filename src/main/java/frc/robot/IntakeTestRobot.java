@@ -27,7 +27,7 @@ public class IntakeTestRobot extends RobotContainer {
   private void createRobot() {
     /* Set all of the subsystems */
     drive = new DummyDrive("No Wheels");
-    intake = new RollerIntake();
+    intake = new RollerIntake(10);
     launcher = new DummyLauncher("Airball");
     nav = new DummyNav("Lost Boys");
     registerSubsystems();
