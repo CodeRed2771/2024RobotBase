@@ -11,7 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 public class RollerIntake extends IntakeSubsystem {
     
     private CANSparkMax driveMotor;
-    private boolean armed;
+    
     
     
     public RollerIntake(int motorId) {
