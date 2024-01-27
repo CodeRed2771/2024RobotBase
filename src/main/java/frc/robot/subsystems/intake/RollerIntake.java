@@ -12,52 +12,33 @@ public class RollerIntake extends IntakeSubsystem {
     
     private CANSparkMax driveMotor;
     
-    
-    
     public RollerIntake(int motorId) {
         super();
-        CreateIntake(motorId);
-    }
 
-    public RollerIntake(String name, int motorId) {
-        super(name);
-        CreateIntake(motorId);
-    }
-
-    private void CreateIntake(int motorId){
         driveMotor = new CANSparkMax(motorId, MotorType.kBrushless);
-        armed = false;
     }
 
-    private void log(String text){
-        System.out.println(getName() + " : " + text);
-    }
-
-    public void arm() {
-        armed = true;
-    }
-
-    public void disarm() {
+    @Override
+    public void doDisarm() {
         stop();
-        armed = false;
     }
 
+    @Override
     public void load() {
-        if(!armed){
+        if(!isArmed()){
             return;
         }
         driveMotor.set(1.0);
     }
 
+    @Override
     public void stop() {
-        if(!armed){
-            return;
-        }
         driveMotor.set(0);
     }
 
+    @Override
     public void unload() {
-        if(!armed){
+        if(!isArmed()){
             return;
         }
         driveMotor.set(-1.0);

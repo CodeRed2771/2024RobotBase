@@ -14,31 +14,24 @@ public class IntakeTestRobot extends RobotContainer {
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public IntakeTestRobot() {
-    super("Fake Robot");
-    createRobot();
-  }
+    super();
 
-  /** Creates a new RobotContainer. */
-  public IntakeTestRobot(String name) {
-    super(name);
-    createRobot();
-  }
-
-  private void createRobot() {
     /* Set all of the subsystems */
-    drive = new DummyDrive("No Wheels");
+    drive = new DummyDrive();
     intake = new RollerIntake(10);
-    launcher = new DummyLauncher("Airball");
-    nav = new DummyNav("Lost Boys");
+    launcher = new DummyLauncher();
+    nav = new DummyNav();
     registerSubsystems();
   }
 
   /* On program start, initialize any device settings or internal states of the subsystem. */
-  public void arm() {
+  @Override
+  public void doArm() {
     intake.arm();
   }
 
-  public void disarm() {
+  @Override
+  public void doDisarm() {
     intake.disarm();
   }
 

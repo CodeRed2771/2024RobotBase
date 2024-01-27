@@ -33,6 +33,13 @@ public class Robot extends TimedRobot {
 
   private Gamepad gamepad1;
   private Gamepad gamepad2;
+
+  public enum RobotType{
+    Dummy,
+    IntakeTest,
+    DriveTest,
+    None
+  }
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -50,7 +57,16 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
-    myRobot = new IntakeTestRobot();
+    var botType = RobotType.IntakeTest;
+
+    switch (botType) {
+      case IntakeTest:
+        myRobot = new IntakeTestRobot();
+        break;
+      default:
+        myRobot = new DummyRobot();
+    }
+
     gamepad1 = new Gamepad(0);
     gamepad2 = new Gamepad(1);
   }
