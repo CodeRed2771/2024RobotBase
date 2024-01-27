@@ -4,19 +4,12 @@
 
 package frc.robot.subsystems.launcher;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.ArmedSubsystem;
 
-public abstract class LauncherSubsystem extends SubsystemBase {
+public abstract class LauncherSubsystem extends ArmedSubsystem {
   protected LauncherSubsystem() {
     super();
   }
-
-  protected LauncherSubsystem(String name) {
-    super(name);
-  }
-
-  public abstract void arm();
-  public abstract void disarm();
 
   /** request that the intake perform the operations to try and load a new element into the robot */
   public abstract void load();

@@ -4,14 +4,12 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.ArmedSubsystem;
 
-public abstract class DriveSubsystem extends SubsystemBase {
+public abstract class DriveSubsystem extends ArmedSubsystem {
   protected DriveSubsystem() {
     super();
   }
 
-  public abstract void arm();
-  public abstract void disarm();
 
 }

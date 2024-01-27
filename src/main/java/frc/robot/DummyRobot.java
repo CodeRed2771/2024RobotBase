@@ -28,12 +28,14 @@ public class DummyRobot extends RobotContainer {
    * On program start, initialize any device settings or internal states of the
    * subsystem.
    */
-  public void arm() {
+  public void doArm() {
     intake.arm();
+    launcher.arm();
   }
 
-  public void disarm() {
+  public void doDisarm() {
     intake.disarm();
+    launcher.disarm();
   }
 
   @Override

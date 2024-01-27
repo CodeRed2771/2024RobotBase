@@ -14,11 +14,11 @@ public class DummyIntake extends IntakeSubsystem {
         System.out.println(getName() + " : " + text);
     }
 
-    public void arm() {
+    public void doArm() {
         log("Armed");
     }
 
-    public void disarm() {
+    public void doDisarm() {
         log("Disarmed");
     }
 

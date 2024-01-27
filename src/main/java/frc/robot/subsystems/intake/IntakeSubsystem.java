@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.ArmedSubsystem;
 /**
  * The Intake subsystem provides generic calls that all Intake Subsystems have to support. The subsystem owner should
  * only interact with this API The typical sequence of Automatic events would be: Start the robot Disarmed On match
@@ -15,13 +15,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * command load which will operate the intake until an element is loaded If the Intake can detect element being fully
  * loaded, the
  */
-public abstract class IntakeSubsystem extends SubsystemBase {
+public abstract class IntakeSubsystem extends ArmedSubsystem {
   protected IntakeSubsystem() {
     super();
   }
-
-  public abstract void arm();
-  public abstract void disarm();
 
   /** request that the intake perform the operations to try and load a new element into the robot */
   public abstract void load();

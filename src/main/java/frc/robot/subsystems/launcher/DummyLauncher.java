@@ -9,16 +9,16 @@ public class DummyLauncher extends LauncherSubsystem {
     public DummyLauncher() {
         super();
     }
-    
+
     private void log(String text) {
         System.out.println(getName() + " : " + text);
     }
 
-    public void arm() {
+    public void doArm() {
         log("Armed");
     }
 
-    public void disarm() {
+    public void doDisarm() {
         log("Disarmed");
     }
 
