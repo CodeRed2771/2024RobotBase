@@ -9,11 +9,7 @@ public class DummyLauncher extends LauncherSubsystem {
     public DummyLauncher() {
         super();
     }
-
-    public DummyLauncher(String name) {
-        super(name);
-    }
-
+    
     private void log(String text) {
         System.out.println(getName() + " : " + text);
     }

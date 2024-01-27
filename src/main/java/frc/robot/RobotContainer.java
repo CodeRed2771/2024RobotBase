@@ -18,10 +18,6 @@ public abstract class RobotContainer extends SubsystemBase {
   protected LauncherSubsystem launcher;
   protected NavSubsystem nav;
 
-  /** Creates a new RobotContainer and registers the subsystems. */
-  protected RobotContainer(String name) {
-    super(name);
-  }
 
   protected RobotContainer() {
     super();

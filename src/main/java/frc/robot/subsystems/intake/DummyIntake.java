@@ -10,10 +10,6 @@ public class DummyIntake extends IntakeSubsystem {
         super();
     }
 
-    public DummyIntake(String name) {
-        super(name);
-    }
-
     private void log(String text){
         System.out.println(getName() + " : " + text);
     }

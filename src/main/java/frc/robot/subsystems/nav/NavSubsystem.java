@@ -11,8 +11,4 @@ public abstract class NavSubsystem extends SubsystemBase {
     super();
   }
 
-  protected NavSubsystem(String name) {
-    super(name);
-  }
-
 }

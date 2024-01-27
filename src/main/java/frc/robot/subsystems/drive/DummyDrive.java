@@ -10,10 +10,6 @@ public class DummyDrive extends DriveSubsystem {
         super();
     }
 
-    public DummyDrive(String name) {
-        super(name);
-    }
-
     private void log(String text) {
         System.out.println(getName() + " : " + text);
     }

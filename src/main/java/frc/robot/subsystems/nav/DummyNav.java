@@ -10,7 +10,4 @@ public class DummyNav extends NavSubsystem {
         super();
     }
 
-    public DummyNav(String name) {
-        super(name);
-    }
 }

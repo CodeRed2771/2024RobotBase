@@ -20,10 +20,6 @@ public abstract class IntakeSubsystem extends SubsystemBase {
     super();
   }
 
-  protected IntakeSubsystem(String name) {
-    super(name);
-  }
-
   public abstract void arm();
   public abstract void disarm();
 

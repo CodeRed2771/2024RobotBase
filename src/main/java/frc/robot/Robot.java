@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
-    myRobot = new DummyRobot("Dummy Robot");
+    myRobot = new DummyRobot();
   }
 
   /**

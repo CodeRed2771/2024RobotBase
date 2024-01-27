@@ -14,26 +14,20 @@ public class DummyRobot extends RobotContainer {
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public DummyRobot() {
-    super("Fake Robot");
-    createRobot();
-  }
+    super();
 
-  /** Creates a new RobotContainer. */
-  public DummyRobot(String name) {
-    super(name);
-    createRobot();
-  }
-
-  private void createRobot() {
     /* Set all of the subsystems */
-    drive = new DummyDrive("No Wheels");
-    intake = new DummyIntake("Fake Intake");
-    launcher = new DummyLauncher("Airball");
-    nav = new DummyNav("Lost Boys");
+    drive = new DummyDrive();
+    intake = new DummyIntake();
+    launcher = new DummyLauncher();
+    nav = new DummyNav();
     registerSubsystems();
   }
 
-  /* On program start, initialize any device settings or internal states of the subsystem. */
+  /*
+   * On program start, initialize any device settings or internal states of the
+   * subsystem.
+   */
   public void arm() {
     intake.arm();
   }

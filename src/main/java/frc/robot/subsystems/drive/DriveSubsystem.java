@@ -11,10 +11,6 @@ public abstract class DriveSubsystem extends SubsystemBase {
     super();
   }
 
-  protected DriveSubsystem(String name) {
-    super(name);
-  }
-
   public abstract void arm();
   public abstract void disarm();
 
