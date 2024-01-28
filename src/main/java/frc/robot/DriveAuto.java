@@ -10,22 +10,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import frc.robot.libs.CurrentBreaker;
 
 public class DriveAuto {
-    private static PIDController rotDrivePID;
 
-    private static boolean isDriving = false;
-    private static boolean followingTarget = false;
+    private PIDController rotDrivePID;
 
-    private static double heading = 0; // keeps track of intended heading - used for driving "straight"
-	private static double strafeAngle = 0;
-	private static double GyroAngle = 0;
-    private static double strafeAngleOriginal = 0;
+    private boolean isDriving = false;
+    private boolean followingTarget = false;
+
+    private double heading = 0; // keeps track of intended heading - used for driving "straight"
+	private double strafeAngle = 0;
+	private double GyroAngle = 0;
+    private double strafeAngleOriginal = 0;
 
     // private static CurrentBreaker driveCurrentBreaker;
 
-    private static NavXGyro robotGyro = NavXGyro.getInstance();
-    private static DriveTrain driveTrain = DriveTrain.getInstance();
+    private NavXGyro robotGyro = NavXGyro.getInstance();
+    private DriveTrain driveTrain = DriveTrain.getInstance();
 
-    public static enum DriveSpeed {
+    public enum DriveSpeed {
         VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED
     };
 
@@ -40,13 +41,24 @@ public class DriveAuto {
         }
     }
 
-    public static Position currrentPosition; 
+    public Position currrentPosition; 
 
-    public static void init() {
+    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
+    private static class DriveAutoSingleton {
+        private static final DriveAuto instance = new DriveAuto();
+    }
+    public static DriveAuto getInstance(){
+        return DriveAutoSingleton.instance;
+    }
+
+    private DriveAuto(){        
+        rotDrivePID = new PIDController(Calibration.AUTO_ROT_P, Calibration.AUTO_ROT_I, Calibration.AUTO_ROT_D);
+    }
+
+    public void init() {
 
         System.out.println("START OF DRIVEAUTO INIT");
 
-        rotDrivePID = new PIDController(Calibration.AUTO_ROT_P, Calibration.AUTO_ROT_I, Calibration.AUTO_ROT_D);
         rotDrivePID.setTolerance(2); // degrees off
 
         driveTrain.setDriveMMAccel(Calibration.getDT_MM_ACCEL());
@@ -85,7 +97,7 @@ public class DriveAuto {
         }
 	}
 
-    private static void calculateNewDrivePosition(double distance, double angle) {
+    private void calculateNewDrivePosition(double distance, double angle) {
         double slope;
         if (distance > 0) {
             slope = Math.tan(angle);
@@ -96,15 +108,15 @@ public class DriveAuto {
         double y = slope*(x+currrentPosition.x) - currrentPosition.y;
     }
 
-    private static void calcualteNewTurnPosition(double degrees) {
+    private void calcualteNewTurnPosition(double degrees) {
         currrentPosition.orientation = currrentPosition.orientation + degrees;
     }
 
-	public static void driveInches(double inches, double angle, double speedFactor, boolean followTarget) {
+	public void driveInches(double inches, double angle, double speedFactor, boolean followTarget) {
 		driveInches(inches, angle, speedFactor, followTarget, false);
 	}
 
-    public static void driveInches(double inches, double angle, double speedFactor, boolean followTarget, boolean fieldCentric) {
+    public void driveInches(double inches, double angle, double speedFactor, boolean followTarget, boolean fieldCentric) {
 
         followingTarget = followTarget;
 
@@ -156,11 +168,11 @@ public class DriveAuto {
         calculateNewDrivePosition(inches, angle);
     }
 
-    public static void driveInches(double inches, double angle, double speedFactor) {
+    public void driveInches(double inches, double angle, double speedFactor) {
         driveInches(inches, angle, speedFactor, false);
     }
 
-    public static void reset() {
+    public void reset() {
         stop();
         driveTrain.resetDriveEncoders();
         rotDrivePID.reset();
@@ -169,17 +181,17 @@ public class DriveAuto {
         isDriving = false;
     }
 
-    public static void stop() {
+    public void stop() {
         stopTurning();
         stopDriving();
     }
 
-    public static void stopDriving() {
+    public void stopDriving() {
         isDriving = false;
         driveTrain.stopDriveAndTurnMotors();
     }
 
-    public static void stopTurning() {
+    public void stopTurning() {
         // rotDrivePID.setSetpoint(rotDrivePID.calculate(RobotGyro.getAngle())); //
         // changed 1/6/20
         // rotDrivePID.disable();
@@ -187,18 +199,18 @@ public class DriveAuto {
         driveTrain.stopTurn();
     }
 
-    public static void setTurnDegreesToCurrentAngle() {
+    public void setTurnDegreesToCurrentAngle() {
         // this is necessary so that subsequent turns are relative to the current
         // position. Otherwise they'd always be relative to 0
         rotDrivePID.setSetpoint(robotGyro.getAngle());
     }
 
-    public static double degreesToInches(double degrees) {
+    public double degreesToInches(double degrees) {
         double inches = degrees / 4.42; //3.115;
         return inches;
     }
 
-    public static void turnToHeading(double desiredHeading, double turnSpeedFactor) {
+    public void turnToHeading(double desiredHeading, double turnSpeedFactor) {
         // double turnAmount = desiredHeading - RobotGyro.getRelativeAngle();
 
         double turnAmount = 0;
@@ -222,7 +234,7 @@ public class DriveAuto {
         SmartDashboard.putNumber("NEW ROBOT GYRO ANGLE", robotGyro.getRelativeAngle());
     }
 
-    public static void turnDegrees(double degrees, double turnSpeedFactor) {
+    public void turnDegrees(double degrees, double turnSpeedFactor) {
         // Turns by driving with the modules turned.
         // Use "turnCompleted" method to determine when the turn is done
         // The PID controller for this sends a rotational value to the
@@ -251,7 +263,7 @@ public class DriveAuto {
         calcualteNewTurnPosition(degrees);
     }
 
-    public static void continuousDrive(double inches, double maxPower) {
+    public void continuousDrive(double inches, double maxPower) {
         // setRotationalPowerOutput(maxPower);
 
         driveTrain.setTurnOrientation(driveTrain.angleToPosition(0), driveTrain.angleToPosition(0),
@@ -259,7 +271,7 @@ public class DriveAuto {
         // rotDrivePID.disable();
     }
 
-    public static void tick() {
+    public void tick() {
         // this is called roughly 50 times per second
 
         // SmartDashboard.putBoolean("HasArrived", hasArrived());
@@ -268,43 +280,43 @@ public class DriveAuto {
 
     }
 
-    public static double getDistanceTravelled() {
+    public double getDistanceTravelled() {
         return Math.abs(convertTicksToInches(driveTrain.getDriveEnc()));
     }
 
-    public static boolean hasArrived() {
+    public boolean hasArrived() {
         return driveTrain.hasDriveCompleted(.5); // half inch accuracy
     }
 
-    public static boolean turnCompleted(double allowedError) {
+    public boolean turnCompleted(double allowedError) {
         return Math.abs(robotGyro.getRelativeAngle() - heading) <= allowedError;
     }
 
-    public static boolean turnCompleted() {
+    public boolean turnCompleted() {
         return turnCompleted(1); // allow 1 degree of error by default
     }
 
-    // public static void resetDriveCurrentBreaker() {
+    // public void resetDriveCurrentBreaker() {
     //     driveCurrentBreaker.reset();
     // }
 
-    // public static boolean isAgainstWall() {
+    // public boolean isAgainstWall() {
     //     return driveCurrentBreaker.tripped();
     // }
 
-    public static void disable() {
+    public void disable() {
         // setPIDstate(false);
     }
 
-    private static double convertToTicks(double inches) {
+    private double convertToTicks(double inches) {
         return (double) (inches * Calibration.getDriveTicksPerInch());
     }
 
-    private static double convertTicksToInches(double ticks) {
+    private double convertTicksToInches(double ticks) {
         return ticks / Calibration.getDriveTicksPerInch();
     }
 
-    public static void showEncoderValues() {
+    public void showEncoderValues() {
         SmartDashboard.putNumber("Drive Encoder", driveTrain.getDriveEnc());
 
         // SmartDashboard.putNumber("Drive PID Error", DriveTrain.getDriveError());
@@ -340,7 +352,7 @@ public class DriveAuto {
 
     }
     
-    public static void parkingBrake(){
+    public void parkingBrake(){
         // DriveTrain.setTurnOrientation(.125, .875, .125, .875, true);
         driveTrain.setTurnOrientation(.875, .875, .125, .125, true);
     }

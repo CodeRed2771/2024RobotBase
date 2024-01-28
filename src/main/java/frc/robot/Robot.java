@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
 
   NavXGyro robotGyro;
   DriveTrain driveTrain;
+  DriveAuto driveAuto;
 
   private Gamepad gamepad1;
   private Gamepad gamepad2;
@@ -57,10 +58,11 @@ public class Robot extends TimedRobot {
 
     robotGyro = NavXGyro.getInstance();
     driveTrain = DriveTrain.getInstance();
+    driveAuto = DriveAuto.getInstance();
 
     robotGyro.init();
     driveTrain.init();
-    // DriveAuto.init();
+    // driveAuto.init();
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
@@ -95,7 +97,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     // NOTE: If there are no commands registered, this calls the subsystems().periodic() function
 
-    // DriveAuto.tick();
+    // driveAuto.tick();
     SmartDashboard.updateValues();
     driveTrain.smartDashboardOutputABSRotations();
     driveTrain.showTurnEncodersOnDash();
