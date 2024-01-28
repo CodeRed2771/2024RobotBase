@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
   private RobotContainer myRobot;
 
   NavXGyro robotGyro;
+  DriveTrain driveTrain;
 
   private Gamepad gamepad1;
   private Gamepad gamepad2;
@@ -55,9 +56,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     robotGyro = NavXGyro.getInstance();
+    driveTrain = DriveTrain.getInstance();
 
     robotGyro.init();
-    DriveTrain.init();
+    driveTrain.init();
     // DriveAuto.init();
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
@@ -95,8 +97,8 @@ public class Robot extends TimedRobot {
 
     // DriveAuto.tick();
     SmartDashboard.updateValues();
-    DriveTrain.smartDashboardOutputABSRotations();
-    DriveTrain.showTurnEncodersOnDash();
+    driveTrain.smartDashboardOutputABSRotations();
+    driveTrain.showTurnEncodersOnDash();
 
     
   }
@@ -141,10 +143,10 @@ public class Robot extends TimedRobot {
     myRobot.arm();
     robotGyro.reset();
         
-    DriveTrain.stopDriveAndTurnMotors();
-    DriveTrain.allowTurnEncoderReset();
-    DriveTrain.resetTurnEncoders();
-    DriveTrain.setAllTurnOrientation(0, false);
+    driveTrain.stopDriveAndTurnMotors();
+    driveTrain.allowTurnEncoderReset();
+    driveTrain.resetTurnEncoders();
+    driveTrain.setAllTurnOrientation(0, false);
   }
 
   /** This function is called periodically during operator control. */
@@ -153,12 +155,12 @@ public class Robot extends TimedRobot {
       if (gamepad1.getStartButton()) {
           robotGyro.reset();
           
-          DriveTrain.allowTurnEncoderReset();
-          DriveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions
+          driveTrain.allowTurnEncoderReset();
+          driveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions
 
-          DriveTrain.setAllTurnOrientation(0, false);
+          driveTrain.setAllTurnOrientation(0, false);
       }
-      DriveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
+      driveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
     /* read gamepad and map inputs to robot functions*/
     if(gamepad2.getXButton()) {
       myRobot.intake.load();
@@ -180,7 +182,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     if (Calibration.shouldCalibrateSwerve()) {
-      double[] pos = DriveTrain.getAllAbsoluteTurnOrientations();
+      double[] pos = driveTrain.getAllAbsoluteTurnOrientations();
       Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
   }
 

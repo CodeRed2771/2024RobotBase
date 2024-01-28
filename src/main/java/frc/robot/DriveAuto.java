@@ -22,7 +22,8 @@ public class DriveAuto {
 
     // private static CurrentBreaker driveCurrentBreaker;
 
-    static NavXGyro robotGyro;
+    private static NavXGyro robotGyro = NavXGyro.getInstance();
+    private static DriveTrain driveTrain = DriveTrain.getInstance();
 
     public static enum DriveSpeed {
         VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED
@@ -42,14 +43,14 @@ public class DriveAuto {
     public static Position currrentPosition; 
 
     public static void init() {
-        robotGyro = NavXGyro.getInstance();
+
         System.out.println("START OF DRIVEAUTO INIT");
 
         rotDrivePID = new PIDController(Calibration.AUTO_ROT_P, Calibration.AUTO_ROT_I, Calibration.AUTO_ROT_D);
         rotDrivePID.setTolerance(2); // degrees off
 
-        DriveTrain.setDriveMMAccel(Calibration.getDT_MM_ACCEL());
-        DriveTrain.setDriveMMVelocity(Calibration.getDT_MM_VELOCITY());
+        driveTrain.setDriveMMAccel(Calibration.getDT_MM_ACCEL());
+        driveTrain.setDriveMMVelocity(Calibration.getDT_MM_VELOCITY());
 
         // driveCurrentBreaker = new CurrentBreaker(Wiring.DRIVE_PDP_PORT, 55, 400); 
         // driveCurrentBreaker.reset();
@@ -130,14 +131,14 @@ public class DriveAuto {
 
         isDriving = true;
 
-        DriveTrain.setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+        driveTrain.setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
 
         // angle at which the wheel modules should be turned
 
         // didnt help - DriveTrain.unReverseModules(); // make sure all "reversed" flags
         // are reset.
         SmartDashboard.putNumber("Strafe Angle:", strafeAngle);
-        DriveTrain.setAllTurnOrientation(DriveTrain.angleToPosition(strafeAngle), true);
+        driveTrain.setAllTurnOrientation(driveTrain.angleToPosition(strafeAngle), true);
 
         // give it just a little time to get the modules turned to position
         // before starting the drive
@@ -151,7 +152,7 @@ public class DriveAuto {
         }
 
         // set the new drive distance setpoint
-        DriveTrain.addToAllDrivePositions(convertToTicks(inches));
+        driveTrain.addToAllDrivePositions(convertToTicks(inches));
         calculateNewDrivePosition(inches, angle);
     }
 
@@ -161,7 +162,7 @@ public class DriveAuto {
 
     public static void reset() {
         stop();
-        DriveTrain.resetDriveEncoders();
+        driveTrain.resetDriveEncoders();
         rotDrivePID.reset();
         rotDrivePID.setSetpoint(0);
         heading = robotGyro.getRelativeAngle();
@@ -175,7 +176,7 @@ public class DriveAuto {
 
     public static void stopDriving() {
         isDriving = false;
-        DriveTrain.stopDriveAndTurnMotors();
+        driveTrain.stopDriveAndTurnMotors();
     }
 
     public static void stopTurning() {
@@ -183,7 +184,7 @@ public class DriveAuto {
         // changed 1/6/20
         // rotDrivePID.disable();
         // DriveTrain.stopDriveAndTurnMotors();
-        DriveTrain.stopTurn();
+        driveTrain.stopTurn();
     }
 
     public static void setTurnDegreesToCurrentAngle() {
@@ -233,8 +234,8 @@ public class DriveAuto {
 
         SmartDashboard.putNumber("TURN DEGREES CALL", degrees);
 
-        DriveTrain.setTurnOrientation(DriveTrain.angleToPosition(-133.6677), DriveTrain.angleToPosition(46.3322),
-                DriveTrain.angleToPosition(133.6677), DriveTrain.angleToPosition(-46.3322), true);
+        driveTrain.setTurnOrientation(driveTrain.angleToPosition(-133.6677), driveTrain.angleToPosition(46.3322),
+                driveTrain.angleToPosition(133.6677), driveTrain.angleToPosition(-46.3322), true);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -242,19 +243,19 @@ public class DriveAuto {
             e.printStackTrace();
         }
 
-        DriveTrain.setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * turnSpeedFactor));
+        driveTrain.setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * turnSpeedFactor));
 
         double turnInches = degreesToInches(-degrees);
         SmartDashboard.putNumber("Turn Inches", turnInches);
-        DriveTrain.addToAllDrivePositions(convertToTicks(turnInches));
+        driveTrain.addToAllDrivePositions(convertToTicks(turnInches));
         calcualteNewTurnPosition(degrees);
     }
 
     public static void continuousDrive(double inches, double maxPower) {
         // setRotationalPowerOutput(maxPower);
 
-        DriveTrain.setTurnOrientation(DriveTrain.angleToPosition(0), DriveTrain.angleToPosition(0),
-                DriveTrain.angleToPosition(0), DriveTrain.angleToPosition(0), true);
+        driveTrain.setTurnOrientation(driveTrain.angleToPosition(0), driveTrain.angleToPosition(0),
+                driveTrain.angleToPosition(0), driveTrain.angleToPosition(0), true);
         // rotDrivePID.disable();
     }
 
@@ -268,11 +269,11 @@ public class DriveAuto {
     }
 
     public static double getDistanceTravelled() {
-        return Math.abs(convertTicksToInches(DriveTrain.getDriveEnc()));
+        return Math.abs(convertTicksToInches(driveTrain.getDriveEnc()));
     }
 
     public static boolean hasArrived() {
-        return DriveTrain.hasDriveCompleted(.5); // half inch accuracy
+        return driveTrain.hasDriveCompleted(.5); // half inch accuracy
     }
 
     public static boolean turnCompleted(double allowedError) {
@@ -304,7 +305,7 @@ public class DriveAuto {
     }
 
     public static void showEncoderValues() {
-        SmartDashboard.putNumber("Drive Encoder", DriveTrain.getDriveEnc());
+        SmartDashboard.putNumber("Drive Encoder", driveTrain.getDriveEnc());
 
         // SmartDashboard.putNumber("Drive PID Error", DriveTrain.getDriveError());
         // SmartDashboard.putNumber("Drive Avg Error",
@@ -341,7 +342,7 @@ public class DriveAuto {
     
     public static void parkingBrake(){
         // DriveTrain.setTurnOrientation(.125, .875, .125, .875, true);
-        DriveTrain.setTurnOrientation(.875, .875, .125, .125, true);
+        driveTrain.setTurnOrientation(.875, .875, .125, .125, true);
     }
 
     private static Double round2(Double val) {
