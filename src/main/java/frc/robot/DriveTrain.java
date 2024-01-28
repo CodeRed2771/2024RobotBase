@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain {
 
     private static SwerveModule moduleA, moduleB, moduleC, moduleD;
+    private static NavXGyro robotGyro;
 
     public static void init() {
-        
+        robotGyro = NavXGyro.getInstance();
+
         moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), 'A'); // Front right
         moduleB = new SwerveModuleVortex(Calibration.DT_B_DRIVE_ID, Calibration.DT_B_TURN_ID, Wiring.TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), 'B'); // Back left
         moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), 'C'); // Back right
@@ -353,11 +355,11 @@ public class DriveTrain {
     }
 
     public static void fieldCentricDrive(double fwd, double strafe, double rot) {
-        double temp = (fwd * Math.cos(NavXGyro.getGyroAngleInRad()))
-                + (strafe * Math.sin(NavXGyro.getGyroAngleInRad()));
-        strafe = (-fwd * Math.sin(NavXGyro.getGyroAngleInRad()))
+        double temp = (fwd * Math.cos(robotGyro.getGyroAngleInRad()))
+                + (strafe * Math.sin(robotGyro.getGyroAngleInRad()));
+        strafe = (-fwd * Math.sin(robotGyro.getGyroAngleInRad()))
                 + (strafe * Math.cos(
-                    NavXGyro.getGyroAngleInRad()));
+                    robotGyro.getGyroAngleInRad()));
         fwd = temp;
         humanDrive(fwd, strafe, rot);
     }

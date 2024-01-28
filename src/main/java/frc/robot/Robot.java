@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,6 +32,8 @@ public class Robot extends TimedRobot {
   //XboxController gamepad1;
   private RobotContainer myRobot;
 
+  NavXGyro robotGyro;
+
   private Gamepad gamepad1;
   private Gamepad gamepad2;
 
@@ -50,7 +53,10 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    NavXGyro.init();
+
+    robotGyro = NavXGyro.getInstance();
+
+    robotGyro.init();
     DriveTrain.init();
     // DriveAuto.init();
     //gamepad1 = new XboxController(0);
@@ -133,7 +139,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     myRobot.arm();
-    NavXGyro.reset();
+    robotGyro.reset();
         
     DriveTrain.stopDriveAndTurnMotors();
     DriveTrain.allowTurnEncoderReset();
@@ -145,7 +151,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
       if (gamepad1.getStartButton()) {
-          NavXGyro.reset();
+          robotGyro.reset();
           
           DriveTrain.allowTurnEncoderReset();
           DriveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions

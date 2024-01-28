@@ -4,16 +4,28 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
 public class NavXGyro {
-    private static AHRS mGyro;
-    private static double pitchAdjust = 0;
+    private AHRS mGyro;
+    private double pitchAdjust = 0;
 
-    public static void init() {
-        mGyro = new AHRS(SPI.Port.kMXP);
+    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
+    private static class NavXGyroSingleton {
+        private static final NavXGyro instance = new NavXGyro(SPI.Port.kMXP);
+    }
+
+    private NavXGyro(SPI.Port port){
+        mGyro = new AHRS(port);
+    }
+
+    public static NavXGyro getInstance(){
+        return NavXGyroSingleton.instance;
+    }
+
+    public void init() {
         pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface
                                         // will be used to offset values to return a relative pitch
     }
 
-    public static AHRS getGyro() {
+    public AHRS getGyro() {
         return mGyro;
     }
 
@@ -24,7 +36,7 @@ public class NavXGyro {
      *         is useful for turning but not as useful for figuring out which
      *         direction you're facing. Use getRelativeAngle for that.
      */
-    public static double getAngle() {
+    public double getAngle() {
         return mGyro.getAngle();
     }
 
@@ -46,7 +58,7 @@ public class NavXGyro {
      * 
      * @return gyro angle 0 to 360
      */
-    public static double getRelativeAngle() {
+    public double getRelativeAngle() {
         if (getAngle() < 0) {
             return 360 + (getAngle() % 360);
         } else {
@@ -54,31 +66,31 @@ public class NavXGyro {
         }
     }
 
-    public static double velocityX() {
+    public double velocityX() {
         return mGyro.getVelocityX();
     }
 
-    public static double velocityY() {
+    public double velocityY() {
         return mGyro.getVelocityY();
     }
 
-    public static double velocityZ() {
+    public double velocityZ() {
         return mGyro.getVelocityZ();
     }
 
-    public static double pitch_raw() {
+    public double pitch_raw() {
         return mGyro.getPitch();
     }
 
-    public static double pitch() {
+    public double pitch() {
         return mGyro.getPitch()-pitchAdjust;
     }
 
-    public static double roll() {
+    public double roll() {
         return mGyro.getRoll();
     }
 
-    public static double yaw() {
+    public double yaw() {
         return mGyro.getYaw();
     }
     /***
@@ -86,7 +98,7 @@ public class NavXGyro {
      * @param desiredPosition - desired 0 to 360 position
      * @return amount to turn to get there the quickest way
      */
-    public static double getClosestTurn(double desiredPosition) {
+    public double getClosestTurn(double desiredPosition) {
         double distance = 0;
         double currentPosition = getRelativeAngle();
 
@@ -103,14 +115,14 @@ public class NavXGyro {
         return distance;
     }
 
-    public static void reset() {
+    public void reset() {
         mGyro.reset();
         pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface
         // will be used to offset values to return a relative pitch
 
     }
 
-    public static double getGyroAngleInRad() {
+    public double getGyroAngleInRad() {
         double adjustedAngle = -Math.floorMod((long) mGyro.getAngle(), 360);
         if (adjustedAngle > 180)
             adjustedAngle = -(360 - adjustedAngle);
@@ -122,12 +134,12 @@ public class NavXGyro {
         return mGyro.getAngle();
     }
     
-    public static void position() {
+    public void position() {
         position.x += mGyro.getVelocityX() * CYCLE_TIME;
         position.y += mGyro.getVelocityY() * CYCLE_TIME;
         position.x = mGyro.getVelocityZ() * CYCLE_TIME;
     }
-    public static Position getPosition() {
+    public Position getPosition() {
         return position;
     }
 }
