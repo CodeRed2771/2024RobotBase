@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import frc.robot.libs.CurrentBreaker;
+import frc.robot.subsystems.drive.DriveTrain;
+import frc.robot.subsystems.nav.NavXGyro;
 
 public class DriveAuto {
 

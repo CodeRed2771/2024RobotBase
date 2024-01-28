@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.subsystems.nav;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;

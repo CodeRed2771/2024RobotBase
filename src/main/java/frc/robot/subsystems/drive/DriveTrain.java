@@ -1,10 +1,12 @@
-package frc.robot;
+package frc.robot.subsystems.drive;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Calibration;
+import frc.robot.Wiring;
+import frc.robot.subsystems.nav.NavXGyro;
 
 public class DriveTrain {
 
@@ -405,7 +407,7 @@ public class DriveTrain {
         moduleD.setTurnPIDValues(p, i, d, iZone, f);
     }
 
-    public static Double round(Double val, int scale) {
+    private static Double round(Double val, int scale) {
         return new BigDecimal(val.toString()).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 }

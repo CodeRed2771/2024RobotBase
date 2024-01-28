@@ -4,15 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
 
 import frc.robot.libs.HID.Gamepad;
+import frc.robot.subsystems.drive.DriveTrain;
+import frc.robot.subsystems.nav.NavXGyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,7 +27,6 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private int dvv;
   private static double cmb; 
   //XboxController gamepad1;
   private RobotContainer myRobot;
