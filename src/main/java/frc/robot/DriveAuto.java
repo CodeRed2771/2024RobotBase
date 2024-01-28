@@ -107,7 +107,7 @@ public class DriveAuto {
         SmartDashboard.putNumber("DRIVE INCHES", inches);
 
 		if (fieldCentric) {
-			GyroAngle = RobotGyro.getRelativeAngle();
+			GyroAngle = NavXGyro.getRelativeAngle();
 			strafeAngle = angle;
 			strafeAngleOriginal = strafeAngle;
 
@@ -161,7 +161,7 @@ public class DriveAuto {
         DriveTrain.resetDriveEncoders();
         rotDrivePID.reset();
         rotDrivePID.setSetpoint(0);
-        heading = RobotGyro.getRelativeAngle();
+        heading = NavXGyro.getRelativeAngle();
         isDriving = false;
     }
 
@@ -186,7 +186,7 @@ public class DriveAuto {
     public static void setTurnDegreesToCurrentAngle() {
         // this is necessary so that subsequent turns are relative to the current
         // position. Otherwise they'd always be relative to 0
-        rotDrivePID.setSetpoint(RobotGyro.getAngle());
+        rotDrivePID.setSetpoint(NavXGyro.getAngle());
     }
 
     public static double degreesToInches(double degrees) {
@@ -199,23 +199,23 @@ public class DriveAuto {
 
         double turnAmount = 0;
 
-        if (desiredHeading - RobotGyro.getRelativeAngle() > 180)
+        if (desiredHeading - NavXGyro.getRelativeAngle() > 180)
         {
-            turnAmount = (desiredHeading - RobotGyro.getRelativeAngle()) - 360;   
+            turnAmount = (desiredHeading - NavXGyro.getRelativeAngle()) - 360;   
         } 
-        else if (desiredHeading - RobotGyro.getRelativeAngle() < -180)
+        else if (desiredHeading - NavXGyro.getRelativeAngle() < -180)
         {
-            turnAmount = (desiredHeading - RobotGyro.getRelativeAngle()) + 360; 
+            turnAmount = (desiredHeading - NavXGyro.getRelativeAngle()) + 360; 
         }
         else
         {
-            turnAmount = desiredHeading - RobotGyro.getRelativeAngle();
+            turnAmount = desiredHeading - NavXGyro.getRelativeAngle();
         }
         SmartDashboard.putNumber("DESIRED HEADING EQUALS", desiredHeading);
-        SmartDashboard.putNumber("ROBOT GYRO RELATIVE", RobotGyro.getRelativeAngle());
+        SmartDashboard.putNumber("ROBOT GYRO RELATIVE", NavXGyro.getRelativeAngle());
         SmartDashboard.putNumber("TURN AMOUNT", turnAmount);
         turnDegrees(turnAmount, turnSpeedFactor);
-        SmartDashboard.putNumber("NEW ROBOT GYRO ANGLE", RobotGyro.getRelativeAngle());
+        SmartDashboard.putNumber("NEW ROBOT GYRO ANGLE", NavXGyro.getRelativeAngle());
     }
 
     public static void turnDegrees(double degrees, double turnSpeedFactor) {
@@ -273,7 +273,7 @@ public class DriveAuto {
     }
 
     public static boolean turnCompleted(double allowedError) {
-        return Math.abs(RobotGyro.getRelativeAngle() - heading) <= allowedError;
+        return Math.abs(NavXGyro.getRelativeAngle() - heading) <= allowedError;
     }
 
     public static boolean turnCompleted() {

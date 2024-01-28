@@ -3,7 +3,7 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
-public class RobotGyro {
+public class NavXGyro {
     private static AHRS mGyro;
     private static double pitchAdjust = 0;
 

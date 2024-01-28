@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    RobotGyro.init();
+    NavXGyro.init();
     DriveTrain.init();
     // DriveAuto.init();
     //gamepad1 = new XboxController(0);
@@ -133,7 +133,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     myRobot.arm();
-    RobotGyro.reset();
+    NavXGyro.reset();
         
     DriveTrain.stopDriveAndTurnMotors();
     DriveTrain.allowTurnEncoderReset();
@@ -145,7 +145,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
       if (gamepad1.getStartButton()) {
-          RobotGyro.reset();
+          NavXGyro.reset();
           
           DriveTrain.allowTurnEncoderReset();
           DriveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions

@@ -353,11 +353,11 @@ public class DriveTrain {
     }
 
     public static void fieldCentricDrive(double fwd, double strafe, double rot) {
-        double temp = (fwd * Math.cos(RobotGyro.getGyroAngleInRad()))
-                + (strafe * Math.sin(RobotGyro.getGyroAngleInRad()));
-        strafe = (-fwd * Math.sin(RobotGyro.getGyroAngleInRad()))
+        double temp = (fwd * Math.cos(NavXGyro.getGyroAngleInRad()))
+                + (strafe * Math.sin(NavXGyro.getGyroAngleInRad()));
+        strafe = (-fwd * Math.sin(NavXGyro.getGyroAngleInRad()))
                 + (strafe * Math.cos(
-                    RobotGyro.getGyroAngleInRad()));
+                    NavXGyro.getGyroAngleInRad()));
         fwd = temp;
         humanDrive(fwd, strafe, rot);
     }
