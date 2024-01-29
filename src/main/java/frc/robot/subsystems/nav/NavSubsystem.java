@@ -11,5 +11,10 @@ public abstract class NavSubsystem extends SubsystemBase {
     super();
   }
 
-  public void reset(){}
+  public void reset() {
+  }
+
+  public double getAngle() {
+    return 0;
+  }
 }

@@ -7,17 +7,21 @@ package frc.robot.subsystems.nav;
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
 
-    private NavXGyro robotGyro;
+    private NavXGyro gyro;
 
     public PracticeRobotNav() {
         super();
 
-        robotGyro = NavXGyro.getInstance();
+        gyro = NavXGyro.getInstance();
     }
 
     @Override
     public void reset(){
-        robotGyro.reset();
+        gyro.reset();
     }
 
+    @Override
+    public double getAngle() {
+        return gyro.getAngle();
+      }
 }
