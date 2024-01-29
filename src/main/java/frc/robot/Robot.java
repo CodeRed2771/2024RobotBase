@@ -32,8 +32,7 @@ public class Robot extends TimedRobot {
 
   NavXGyro robotGyro;
   PracticeDriveTrain driveTrain;
-  DriveAuto driveAuto;
-
+  
   private Gamepad gamepad1;
   private Gamepad gamepad2;
 
@@ -55,9 +54,7 @@ public class Robot extends TimedRobot {
 
     robotGyro = NavXGyro.getInstance();
     driveTrain = PracticeDriveTrain.getInstance();
-    driveAuto = DriveAuto.getInstance();
-
-    // driveAuto.init();
+  
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
