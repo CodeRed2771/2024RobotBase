@@ -7,7 +7,7 @@ package frc.robot;
 import frc.robot.subsystems.drive.PracticeDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
-import frc.robot.subsystems.nav.DummyNav;
+import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class PracticeRobot extends RobotContainer {
 
@@ -20,7 +20,7 @@ public class PracticeRobot extends RobotContainer {
     drive = PracticeDriveTrain.getInstance();
     intake = new DummyIntake();
     launcher = new DummyLauncher();
-    nav = new DummyNav();
+    nav = new PracticeRobotNav();
     registerSubsystems();
   }
 
