@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.ArmedSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -31,4 +33,21 @@ public abstract class RobotContainer extends ArmedSubsystem {
   }
 
   public void restoreRobotToDefaultState(){}
+
+  /* By default just pass commands to the drive system */
+  public void driveSpeedControl(double fwd, double strafe, double rotate){
+    drive.driveSpeedControl(fwd,strafe,rotate);
+  }
+
+  public void driveSpeedControlFieldCentric(double fwd, double strafe, double rotate) {
+    /*
+     * Rotate the drive command into field centric orientation by reversing out the
+     * orientation of the robot
+     */
+    Translation2d command = new Translation2d(fwd, strafe);
+    command.rotateBy(Rotation2d.fromDegrees(-nav.getAngle()));
+
+    drive.driveSpeedControl(command.getX(), command.getY(), rotate);
+  }
+
 }

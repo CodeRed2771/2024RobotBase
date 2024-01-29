@@ -398,27 +398,18 @@ public class PracticeDriveTrain extends DriveSubsystem {
         SmartDashboard.putNumber("D Encoder Raw Value", moduleD.getTurnRelativePosition());
     }
 
-    public void humanDrive(double fwd, double str, double rot) {
-        if (Math.abs(rot) < 0.01)
-            rot = 0;
+    @Override
+    public void driveSpeedControl(double fwd, double strafe, double rotate){
+        if (Math.abs(rotate) < 0.01)
+            rotate = 0;
 
-        if (Math.abs(fwd) < .15 && Math.abs(str) < .15 && Math.abs(rot) < 0.01) {
+        if (Math.abs(fwd) < .15 && Math.abs(strafe) < .15 && Math.abs(rotate) < 0.01) {
             setDriveBrakeMode(true);
             stopDrive();
         } else {
             setDriveBrakeMode(false);
-            swerveDrive(fwd, str, rot);
+            swerveDrive(fwd, strafe, rotate);
         }
-    }
-
-    public void fieldCentricDrive(double fwd, double strafe, double rot) {
-        double temp = (fwd * Math.cos(robotGyro.getGyroAngleInRad()))
-                + (strafe * Math.sin(robotGyro.getGyroAngleInRad()));
-        strafe = (-fwd * Math.sin(robotGyro.getGyroAngleInRad()))
-                + (strafe * Math.cos(
-                    robotGyro.getGyroAngleInRad()));
-        fwd = temp;
-        humanDrive(fwd, strafe, rot);
     }
 
     public void tankDrive(double left, double right) {

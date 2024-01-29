@@ -146,7 +146,8 @@ public class Robot extends TimedRobot {
       if (gamepad1.getStartButton()) {
           myRobot.restoreRobotToDefaultState();
       }
-      driveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
+      myRobot.driveSpeedControlFieldCentric(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
+
     /* read gamepad and map inputs to robot functions*/
     if(gamepad2.getXButton()) {
       myRobot.intake.load();

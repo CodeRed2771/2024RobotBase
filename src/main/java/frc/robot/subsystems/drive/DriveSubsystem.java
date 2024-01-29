@@ -12,4 +12,6 @@ public abstract class DriveSubsystem extends ArmedSubsystem {
   }
 
   public void reset(){}
+
+  public void driveSpeedControl(double fwd, double strafe, double rot){}
 }
