@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 
 public class SwerveModuleVortex implements SwerveModule {
-    public CANSparkFlex drive;
-    public CANSparkMax turn;
+    private CANSparkFlex drive;
+    private CANSparkMax turn;
     private SparkPIDController drivePID;
 	private SparkPIDController turnPID;
     private RelativeEncoder driveEncoder;
