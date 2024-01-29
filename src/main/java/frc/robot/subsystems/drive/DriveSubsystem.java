@@ -11,5 +11,5 @@ public abstract class DriveSubsystem extends ArmedSubsystem {
     super();
   }
 
-
+  public void reset(){}
 }

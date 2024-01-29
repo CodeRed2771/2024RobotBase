@@ -59,7 +59,6 @@ public class Robot extends TimedRobot {
     driveAuto = DriveAuto.getInstance();
 
     robotGyro.init();
-    driveTrain.init();
     // driveAuto.init();
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
@@ -98,12 +97,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     // NOTE: If there are no commands registered, this calls the subsystems().periodic() function
 
-    // driveAuto.tick();
     SmartDashboard.updateValues();
-    driveTrain.smartDashboardOutputABSRotations();
-    driveTrain.showTurnEncodersOnDash();
 
-    
   }
 
   /**
@@ -146,9 +141,6 @@ public class Robot extends TimedRobot {
     myRobot.arm();
     robotGyro.reset();
         
-    driveTrain.stopDriveAndTurnMotors();
-    driveTrain.allowTurnEncoderReset();
-    driveTrain.resetTurnEncoders();
     driveTrain.setAllTurnOrientation(0, false);
   }
 
@@ -158,9 +150,7 @@ public class Robot extends TimedRobot {
       if (gamepad1.getStartButton()) {
           robotGyro.reset();
           
-          driveTrain.allowTurnEncoderReset();
-          driveTrain.resetTurnEncoders(); // sets encoders based on absolute encoder positions
-
+          driveTrain.reset(); // sets encoders based on absolute encoder positions
           driveTrain.setAllTurnOrientation(0, false);
       }
       driveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());

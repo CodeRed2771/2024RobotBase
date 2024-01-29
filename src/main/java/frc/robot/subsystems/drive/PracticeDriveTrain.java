@@ -37,10 +37,15 @@ public class PracticeDriveTrain extends DriveSubsystem {
         moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), 'C'); // Back right
         moduleD = new SwerveModuleVortex(Calibration.DT_D_DRIVE_ID, Calibration.DT_D_TURN_ID, Wiring.TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), 'D'); // Front left
 
+        SmartDashboard.putNumber("TURN P", Calibration.getTurnP());
+        SmartDashboard.putNumber("TURN I", Calibration.getTurnI());
+        SmartDashboard.putNumber("TURN D", Calibration.getTurnD());
+
     }
 
     @Override
     public void doArm() {
+        stopDriveAndTurnMotors();
         init();
     }
 
@@ -49,12 +54,18 @@ public class PracticeDriveTrain extends DriveSubsystem {
         stopDriveAndTurnMotors();
     }
 
-    public void init() {
+    @Override
+    public void periodic(){
+        smartDashboardOutputABSRotations();
+        showTurnEncodersOnDash();
+    }
 
-        SmartDashboard.putNumber("TURN P", Calibration.getTurnP());
-        SmartDashboard.putNumber("TURN I", Calibration.getTurnI());
-        SmartDashboard.putNumber("TURN D", Calibration.getTurnD());
+    @Override
+    public void reset(){
+        init();
+    }
 
+    private void init() {
         allowTurnEncoderReset();
         resetTurnEncoders();
     }
