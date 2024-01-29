@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.libs.HID.Gamepad;
-import frc.robot.subsystems.drive.PracticeDriveTrain;
-import frc.robot.subsystems.nav.NavXGyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,9 +28,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer myRobot;
 
-  NavXGyro robotGyro;
-  PracticeDriveTrain driveTrain;
-  
   private Gamepad gamepad1;
   private Gamepad gamepad2;
 
@@ -52,9 +47,6 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    robotGyro = NavXGyro.getInstance();
-    driveTrain = PracticeDriveTrain.getInstance();
-  
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
