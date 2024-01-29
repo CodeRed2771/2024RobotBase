@@ -16,6 +16,7 @@ public abstract class ArmedSubsystem extends SubsystemBase {
     }
 
     public final boolean isArmed(){return bArmed;}
+    public final boolean isDisarmed(){return !bArmed;}
     
     /** While armed a ArmedSubsystem is likely to move and potentially cause injury. */
     public final void arm(){
@@ -28,7 +29,7 @@ public abstract class ArmedSubsystem extends SubsystemBase {
     /** While disarmed, the ArmedSubsystem should not be able to move or cause injury. */
     public final void disarm(){
         /* Ignore repeated disarm calls */
-        if (!isArmed()){return;}
+        if (isDisarmed()){return;}
         doDisarm();
         bArmed = false;
     }

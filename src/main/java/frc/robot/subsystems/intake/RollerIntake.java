@@ -25,7 +25,7 @@ public class RollerIntake extends IntakeSubsystem {
 
     @Override
     public void load() {
-        if(!isArmed()){
+        if(isDisarmed()){
             return;
         }
         driveMotor.set(1.0);
@@ -38,7 +38,7 @@ public class RollerIntake extends IntakeSubsystem {
 
     @Override
     public void unload() {
-        if(!isArmed()){
+        if(isDisarmed()){
             return;
         }
         driveMotor.set(-1.0);
