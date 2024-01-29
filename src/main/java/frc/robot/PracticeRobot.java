@@ -57,15 +57,4 @@ public class PracticeRobot extends RobotContainer {
     ((PracticeDriveTrain) drive).setAllTurnOrientation(0, false);
   }
 
-  @Override
-  public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    /*
-     * Rotate the drive command into field centric orientation by reversing out the
-     * orientation of the robot
-     */
-    Translation2d command = new Translation2d(fwd, strafe);
-    command.rotateBy(Rotation2d.fromDegrees(-nav.getAngle()));
-
-    drive.driveSpeedControl(command.getX(), command.getY(), rotate);
-  }
 }
