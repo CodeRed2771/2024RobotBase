@@ -48,6 +48,10 @@ public class PracticeDriveTrain extends DriveSubsystem {
 
     @Override
     public void doArm() {
+        moduleA.arm();
+        moduleB.arm();
+        moduleC.arm();
+        moduleD.arm();
         stopDriveAndTurnMotors();
         reset();
     }
@@ -55,6 +59,10 @@ public class PracticeDriveTrain extends DriveSubsystem {
     @Override
     public void doDisarm() {
         stopDriveAndTurnMotors();
+        moduleA.disarm();
+        moduleB.disarm();
+        moduleC.disarm();
+        moduleD.disarm();
     }
 
     @Override
@@ -109,17 +117,17 @@ public class PracticeDriveTrain extends DriveSubsystem {
     }
 
     public void setDriveMMAccel(int accel) {
-        moduleA.setDriveMMAccel(accel);
-        moduleB.setDriveMMAccel(accel);
-        moduleC.setDriveMMAccel(accel);
-        moduleD.setDriveMMAccel(accel);
+        moduleA.setDriveMaxAccel(accel);
+        moduleB.setDriveMaxAccel(accel);
+        moduleC.setDriveMaxAccel(accel);
+        moduleD.setDriveMaxAccel(accel);
     }
 
     public void setDriveMMVelocity(int velocity) {
-        moduleA.setDriveMMVelocity(velocity);
-        moduleB.setDriveMMVelocity(velocity);
-        moduleC.setDriveMMVelocity(velocity);
-        moduleD.setDriveMMVelocity(velocity);
+        moduleA.setDriveMaxVelocity(velocity);
+        moduleB.setDriveMaxVelocity(velocity);
+        moduleC.setDriveMaxVelocity(velocity);
+        moduleD.setDriveMaxVelocity(velocity);
     }
 
     public boolean hasDriveCompleted(double inchesError) {

@@ -113,10 +113,10 @@ public class SwerveModuleVortex extends SwerveModule {
 		
 	}
 
-    public void setDriveMMAccel(final int accel) {
+    public void setDriveMaxAccel(final int accel) {
         drivePID.setSmartMotionMaxAccel(accel, 0);
     }
-    public void setDriveMMVelocity(final int velocity) {
+    public void setDriveMaxVelocity(final int velocity) {
         drivePID.setSmartMotionMaxVelocity(velocity, 0);
     }
 

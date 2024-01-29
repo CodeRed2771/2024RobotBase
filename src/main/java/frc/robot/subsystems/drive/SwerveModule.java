@@ -9,8 +9,8 @@ public abstract class SwerveModule extends ArmedSubsystem {
 
 	// override with motor specific class
 	public void setDrivePower(double p){}
-	public void setDriveMMAccel(final int accel){}
-    public void setDriveMMVelocity(final int velocity){}
+	public void setDriveMaxAccel(final int accel){}
+    public void setDriveMaxVelocity(final int velocity){}
 	public void setTurnPower(double p){}
 	public double getTurnRelativePosition(){ return 0;}
 	public double getTurnAbsolutePosition(){ return 0;}
