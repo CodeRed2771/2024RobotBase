@@ -32,6 +32,8 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private PracticeDriveTrain(){
         robotGyro = NavXGyro.getInstance();
 
+        Calibration.loadSwerveCalibration();
+
         moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), 'A'); // Front right
         moduleB = new SwerveModuleVortex(Calibration.DT_B_DRIVE_ID, Calibration.DT_B_TURN_ID, Wiring.TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), 'B'); // Back left
         moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), 'C'); // Back right
@@ -40,6 +42,8 @@ public class PracticeDriveTrain extends DriveSubsystem {
         SmartDashboard.putNumber("TURN P", Calibration.getTurnP());
         SmartDashboard.putNumber("TURN I", Calibration.getTurnI());
         SmartDashboard.putNumber("TURN D", Calibration.getTurnD());
+
+        Calibration.initializeSmartDashboard(); 
 
     }
 
@@ -58,6 +62,18 @@ public class PracticeDriveTrain extends DriveSubsystem {
     public void periodic(){
         smartDashboardOutputABSRotations();
         showTurnEncodersOnDash();
+
+        if(isDisarmed()){
+            if (Calibration.shouldCalibrateSwerve()) {
+                double[] pos = getAllAbsoluteTurnOrientations();
+                Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
+            }
+          
+            // see if we want to reset the calibration to whatever is in the program
+            // basically setting "Delete Swerve Calibration" to true will trigger
+            // this, which deletes the calibration file.
+            Calibration.checkIfShouldDeleteCalibration();
+        }
     }
 
     @Override

@@ -49,7 +49,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    Calibration.loadSwerveCalibration();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -167,23 +166,12 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    Calibration.initializeSmartDashboard(); 
     myRobot.disarm();
   }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-    if (Calibration.shouldCalibrateSwerve()) {
-      double[] pos = driveTrain.getAllAbsoluteTurnOrientations();
-      Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
-  }
-
-  // see if we want to reset the calibration to whatever is in the program
-  // basically setting "Delete Swerve Calibration" to true will trigger
-  // this, which deletes the calibration file.
-  Calibration.checkIfShouldDeleteCalibration();
-  }
+  public void disabledPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
