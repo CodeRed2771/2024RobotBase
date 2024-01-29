@@ -3,14 +3,9 @@ package frc.robot.subsystems.drive;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 import frc.robot.Wiring;
-import frc.robot.subsystems.nav.NavXGyro;
-import frc.robot.subsystems.drive.SwerveModuleVortex;
 
 public class PracticeDriveTrain extends DriveSubsystem {
 
@@ -18,7 +13,6 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private SwerveModule moduleB;
     private SwerveModule moduleC;
     private SwerveModule moduleD;
-    private NavXGyro robotGyro;
 
         /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
     private static class PracticeDriveTrainSingleton {
@@ -31,7 +25,6 @@ public class PracticeDriveTrain extends DriveSubsystem {
 
 
     private PracticeDriveTrain(){
-        robotGyro = NavXGyro.getInstance();
 
         Calibration.loadSwerveCalibration();
 
