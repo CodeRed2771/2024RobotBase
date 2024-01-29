@@ -8,10 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
 
 import frc.robot.libs.HID.Gamepad;
-import frc.robot.subsystems.drive.DriveTrain;
+import frc.robot.subsystems.drive.PracticeDriveTrain;
 import frc.robot.subsystems.nav.NavXGyro;
 
 /**
@@ -28,11 +27,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static double cmb; 
-  //XboxController gamepad1;
+
   private RobotContainer myRobot;
 
   NavXGyro robotGyro;
-  DriveTrain driveTrain;
+  PracticeDriveTrain driveTrain;
   DriveAuto driveAuto;
 
   private Gamepad gamepad1;
@@ -56,7 +55,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     robotGyro = NavXGyro.getInstance();
-    driveTrain = DriveTrain.getInstance();
+    driveTrain = PracticeDriveTrain.getInstance();
     driveAuto = DriveAuto.getInstance();
 
     robotGyro.init();
@@ -69,6 +68,9 @@ public class Robot extends TimedRobot {
     var botType = RobotType.IntakeTest;
 
     switch (botType) {
+      case DriveTest:
+        myRobot = new PracticeRobot();
+        break;
       case IntakeTest:
         myRobot = new IntakeTestRobot();
         break;

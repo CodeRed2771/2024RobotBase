@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import frc.robot.libs.CurrentBreaker;
-import frc.robot.subsystems.drive.DriveTrain;
+import frc.robot.subsystems.drive.PracticeDriveTrain;
 import frc.robot.subsystems.nav.NavXGyro;
 
 public class DriveAuto {
@@ -26,7 +26,7 @@ public class DriveAuto {
     // private static CurrentBreaker driveCurrentBreaker;
 
     private NavXGyro robotGyro = NavXGyro.getInstance();
-    private DriveTrain driveTrain = DriveTrain.getInstance();
+    private PracticeDriveTrain driveTrain = PracticeDriveTrain.getInstance();
 
     public enum DriveSpeed {
         VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED

@@ -3,12 +3,15 @@ package frc.robot.subsystems.drive;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 import frc.robot.Wiring;
 import frc.robot.subsystems.nav.NavXGyro;
 
-public class DriveTrain {
+public class PracticeDriveTrain extends DriveSubsystem {
 
     private SwerveModule moduleA;
     private SwerveModule moduleB;
@@ -16,15 +19,17 @@ public class DriveTrain {
     private SwerveModule moduleD;
     private NavXGyro robotGyro;
 
-    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
-    private static class DriveTrainSingleton {
-        private static final DriveTrain instance = new DriveTrain();
-    }
-    public static DriveTrain getInstance(){
-        return DriveTrainSingleton.instance;
+        /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
+    private static class PracticeDriveTrainSingleton {
+        private static final PracticeDriveTrain instance = new PracticeDriveTrain();
     }
 
-    private DriveTrain(){
+    public static PracticeDriveTrain getInstance(){
+        return PracticeDriveTrainSingleton.instance;
+    }
+
+
+    private PracticeDriveTrain(){
         robotGyro = NavXGyro.getInstance();
 
         moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), 'A'); // Front right
@@ -32,6 +37,16 @@ public class DriveTrain {
         moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), 'C'); // Back right
         moduleD = new SwerveModuleVortex(Calibration.DT_D_DRIVE_ID, Calibration.DT_D_TURN_ID, Wiring.TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), 'D'); // Front left
 
+    }
+
+    @Override
+    public void doArm() {
+        init();
+    }
+
+    @Override
+    public void doDisarm() {
+        stopDriveAndTurnMotors();
     }
 
     public void init() {
