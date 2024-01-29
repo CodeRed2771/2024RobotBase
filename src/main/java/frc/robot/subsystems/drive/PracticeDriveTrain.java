@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 import frc.robot.Wiring;
 import frc.robot.subsystems.nav.NavXGyro;
+import frc.robot.subsystems.drive.SwerveModuleVortex;
 
 public class PracticeDriveTrain extends DriveSubsystem {
 
@@ -34,10 +35,15 @@ public class PracticeDriveTrain extends DriveSubsystem {
 
         Calibration.loadSwerveCalibration();
 
-        moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), 'A'); // Front right
-        moduleB = new SwerveModuleVortex(Calibration.DT_B_DRIVE_ID, Calibration.DT_B_TURN_ID, Wiring.TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), 'B'); // Back left
-        moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), 'C'); // Back right
-        moduleD = new SwerveModuleVortex(Calibration.DT_D_DRIVE_ID, Calibration.DT_D_TURN_ID, Wiring.TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), 'D'); // Front left
+        moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), "A"); // Front right
+        moduleB = new SwerveModuleVortex(Calibration.DT_B_DRIVE_ID, Calibration.DT_B_TURN_ID, Wiring.TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), "B"); // Back left
+        moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), "C"); // Back right
+        moduleD = new SwerveModuleVortex(Calibration.DT_D_DRIVE_ID, Calibration.DT_D_TURN_ID, Wiring.TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), "D"); // Front left
+
+        this.addChild(moduleA.getName(), moduleA);
+        this.addChild(moduleB.getName(), moduleB);
+        this.addChild(moduleC.getName(), moduleC);
+        this.addChild(moduleD.getName(), moduleD);
 
         SmartDashboard.putNumber("TURN P", Calibration.getTurnP());
         SmartDashboard.putNumber("TURN I", Calibration.getTurnI());

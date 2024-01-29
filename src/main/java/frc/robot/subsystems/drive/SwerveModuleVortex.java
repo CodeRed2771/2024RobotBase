@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 
-public class SwerveModuleVortex implements SwerveModule {
+public class SwerveModuleVortex extends SwerveModule {
     private CANSparkFlex drive;
     private CANSparkMax turn;
     private SparkPIDController drivePID;
@@ -25,7 +25,6 @@ public class SwerveModuleVortex implements SwerveModule {
     private RelativeEncoder driveEncoder;
 	private RelativeEncoder turnEncoder;
 	private AnalogEncoder turnAbsEncoder;
-	private char mModuleID;
 	// private final int FULL_ROTATION = 4096;
 	private double TURN_P, TURN_I, TURN_D, TURN_F, DRIVE_P, DRIVE_I, DRIVE_D;
 	private double TURN_IZONE, DRIVE_IZONE;
@@ -39,7 +38,8 @@ public class SwerveModuleVortex implements SwerveModule {
 	 * @param driveTalonID First I gotta know what talon we are using for driving
 	 * @param turnTalonID  Next I gotta know what talon we are using to turn
 	 */
-	public SwerveModuleVortex(int driveMotorID, int turnMotorID,  int turnAbsEncID, double tZeroPos, char moduleID) {
+	public SwerveModuleVortex(int driveMotorID, int turnMotorID,  int turnAbsEncID, double tZeroPos, String moduleID) {
+		super();
 
         drive = new CANSparkFlex(driveMotorID, MotorType.kBrushless);
         drive.restoreFactoryDefaults();
@@ -47,7 +47,7 @@ public class SwerveModuleVortex implements SwerveModule {
         drive.setSmartCurrentLimit(40);
         drive.setIdleMode(IdleMode.kBrake);
         
-        mModuleID = moduleID;
+		this.setName(moduleID);
 
 	  /**
          * In order to use PID functionality for a controller, a CANPIDController object
@@ -119,14 +119,6 @@ public class SwerveModuleVortex implements SwerveModule {
     public void setDriveMMVelocity(final int velocity) {
         drivePID.setSmartMotionMaxVelocity(velocity, 0);
     }
-
-	/**
-	 * getModuleLetters
-	 * @return a single character, A,B,C,D indicating which module this is
-	 */
-	public char getModuleLetter() {
-		return mModuleID;
-	}
 
 	/**
 	 * Setting turn motor power
@@ -292,10 +284,6 @@ public class SwerveModuleVortex implements SwerveModule {
 	public boolean hasDriveCompleted(final double inchesError) {
         return Math.abs(currentDriveSetpoint - getDriveEnc()) <= Calibration.getDriveTicksPerInch() * inchesError;
     }
-      
-	public boolean hasDriveCompleted() {
-		return hasDriveCompleted(0.25);
-	}
 
 	public void setTurnPIDToSetPoint(double setpoint) {
 		turn.set(setpoint);
@@ -405,8 +393,8 @@ public class SwerveModuleVortex implements SwerveModule {
 		 
         // TURN
         turnPID.setReference(newTargetPosition, ControlType.kPosition);
-		SmartDashboard.putNumber(mModuleID + " Target Position", newTargetPosition);
-		// if (mModuleID=='C') {
+		SmartDashboard.putNumber(getName() + " Target Position", newTargetPosition);
+		// if (getName()=="C") {
 		// 	SmartDashboard.putString("MC Cur Pos", String.format("%.3f", turnEncoder.getPosition()));
 		// 	SmartDashboard.putString("MC Req Pos", String.format("%.3f", reqPosition));
 		// 	SmartDashboard.putString("MC Nearest", String.format("%.3f", nearestPosInRotation));
@@ -416,7 +404,7 @@ public class SwerveModuleVortex implements SwerveModule {
 
 		// look for error
 		// if (Math.abs(currentPosition - newTargetPosition) > .250) {
-		// 	SmartDashboard.putString("MOD " + mModuleID + " CALC ERROR", "Cur: " + String.format("%.3f", currentPosition) + " New: " + String.format("%.3f", newTargetPosition) + "Called:  " + String.format("%.3f", reqPosition));
+		// 	SmartDashboard.putString("MOD " + getName() + " CALC ERROR", "Cur: " + String.format("%.3f", currentPosition) + " New: " + String.format("%.3f", newTargetPosition) + "Called:  " + String.format("%.3f", reqPosition));
 		// }
 
         // System.out.println("");
