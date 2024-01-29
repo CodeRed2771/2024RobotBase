@@ -30,4 +30,5 @@ public abstract class RobotContainer extends ArmedSubsystem {
     this.addChild(nav.getName(), nav);
   }
 
+  public void restoreRobotToDefaultState(){}
 }

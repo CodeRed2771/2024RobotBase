@@ -50,7 +50,7 @@ public class PracticeDriveTrain extends DriveSubsystem {
     @Override
     public void doArm() {
         stopDriveAndTurnMotors();
-        init();
+        reset();
     }
 
     @Override
@@ -78,10 +78,6 @@ public class PracticeDriveTrain extends DriveSubsystem {
 
     @Override
     public void reset(){
-        init();
-    }
-
-    private void init() {
         allowTurnEncoderReset();
         resetTurnEncoders();
     }

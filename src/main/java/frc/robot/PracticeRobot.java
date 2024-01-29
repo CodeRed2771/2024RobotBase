@@ -33,6 +33,7 @@ public class PracticeRobot extends RobotContainer {
     intake.arm();
     launcher.arm();
     drive.arm();
+    nav.reset();
   }
 
   @Override
@@ -47,4 +48,10 @@ public class PracticeRobot extends RobotContainer {
     // This method will be called once per scheduler run
   }
 
+  @Override
+  public void restoreRobotToDefaultState(){
+    nav.reset();
+    drive.reset(); // sets encoders based on absolute encoder positions
+    ((PracticeDriveTrain) drive).setAllTurnOrientation(0, false);
+  }
 }

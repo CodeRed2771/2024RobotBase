@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.nav;
 
-import edu.wpi.first.math.geometry.Pose3d;
-
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
 
@@ -15,6 +13,11 @@ public class PracticeRobotNav extends NavSubsystem {
         super();
 
         robotGyro = NavXGyro.getInstance();
+    }
+
+    @Override
+    public void reset(){
+        robotGyro.reset();
     }
 
 }

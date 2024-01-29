@@ -57,7 +57,6 @@ public class Robot extends TimedRobot {
     driveTrain = PracticeDriveTrain.getInstance();
     driveAuto = DriveAuto.getInstance();
 
-    robotGyro.init();
     // driveAuto.init();
     //gamepad1 = new XboxController(0);
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
@@ -138,19 +137,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     myRobot.arm();
-    robotGyro.reset();
-        
-    driveTrain.setAllTurnOrientation(0, false);
+    myRobot.restoreRobotToDefaultState();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
       if (gamepad1.getStartButton()) {
-          robotGyro.reset();
-          
-          driveTrain.reset(); // sets encoders based on absolute encoder positions
-          driveTrain.setAllTurnOrientation(0, false);
+          myRobot.restoreRobotToDefaultState();
       }
       driveTrain.fieldCentricDrive(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
     /* read gamepad and map inputs to robot functions*/

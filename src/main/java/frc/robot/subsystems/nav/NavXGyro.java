@@ -20,11 +20,6 @@ public class NavXGyro {
         return NavXGyroSingleton.instance;
     }
 
-    public void init() {
-        pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface
-                                        // will be used to offset values to return a relative pitch
-    }
-
     public AHRS getGyro() {
         return mGyro;
     }
