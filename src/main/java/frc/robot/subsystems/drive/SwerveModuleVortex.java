@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
+import frc.robot.subsystems.ArmedSubsystem;
 
-public class SwerveModuleVortex extends SwerveModule {
+public class SwerveModuleVortex extends ArmedSubsystem implements SwerveModule {
     private CANSparkFlex drive;
     private CANSparkMax turn;
     private SparkPIDController drivePID;
@@ -284,6 +285,10 @@ public class SwerveModuleVortex extends SwerveModule {
 	public boolean hasDriveCompleted(final double inchesError) {
         return Math.abs(currentDriveSetpoint - getDriveEnc()) <= Calibration.getDriveTicksPerInch() * inchesError;
     }
+
+	public boolean hasDriveCompleted() {
+		return hasDriveCompleted(0.25);
+	}
 
 	public void setTurnPIDToSetPoint(double setpoint) {
 		turn.set(setpoint);

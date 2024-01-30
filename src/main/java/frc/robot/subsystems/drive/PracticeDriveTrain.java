@@ -9,12 +9,12 @@ import frc.robot.Wiring;
 
 public class PracticeDriveTrain extends DriveSubsystem {
 
-    private SwerveModule moduleA;
-    private SwerveModule moduleB;
-    private SwerveModule moduleC;
-    private SwerveModule moduleD;
+    private SwerveModuleVortex moduleA;
+    private SwerveModuleVortex moduleB;
+    private SwerveModuleVortex moduleC;
+    private SwerveModuleVortex moduleD;
 
-        /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
+    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
     private static class PracticeDriveTrainSingleton {
         private static final PracticeDriveTrain instance = new PracticeDriveTrain();
     }
@@ -25,7 +25,7 @@ public class PracticeDriveTrain extends DriveSubsystem {
 
 
     private PracticeDriveTrain(){
-
+        
         Calibration.loadSwerveCalibration();
 
         moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), "A"); // Front right
