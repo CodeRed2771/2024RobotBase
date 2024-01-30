@@ -14,18 +14,33 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private SwerveModuleVortex moduleC;
     private SwerveModuleVortex moduleD;
 
-    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
-    private static class PracticeDriveTrainSingleton {
-        private static final PracticeDriveTrain instance = new PracticeDriveTrain();
+    /**
+     * Apply the Singleton design pattern for Java because the I/O mapping for the
+     * drive train is fixed here.
+     * See:
+     * https://howtodoinjava.com/design-patterns/creational/singleton-design-pattern-in-java/
+     */
+    private static volatile PracticeDriveTrain instance = null;
+
+    public static PracticeDriveTrain getInstance() {
+        if (instance == null) {
+            synchronized (PracticeDriveTrain.class) {
+                // Double check
+                if (instance == null) {
+                    instance = new PracticeDriveTrain();
+                }
+            }
+        }
+        return instance;
     }
 
-    public static PracticeDriveTrain getInstance(){
-        return PracticeDriveTrainSingleton.instance;
+    protected Object readResolve() {
+        return getInstance();
     }
-
 
     private PracticeDriveTrain(){
-        
+        super();
+
         Calibration.loadSwerveCalibration();
 
         moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), "A"); // Front right
