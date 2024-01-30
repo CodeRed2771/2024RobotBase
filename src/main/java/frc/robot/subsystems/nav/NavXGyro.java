@@ -2,22 +2,14 @@ package frc.robot.subsystems.nav;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.subsystems.drive.PracticeDriveTrain;
 
 public class NavXGyro {
     private AHRS mGyro;
     private double pitchAdjust = 0;
 
-    /* Use a singleton design pattern to assist in migrating from ubiquitous static class operations */
-    private static class NavXGyroSingleton {
-        private static final NavXGyro instance = new NavXGyro(SPI.Port.kMXP);
-    }
-
-    private NavXGyro(SPI.Port port){
+    public NavXGyro(SPI.Port port){
         mGyro = new AHRS(port);
-    }
-
-    public static NavXGyro getInstance(){
-        return NavXGyroSingleton.instance;
     }
 
     public AHRS getGyro() {

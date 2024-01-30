@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.nav;
 
+import edu.wpi.first.wpilibj.SPI;
+
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
 
@@ -12,7 +14,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public PracticeRobotNav() {
         super();
 
-        gyro = NavXGyro.getInstance();
+        gyro = new NavXGyro(SPI.Port.kMXP);
     }
 
     @Override
