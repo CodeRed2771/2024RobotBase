@@ -5,6 +5,7 @@
 package frc.robot.subsystems.nav;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
@@ -18,12 +19,17 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     @Override
-    public void reset(){
+    public void reset() {
         gyro.reset();
     }
 
     @Override
     public double getAngle() {
         return gyro.getAngle();
-      }
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Gyro Angle", ((int)(gyro.getAngle()*1000))/1000.0);
+    }
 }

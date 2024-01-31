@@ -47,7 +47,6 @@ public class SwerveModuleVortex extends ArmedSubsystem implements SwerveModule {
         drive.setOpenLoopRampRate(.1);
         drive.setSmartCurrentLimit(40);
         drive.setIdleMode(IdleMode.kBrake);
-        
 		this.setName(moduleID);
 
 	  /**

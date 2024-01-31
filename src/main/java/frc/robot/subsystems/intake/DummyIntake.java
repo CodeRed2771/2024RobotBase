@@ -23,15 +23,15 @@ public class DummyIntake extends IntakeSubsystem {
     }
 
     public void load() {
-        log("Running load actuators");
+        //log("Running load actuators");
     }
 
     public void stop() {
-        log("stop motions");
+        //log("stop motions");
     }
 
     public void unload() {
-        log("Unloading element");
+        //log("Unloading element");
     }
 
 }

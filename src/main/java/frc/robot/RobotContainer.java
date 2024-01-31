@@ -45,7 +45,7 @@ public abstract class RobotContainer extends ArmedSubsystem {
      * orientation of the robot
      */
     Translation2d command = new Translation2d(fwd, strafe);
-    command.rotateBy(Rotation2d.fromDegrees(-nav.getAngle()));
+    command = command.rotateBy(Rotation2d.fromDegrees(-nav.getAngle()));
 
     drive.driveSpeedControl(command.getX(), command.getY(), rotate);
   }

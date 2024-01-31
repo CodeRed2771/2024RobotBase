@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,7 +52,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
-    var botType = RobotType.IntakeTest;
+    var botType = RobotType.DriveTest;
 
     switch (botType) {
       case DriveTest:
@@ -135,7 +136,11 @@ public class Robot extends TimedRobot {
       if (gamepad1.getStartButton()) {
           myRobot.restoreRobotToDefaultState();
       }
-      myRobot.driveSpeedControlFieldCentric(-gamepad1.getLeftY(), gamepad1.getLeftX(), gamepad1.getRightX());
+
+      double fwd = MathUtil.applyDeadband(-gamepad1.getLeftY(),0.02);
+      double strafe = MathUtil.applyDeadband(gamepad1.getLeftX(),0.02);
+      double rotate = MathUtil.applyDeadband(gamepad1.getRightX(),0.02);
+      myRobot.driveSpeedControlFieldCentric(fwd, strafe, rotate);
 
     /* read gamepad and map inputs to robot functions*/
     if(gamepad2.getXButton()) {

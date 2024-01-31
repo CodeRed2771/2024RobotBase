@@ -336,6 +336,7 @@ public class PracticeDriveTrain extends DriveSubsystem {
      * Drive methods
      */
     public void swerveDrive(double fwd, double strafe, double rot) {
+        rot = -rot;
         double a = strafe - (rot * (l / r));
         double b = strafe + (rot * (l / r));
         double c = fwd - (rot * (w / r));

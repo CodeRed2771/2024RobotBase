@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.nav;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class NavSubsystem extends SubsystemBase {
@@ -17,4 +18,5 @@ public abstract class NavSubsystem extends SubsystemBase {
   public double getAngle() {
     return 0;
   }
+
 }

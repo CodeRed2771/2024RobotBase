@@ -37,10 +37,10 @@ public class Calibration {
     private final static double DT_PRACT_D_ABS_ZERO_INITIAL = .098; 
     
     // COMPETITION
-    public final static double DT_COMP_A_ABS_ZERO_INITIAL = .492; // COMPETITION BOT
-    public final static double DT_COMP_B_ABS_ZERO_INITIAL = .851; 
-    public final static double DT_COMP_C_ABS_ZERO_INITIAL = .224; 
-    public final static double DT_COMP_D_ABS_ZERO_INITIAL = .394; 
+    public final static double DT_COMP_A_ABS_ZERO_INITIAL = 0.385;
+    public final static double DT_COMP_B_ABS_ZERO_INITIAL = 0.226;
+    public final static double DT_COMP_C_ABS_ZERO_INITIAL = 0.902;
+    public final static double DT_COMP_D_ABS_ZERO_INITIAL = 0.508;
 
     public static final double AUTO_ROT_P = 0.08; 
     public static final double AUTO_ROT_I = 0.001;
@@ -54,19 +54,19 @@ public class Calibration {
     // Physical Module - A
     public final static int DT_D_DRIVE_ID = 3;
     public final static int DT_D_TURN_ID = 4;
-    private static double DT_D_ABS_ZERO = getInitialTurnZeroPos('A');
+    private static double DT_D_ABS_ZERO = getInitialTurnZeroPos('D');
     // Physical Module - B
     public final static int DT_C_DRIVE_ID = 5;
     public final static int DT_C_TURN_ID = 6;
-    private static double DT_C_ABS_ZERO = getInitialTurnZeroPos('B');
+    private static double DT_C_ABS_ZERO = getInitialTurnZeroPos('C');
     // Physical Module - C
     public final static int DT_B_DRIVE_ID = 7;
     public final static int DT_B_TURN_ID = 8;
-    private static double DT_B_ABS_ZERO = getInitialTurnZeroPos('C');
+    private static double DT_B_ABS_ZERO = getInitialTurnZeroPos('B');
     // Physical Module - D
     public final static int DT_A_DRIVE_ID = 1;
     public final static int DT_A_TURN_ID = 2;
-    private static double DT_A_ABS_ZERO = getInitialTurnZeroPos('D');
+    private static double DT_A_ABS_ZERO = getInitialTurnZeroPos('A');
 	
     // public static final double GEAR_RATIO = 12;
     // public static final double ENCODER_RESOLUTION = 1;
@@ -227,6 +227,7 @@ public class Calibration {
         File calibrationFile = new File("/home/lvuser/swerve.calibration");
         if (calibrationFile.exists()) {
             try {
+                System.out.println("Loading coefficnets from file!");
                 BufferedReader reader = new BufferedReader(new FileReader(calibrationFile));
                 DT_A_ABS_ZERO = Double.parseDouble(reader.readLine());
                 DT_B_ABS_ZERO = Double.parseDouble(reader.readLine());
@@ -291,6 +292,7 @@ public class Calibration {
     }
 
     public static void deleteSwerveDriveCalibration() {
+        System.out.println("Deleting Calibration file!");
         DT_A_ABS_ZERO = getInitialTurnZeroPos('A');;
         DT_B_ABS_ZERO = getInitialTurnZeroPos('B');;
         DT_C_ABS_ZERO = getInitialTurnZeroPos('C');;
