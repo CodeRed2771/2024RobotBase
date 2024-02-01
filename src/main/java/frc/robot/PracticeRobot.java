@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.drive.PracticeDriveTrain;
-import frc.robot.subsystems.intake.DummyIntake;
+import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
@@ -20,7 +18,7 @@ public class PracticeRobot extends RobotContainer {
 
     /* Set all of the subsystems */
     drive = PracticeDriveTrain.getInstance();
-    intake = new DummyIntake();
+    intake = new RollerIntake(16);
     launcher = new DummyLauncher();
     nav = new PracticeRobotNav();
     registerSubsystems();

@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
       myRobot.intake.load();
     } else if(gamepad2.getYButton()){
       myRobot.intake.unload();
-    } else {
+    } else if(gamepad2.getAButton()){
       myRobot.intake.stop();
     }
   }
