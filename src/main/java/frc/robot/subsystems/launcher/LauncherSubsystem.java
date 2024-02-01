@@ -14,5 +14,15 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
   /** request that the intake perform the operations to try and load a new element into the robot */
   public void load(){}
 
-  public void fire(double power){}
+  public boolean isLoaded() {return true;}
+
+  public boolean isAimed() {return true;}
+
+  public void aim(double angle){}
+
+  public void prime(double power){}
+
+  public boolean isPrimed() {return true;}
+
+  public void fire() {}
 }
