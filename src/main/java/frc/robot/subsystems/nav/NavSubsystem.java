@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.nav;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -15,8 +16,7 @@ public abstract class NavSubsystem extends SubsystemBase {
   public void reset() {
   }
 
-  public double getAngle() {
-    return 0;
-  }
+  public abstract Translation2d getPosition();
+  public abstract double getAngle();
 
 }

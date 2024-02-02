@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.ArmedSubsystem;
@@ -20,9 +23,12 @@ public abstract class RobotContainer extends ArmedSubsystem {
   protected LauncherSubsystem launcher;
   protected NavSubsystem nav;
 
+  protected Map<String,Integer> wiring;
 
   protected RobotContainer() {
     super();
+
+    wiring = new HashMap<>();
   }
 
   protected void registerSubsystems() {
