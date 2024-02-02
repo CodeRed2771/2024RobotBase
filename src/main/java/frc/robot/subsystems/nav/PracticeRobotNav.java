@@ -7,16 +7,22 @@ package frc.robot.subsystems.nav;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.nav.Limelight.LimelightOn;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
 
     Translation2d position = new Translation2d();
     private NavXGyro gyro;
+    private Limelight limelight;
 
     public PracticeRobotNav() {
         super();
 
+        limelight = new Limelight();
+        limelight.setAprilTagPipeline();
+        limelight.setLED(LimelightOn.Off);
+        
         gyro = new NavXGyro(SPI.Port.kMXP);
     }
 
