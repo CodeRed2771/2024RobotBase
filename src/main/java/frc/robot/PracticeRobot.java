@@ -18,14 +18,14 @@ public class PracticeRobot extends RobotContainer {
     super();
 
     /* Define all of the wiring for the robot in a common spot here and then pass it around */
-    wiring.put("A turn",  1);
-    wiring.put("A drive",  2);
-    wiring.put("B turn",  7);
-    wiring.put("B drive",  8);
-    wiring.put("C turn",  5);
-    wiring.put("C drive",  6);
-    wiring.put("D turn",  3);
-    wiring.put("D drive",  4);
+    wiring.put("A turn", 2);
+    wiring.put("A drive", 1);
+    wiring.put("B turn", 8);
+    wiring.put("B drive", 7);
+    wiring.put("C turn",  6);
+    wiring.put("C drive", 5);
+    wiring.put("D turn",  4);
+    wiring.put("D drive", 3);
 
     wiring.put("A turn enc",1 );
     wiring.put("B turn enc",2 );
