@@ -15,10 +15,10 @@ import frc.robot.subsystems.nav.NavSubsystem;
 public abstract class RobotContainer extends ArmedSubsystem {
 
   /* Be sure to register all subsystems after they are created */
-  protected DriveSubsystem drive;
-  protected IntakeSubsystem intake;
-  protected LauncherSubsystem launcher;
-  protected NavSubsystem nav;
+  public DriveSubsystem drive;
+  public IntakeSubsystem intake;
+  public LauncherSubsystem launcher;
+  public NavSubsystem nav;
 
 
   protected RobotContainer() {
