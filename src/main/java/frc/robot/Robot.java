@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
       double fwd = MathUtil.applyDeadband(-gamepad1.getLeftY(),0.02);
       double strafe = MathUtil.applyDeadband(gamepad1.getLeftX(),0.02);
       double rotate = MathUtil.applyDeadband(gamepad1.getRightX(),0.02);
-      myRobot.driveSpeedControlFieldCentric(fwd, strafe, rotate);
+      myRobot.driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
 
     /* read gamepad and map inputs to robot functions*/
     if(gamepad2.getXButton()) {
