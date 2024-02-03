@@ -11,7 +11,7 @@ import frc.robot.Wiring;
 public class PracticeDriveTrain extends DriveSubsystem {
 
     private SwerveModuleVortex moduleA;
-    private SwerveModuleVortex moduleB;
+    private SwerveModuleVortex moduleB; 
     private SwerveModuleVortex moduleC;
     private SwerveModuleVortex moduleD;
 
