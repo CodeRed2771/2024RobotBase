@@ -15,11 +15,11 @@ public abstract class DriveSubsystem extends ArmedSubsystem {
 
   public void driveSpeedControl(double fwd, double strafe, double rot){}
 
-  public void driveInches(double inches){}
+  public void driveInches(double inches, double speedFactor){}
 
-  public void driveInches(double inches, double turnAngle){}
+  public void driveInches(double inches, double speedFactor, double turnAngle){}
 
-  public void rotateDegrees(double degrees){}
+  public void rotateDegrees(double degrees, double speedFactor){}
 
-  public void strafeInches(double inches){}
+  public void strafeInches(double inches, double speedFactor){}
 }

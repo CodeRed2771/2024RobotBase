@@ -15,6 +15,8 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private SwerveModuleVortex moduleC;
     private SwerveModuleVortex moduleD;
 
+    private final double TICKS_PER_INCH = .511; //estimated -- needs to be calculated
+
     public PracticeDriveTrain(Map<String,Integer> wiring){
         super();
 
@@ -453,4 +455,47 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private static Double round(Double val, int scale) {
         return new BigDecimal(val.toString()).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
+
+    @Override
+    public void driveInches(double inches, double speedFactor){
+        driveInches(inches, speedFactor, 0);
+    }
+
+    private double inchesToTicks(double inches) {
+        return (double) (inches * TICKS_PER_INCH);
+    }
+
+    private double degreesToTicks(double degrees) {
+        return (double) ((degrees / 4.42) * TICKS_PER_INCH);
+    }
+
+    @Override
+    public void driveInches(double inches, double speedFactor, double turnAngle){
+        setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+        setAllTurnOrientation(angleToPosition(turnAngle),true);
+
+        //waiting for motors to rotate to position
+        try{
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        addToAllDrivePositions(inchesToTicks(inches));
+    }
+
+    @Override
+    public void rotateDegrees(double degrees, double speedFactor){
+        setTurnOrientation(angleToPosition(-133.6677), angleToPosition(46.3322), angleToPosition(133.6677), angleToPosition(-46.3322), true);
+        
+        //wait for turn
+        try{
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        addToAllDrivePositions(degreesToTicks(-degrees));
+    }
+
 }
