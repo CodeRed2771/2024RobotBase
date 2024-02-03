@@ -41,7 +41,7 @@ public class PracticeRobot extends RobotContainer {
     wiring.put("aim",  0);
 
     /* Set all of the subsystems */
-    drive = PracticeDriveTrain.getInstance();
+    drive = new PracticeDriveTrain(wiring);
     intake = new RollerIntake(16);
     launcher = new DummyLauncher();
     nav = new PracticeRobotNav();

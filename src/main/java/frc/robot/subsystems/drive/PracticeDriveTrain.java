@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
@@ -14,39 +15,29 @@ public class PracticeDriveTrain extends DriveSubsystem {
     private SwerveModuleVortex moduleC;
     private SwerveModuleVortex moduleD;
 
-    /**
-     * Apply the Singleton design pattern for Java because the I/O mapping for the
-     * drive train is fixed here.
-     * See:
-     * https://howtodoinjava.com/design-patterns/creational/singleton-design-pattern-in-java/
-     */
-    private static volatile PracticeDriveTrain instance = null;
-
-    public static PracticeDriveTrain getInstance() {
-        if (instance == null) {
-            synchronized (PracticeDriveTrain.class) {
-                // Double check
-                if (instance == null) {
-                    instance = new PracticeDriveTrain();
-                }
-            }
-        }
-        return instance;
-    }
-
-    protected Object readResolve() {
-        return getInstance();
-    }
-
-    private PracticeDriveTrain(){
+    public PracticeDriveTrain(Map<String,Integer> wiring){
         super();
 
         Calibration.loadSwerveCalibration();
 
-        moduleA = new SwerveModuleVortex(Calibration.DT_A_DRIVE_ID, Calibration.DT_A_TURN_ID, Wiring.TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), "A"); // Front right
-        moduleB = new SwerveModuleVortex(Calibration.DT_B_DRIVE_ID, Calibration.DT_B_TURN_ID, Wiring.TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), "B"); // Back left
-        moduleC = new SwerveModuleVortex(Calibration.DT_C_DRIVE_ID, Calibration.DT_C_TURN_ID, Wiring.TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), "C"); // Back right
-        moduleD = new SwerveModuleVortex(Calibration.DT_D_DRIVE_ID, Calibration.DT_D_TURN_ID, Wiring.TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), "D"); // Front left
+        int TURN_ABS_ENC_A = wiring.get("A turn enc");
+        int TURN_ABS_ENC_B = wiring.get("B turn enc");
+        int TURN_ABS_ENC_C = wiring.get("C turn enc");
+        int TURN_ABS_ENC_D = wiring.get("D turn enc");
+    
+        int DT_A_DRIVE_ID = wiring.get("A drive");
+        int DT_A_TURN_ID = wiring.get("A turn");
+        int DT_B_DRIVE_ID = wiring.get("B drive");
+        int DT_B_TURN_ID = wiring.get("B turn");
+        int DT_C_DRIVE_ID = wiring.get("C drive");
+        int DT_C_TURN_ID = wiring.get("C turn");
+        int DT_D_DRIVE_ID = wiring.get("D drive");
+        int DT_D_TURN_ID = wiring.get("D turn");
+
+        moduleA = new SwerveModuleVortex(DT_A_DRIVE_ID, DT_A_TURN_ID, TURN_ABS_ENC_A, Calibration.getTurnZeroPos('A'), "A"); // Front right
+        moduleB = new SwerveModuleVortex(DT_B_DRIVE_ID, DT_B_TURN_ID, TURN_ABS_ENC_B, Calibration.getTurnZeroPos('B'), "B"); // Back left
+        moduleC = new SwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, Calibration.getTurnZeroPos('C'), "C"); // Back right
+        moduleD = new SwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, Calibration.getTurnZeroPos('D'), "D"); // Front left
 
         this.addChild(moduleA.getName(), moduleA);
         this.addChild(moduleB.getName(), moduleB);
