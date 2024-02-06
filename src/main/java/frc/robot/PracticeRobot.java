@@ -34,8 +34,6 @@ public class PracticeRobot extends RobotContainer {
   
     wiring.put("NavX",  SPI.Port.kMXP.value);
 
-    wiring.put("intake",  16);
-
     wiring.put("upper launcher",  0);
     wiring.put("lower launcher",  0);
     wiring.put("aim",  0);
