@@ -46,6 +46,7 @@ public class Limelight {
     }
 
     private NetworkTable limelight;
+    private Pose3d fieldPosition;
     public Limelight() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -87,10 +88,22 @@ public class Limelight {
         return LimelightPipeline.fromInt(pipeline);
     }
     
+    public double getArea() {
+        return limelight.getEntry("ta").getDouble(0);
+    }
+
     private void updatePose(){
         double[] data;
-        data = limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        double area;
+        boolean seesSomething;
+        int aprilTagID;
+        final double VALID_AREA = 0.25;
+        Transform3d aprilTagTransmorm3d;
 
+        data = limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        area = getArea();
+        seesSomething = seesSomething();
+        aprilTagID = getAprilTagID();
 
         Pose3d currentReading = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
         /*  gain read
@@ -98,11 +111,15 @@ public class Limelight {
          * set valid flag to true - check each validation info - if false set value to false
          * if valid set field position based on reading transformed by april tag position n
          */
-        Transform3d fieldPosition;
+        if(seesSomething && area > VALID_AREA) {
+            aprilTagTransmorm3d = aprilTagPositions[aprilTagID];
+            fieldPosition = currentReading.transformBy(aprilTagTransmorm3d);
+        }
     }
     
+
     public Pose3d getFieldPose() {
-        return new Pose3d(currentPose.getTranslation(), currentPose.getRotation());
+        return fieldPosition;
     }
 
     public int getAprilTagID() {
@@ -112,8 +129,12 @@ public class Limelight {
         return -100;
     }
     
-    public double seesSomething() {
-        return limelight.getEntry("tv").getDouble(0);
+    public boolean seesSomething() {
+        double value = limelight.getEntry("tv").getDouble(0);
+        if(value == 1) {
+            return true;
+        }
+        return false;
     }
 
     public double horizontalOffset() {
