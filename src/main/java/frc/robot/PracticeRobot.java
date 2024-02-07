@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.drive.PracticeDriveTrain;
 import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
@@ -16,9 +17,33 @@ public class PracticeRobot extends RobotContainer {
   public PracticeRobot() {
     super();
 
+    /* Define all of the wiring for the robot in a common spot here and then pass it around */
+    wiring.put("A turn", 2);
+    wiring.put("A drive", 1);
+    wiring.put("B turn", 8);
+    wiring.put("B drive", 7);
+    wiring.put("C turn",  6);
+    wiring.put("C drive", 5);
+    wiring.put("D turn",  4);
+    wiring.put("D drive", 3);
+
+    wiring.put("A turn enc",1 );
+    wiring.put("B turn enc",2 );
+    wiring.put("C turn enc",0 );
+    wiring.put("D turn enc",3 );
+  
+    wiring.put("NavX",  SPI.Port.kMXP.value);
+
+    wiring.put("upper launcher",  20);
+    wiring.put("lower launcher",  21);
+    wiring.put("launcher loader",  22);
+    wiring.put("aim",  0);
+
+    wiring.put("intakeMotorId", 16);
+
     /* Set all of the subsystems */
-    drive = PracticeDriveTrain.getInstance();
-    intake = new RollerIntake(16);
+    drive = new PracticeDriveTrain(wiring);
+    intake = new RollerIntake(wiring);
     launcher = new DummyLauncher();
     nav = new PracticeRobotNav();
     registerSubsystems();

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.intake;
 
+import java.util.Map;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -12,8 +14,10 @@ public class RollerIntake extends IntakeSubsystem {
     
     private CANSparkMax driveMotor;
     
-    public RollerIntake(int motorId) {
+    public RollerIntake(Map<String,Integer> wiring) {
         super();
+
+        int motorId = wiring.get("intakeMotorId");
 
         driveMotor = new CANSparkMax(motorId, MotorType.kBrushless);
     }

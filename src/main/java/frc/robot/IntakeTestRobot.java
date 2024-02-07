@@ -16,9 +16,11 @@ public class IntakeTestRobot extends RobotContainer {
   public IntakeTestRobot() {
     super();
 
+    wiring.put("intakeMotorId", 16);
+  
     /* Set all of the subsystems */
     drive = new DummyDrive();
-    intake = new RollerIntake(10);
+    intake = new RollerIntake(wiring);
     launcher = new DummyLauncher();
     nav = new DummyNav();
     registerSubsystems();
