@@ -11,17 +11,25 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
     super();
   }
 
-  /** request that the intake perform the operations to try and load a new element into the robot */
-  public void load(){}
 
+  /** request that the intake perform the operations to try and load a new element into the robot */
+  public void load(){loadState = LoaderState.Loading;}
+  public void unload() {loadState = LoaderState.Unloading;}
+  public void stopLoader() {loadState = LoaderState.Stopped;}
   public boolean isLoaded() {return true;}
+  public enum LoaderState {
+    Loading, 
+    Stopped,
+    Unloading
+  } 
+  protected LoaderState loadState;
+  public LoaderState getLoaderState() {return loadState;}
 
   public boolean isAimed() {return true;}
-
   public void aim(double angle){}
 
   public void prime(double power){}
-
+  public void stop() {prime(0);}
   public boolean isPrimed() {return true;}
 
   public void fire() {}

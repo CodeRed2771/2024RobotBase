@@ -4,13 +4,26 @@
 
 package frc.robot.subsystems.launcher;
 
+import java.util.Map;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
-/** Add your docs here. */
+/** Add your docs 
+ * When load is command - run loader motor until note is in loader position
+ * stop on sensor tells us we have note
+ * hold then load for firing 
+ * 
+ * call prime to get motors up to speed 
+ * 
+ * Fire runs load for time if isPrimed until sensor says otherwise
+ * 
+ * 
+ */
 public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax upperMotor;
     private CANSparkMax lowerMotor;
+    private CANSparkMax loaderMotor;
 
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
@@ -18,11 +31,12 @@ public class RollerLauncher extends LauncherSubsystem {
     private double motorSpeedBias = 0.06;
 
 
-    public RollerLauncher(int upperMotorId, int lowerMotorId) {
+    public RollerLauncher(Map<String,Integer> wiring) {
         super();
 
-        upperMotor = new CANSparkMax(upperMotorId, MotorType.kBrushless);
-        lowerMotor = new CANSparkMax(lowerMotorId, MotorType.kBrushless);
+        upperMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
+        lowerMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
+        loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
     }
 
     private void log(String text) {
@@ -35,10 +49,26 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public void doDisarm() {
         log("Disarmed");
+        stop();
+        stopLoader();
     }
 
     public void load() {
-        log("Running load actuators");
+        super.load();
+
+        loaderMotor.set(1);
+    }
+
+    public void unload() {
+        super.unload();
+
+        loaderMotor.set(-1);
+    }
+
+    public void stopLoader() {
+        super.unload();
+
+        loaderMotor.set(0);
     }
 
     public void prime(double power) {
@@ -63,4 +93,8 @@ public class RollerLauncher extends LauncherSubsystem {
         return upperMotorTracking && lowerMotorTracking;
     }
 
+    @Override
+    public void periodic() {
+        
+    }
 }
