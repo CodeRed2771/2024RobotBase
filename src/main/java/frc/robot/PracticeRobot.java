@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.drive.PracticeDriveTrain;
 import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
+import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class PracticeRobot extends RobotContainer {
@@ -44,7 +45,7 @@ public class PracticeRobot extends RobotContainer {
     /* Set all of the subsystems */
     drive = new PracticeDriveTrain(wiring);
     intake = new RollerIntake(wiring);
-    launcher = new DummyLauncher();
+    launcher = new RollerLauncher(wiring);
     nav = new PracticeRobotNav();
     registerSubsystems();
   }

@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
     Dummy,
     IntakeTest,
     DriveTest,
+    LauncherTest,
     None
   }
 
@@ -57,14 +58,17 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
-    var botType = RobotType.DriveTest;
+    var botType = RobotType.LauncherTest;
 
     switch (botType) {
       case DriveTest:
         myRobot = new PracticeRobot();
         break;
       case IntakeTest:
-        myRobot = new IntakeTestRobot();
+        myRobot = new DummyRobot();
+        break;
+      case LauncherTest:
+        myRobot = new LauncherTestRobot();
         break;
       default:
         myRobot = new DummyRobot();
@@ -162,17 +166,27 @@ public class Robot extends TimedRobot {
     myRobot.driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
 
     /* read gamepad and map inputs to robot functions */
+    runLauncher();
+
   }
 
-  static double speed = 0;
-  static double bias = 0;
+  private double speed = 0;
+  private double bias = 0;
 
   public void runLauncher() {
+    if (gamepad2.getDPadUp()){
+      myRobot.launcher.prime(speed);
+    }
+    if (gamepad2.getDPadDown()){
+      myRobot.launcher.stop();
+    }
     if (gamepad2.getXButtonPressed()) {
       speed = Math.min(1.0,speed + .05);
+      myRobot.launcher.prime(speed);
     }
     if (gamepad2.getYButtonPressed()) {
       speed = Math.max(0.0,speed - .05);
+      myRobot.launcher.prime(speed);
     }
     if (gamepad2.getAButtonPressed()) {
       bias = Math.min(.05,bias + .01);

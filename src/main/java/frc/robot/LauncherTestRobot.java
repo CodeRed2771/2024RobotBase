@@ -16,10 +16,15 @@ public class LauncherTestRobot extends RobotContainer {
   public LauncherTestRobot() {
     super();
 
+    wiring.put("upper launcher",  20);
+    wiring.put("lower launcher",  21);
+    wiring.put("launcher loader",  22);
+    wiring.put("aim",  0);
+
     /* Set all of the subsystems */
     drive = new DummyDrive();
     intake = new DummyIntake();
-    launcher = new RollerLauncher(3,1);
+    launcher = new RollerLauncher(wiring);
     nav = new DummyNav();
     registerSubsystems();
   }
