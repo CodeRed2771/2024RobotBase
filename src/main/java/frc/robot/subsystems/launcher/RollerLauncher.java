@@ -75,8 +75,8 @@ public class RollerLauncher extends LauncherSubsystem {
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
-        upperSpeedCmd = power;
-        lowerSpeedCmd = (-power) + motorSpeedBias;
+        upperSpeedCmd = -power;
+        lowerSpeedCmd = (power) + motorSpeedBias;
 
         upperMotor.set(upperSpeedCmd);
         lowerMotor.set(lowerSpeedCmd);
