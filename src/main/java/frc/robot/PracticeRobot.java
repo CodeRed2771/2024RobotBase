@@ -32,22 +32,23 @@ public class PracticeRobot extends DefaultRobot {
     super();
     wiring = new HashMap<>();
 
-    /* Define all of the wiring for the robot in a common spot here and then pass it around */
+    /*
+     * Define all of the wiring for the robot in a common spot here and then pass it
+     * around
+     */
     wiring.put("A turn", 2);
     wiring.put("A drive", 1);
     wiring.put("B turn", 8);
     wiring.put("B drive", 7);
-    wiring.put("C turn",  6);
+    wiring.put("C turn", 6);
     wiring.put("C drive", 5);
-    wiring.put("D turn",  4);
+    wiring.put("D turn", 4);
     wiring.put("D drive", 3);
 
-    wiring.put("A turn enc",1 );
-    wiring.put("B turn enc",2 );
-    wiring.put("C turn enc",0 );
-    wiring.put("D turn enc",3 );
-  
-    wiring.put("NavX",  SPI.Port.kMXP.value);
+    wiring.put("A turn enc", 1);
+    wiring.put("B turn enc", 2);
+    wiring.put("C turn enc", 0);
+    wiring.put("D turn enc", 3);
 
     wiring.put("upper launcher",  20);
     wiring.put("lower launcher",  21);
@@ -67,9 +68,10 @@ public class PracticeRobot extends DefaultRobot {
     launcher = new DummyLauncher();
 
   }
-  
+
   /**
-   * This function is run when the robot is first started up and should be used for any
+   * This function is run when the robot is first started up and should be used
+   * for any
    * initialization code.
    */
   @Override
@@ -79,10 +81,10 @@ public class PracticeRobot extends DefaultRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
-  /* By default just pass commands to the drive system */
+  /* Always update certian parts of the robot, like telemetry */
   @Override
-  public void driveSpeedControl(double fwd, double strafe, double rotate){
-    drive.driveSpeedControl(fwd,strafe,rotate);
+  public void robotPeriodic(){
+    super.robotPeriodic();
   }
 
   /*
@@ -110,6 +112,7 @@ public class PracticeRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     SpeedDriveByJotstick();
+    RunIntakeByJoystick();
   }
 
   @Override
@@ -119,14 +122,21 @@ public class PracticeRobot extends DefaultRobot {
     drive.setAllTurnOrientation(0, false);
   }
 
-  private void RunIntakeByJoystick(){
-        /* read gamepad and map inputs to robot functions*/
-        if(gamepad2.getXButton()) {
-          intake.load();
-        } else if(gamepad2.getYButton()){
-          intake.unload();
-        } else if(gamepad2.getAButton()){
-          intake.stop();
-        }
+  private void RunIntakeByJoystick() {
+    /* read gamepad and map inputs to robot functions */
+    if (gamepad2.getXButton()) {
+      intake.load();
+    } else if (gamepad2.getYButton()) {
+      intake.unload();
+    } else if (gamepad2.getAButton()) {
+      intake.stop();
+    }
   }
+
+  /* By default just pass commands to the drive system */
+  @Override
+  public void driveSpeedControl(double fwd, double strafe, double rotate) {
+    drive.driveSpeedControl(fwd, strafe, rotate);
+  }
+
 }
