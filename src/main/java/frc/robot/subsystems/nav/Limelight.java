@@ -6,14 +6,20 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
 
-public class Limelight {
+public class Limelight{
     private final double INCHES_TO_METERS = 39.3701;
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
 
     private Pose3d currentPose;
     
+    public static enum Target {
+        SPEAKER,
+        AMP, 
+    }
+
     public static enum LimelightPipeline {
         Unknown(-1),
         AprilTag(1), 
@@ -143,4 +149,18 @@ public class Limelight {
     public double verticalOffset() {
         return limelight.getEntry("ty").getDouble(0);
     }
+    
+    public Transform3d getOffsetToTarget(Target target, fieldPositions targetPositions) {
+        Transform3d pose = new Transform3d();
+        switch (target) {
+            case AMP:
+                pose = new Transform3d(getFieldPose(), targetPositions.ampPose);
+                break;
+            case SPEAKER:
+                pose = new Transform3d(getFieldPose(), targetPositions.supwofferPose);
+                break;
+        }
+        return pose;
+    }
+    
 }

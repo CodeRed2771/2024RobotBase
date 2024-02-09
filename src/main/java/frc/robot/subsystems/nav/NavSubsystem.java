@@ -53,7 +53,6 @@ public abstract class NavSubsystem extends SubsystemBase {
   }
 
 
-
   public void reset() {
   }
 
