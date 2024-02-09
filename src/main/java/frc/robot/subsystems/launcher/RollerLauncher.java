@@ -7,6 +7,9 @@ package frc.robot.subsystems.launcher;
 import java.util.Map;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.AnalogInput;
+
 import com.revrobotics.CANSparkMax;
 
 /** Add your docs 
@@ -24,12 +27,15 @@ public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax upperMotor;
     private CANSparkMax lowerMotor;
     private CANSparkMax loaderMotor;
+    private AnalogInput loadSensor;
 
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
     private double speedTolerance = 0.05;
     private double motorSpeedBias = 0.06;
 
+    private int notePresentFarThreshold = 1200; // < 1200 were starting to see a note
+    private int notePresentCloseThreshold = 500; // < 500 indicates close to center of note
 
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
@@ -37,6 +43,8 @@ public class RollerLauncher extends LauncherSubsystem {
         upperMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
         lowerMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
         loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
+
+        loadSensor = new AnalogInput(wiring.get("load sensor"));
     }
 
     private void log(String text) {
@@ -57,6 +65,16 @@ public class RollerLauncher extends LauncherSubsystem {
         super.load();
 
         loaderMotor.set(-1);
+    }
+
+    public boolean isLoaded() {
+        // value goes down as object gets closer to sensor
+        return loadSensor.getAverageValue() < notePresentFarThreshold;
+    }
+
+    public void fire() {
+        if (isLoaded() && isPrimed())
+            load(); // run the loader which will put note into shooter
     }
 
     public void unload() {

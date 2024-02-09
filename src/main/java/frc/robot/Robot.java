@@ -177,10 +177,14 @@ public class Robot extends TimedRobot {
       myRobot.launcher.unload();
     }
     else
-{
+    {
       myRobot.intake.stop();
       myRobot.launcher.stopLoader();
+    }
 
+    if (gamepad1.getLeftBumper()) {
+      // future - check if primed first - leaving that out for testing
+      myRobot.launcher.fire();
     }
 
   }

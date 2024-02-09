@@ -38,6 +38,7 @@ public class PracticeRobot extends RobotContainer {
     wiring.put("upper launcher",  20);
     wiring.put("lower launcher",  21);
     wiring.put("launcher loader",  23);
+    wiring.put("load sensor", 4); // analog 4 (on the Navx MXP)
     wiring.put("aim",  0);
 
     wiring.put("intakeMotorId", 16);
