@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
     /* read gamepad and map inputs to robot functions */
     runLauncher();
 
-    if (gamepad1.getXButton()){
+    if (gamepad1.getXButton() && !myRobot.launcher.isLoaded()){
       myRobot.intake.load();
       myRobot.launcher.load();
     }
