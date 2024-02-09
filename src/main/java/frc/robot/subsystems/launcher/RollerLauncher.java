@@ -56,13 +56,13 @@ public class RollerLauncher extends LauncherSubsystem {
     public void load() {
         super.load();
 
-        loaderMotor.set(1);
+        loaderMotor.set(-1);
     }
 
     public void unload() {
         super.unload();
 
-        loaderMotor.set(-1);
+        loaderMotor.set(1);
     }
 
     public void stopLoader() {

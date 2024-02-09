@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Mod A ABS", moduleA.)
 
     /* Replace this with the robot selection from pin strapping */
-    var botType = RobotType.LauncherTest;
+    var botType = RobotType.DriveTest;
 
     switch (botType) {
       case DriveTest:
@@ -168,32 +168,28 @@ public class Robot extends TimedRobot {
     /* read gamepad and map inputs to robot functions */
     runLauncher();
 
+    if (gamepad1.getXButton()){
+      myRobot.intake.load();
+      myRobot.launcher.load();
+    }
+    else     if (gamepad1.getAButton()){
+      myRobot.intake.unload();
+      myRobot.launcher.unload();
+    }
+    else
+{
+      myRobot.intake.stop();
+      myRobot.launcher.stopLoader();
+
+    }
+
   }
 
   private double speed = 0;
   private double bias = 0;
 
   public void runLauncher() {
-    if (gamepad2.getDPadUp()){
-      myRobot.launcher.prime(speed);
-    }
-    if (gamepad2.getDPadDown()){
-      myRobot.launcher.stop();
-    }
-    if (gamepad2.getXButtonPressed()) {
-      speed = Math.min(1.0,speed + .05);
-      myRobot.launcher.prime(speed);
-    }
-    if (gamepad2.getYButtonPressed()) {
-      speed = Math.max(0.0,speed - .05);
-      myRobot.launcher.prime(speed);
-    }
-    if (gamepad2.getAButtonPressed()) {
-      bias = Math.min(.05,bias + .01);
-    }
-    if (gamepad2.getBButtonPressed()) {
-      bias = Math.max(-.05,bias - .01);
-    }
+    myRobot.launcher.prime(gamepad1.getRightTriggerAxis());
   }
 
   /** This function is called once when the robot is disabled. */

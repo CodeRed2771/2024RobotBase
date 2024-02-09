@@ -37,7 +37,7 @@ public class PracticeRobot extends RobotContainer {
 
     wiring.put("upper launcher",  20);
     wiring.put("lower launcher",  21);
-    wiring.put("launcher loader",  22);
+    wiring.put("launcher loader",  23);
     wiring.put("aim",  0);
 
     wiring.put("intakeMotorId", 16);
