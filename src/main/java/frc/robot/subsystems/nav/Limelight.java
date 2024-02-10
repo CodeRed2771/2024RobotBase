@@ -14,6 +14,8 @@ public class Limelight{
     private Transform3d[] aprilTagPositions = new Transform3d[17];
 
     private Pose3d currentPose;
+    private Transform3d  cameraPose;
+    private Pose3d robotRelativeToAprilTag;
     
     public static enum Target {
         SPEAKER,
@@ -53,7 +55,7 @@ public class Limelight{
 
     private NetworkTable limelight;
     private Pose3d fieldPosition;
-    public Limelight() {
+    public Limelight(Transform3d cameraPose) {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
         aprilTagPositions[1] = new Transform3d(593.68,9.68,53.38, new Rotation3d(0,0,120));
@@ -72,6 +74,8 @@ public class Limelight{
         aprilTagPositions[14] = new Transform3d(209.48,161.62,52.00,new Rotation3d(0,0,0));
         aprilTagPositions[15] = new Transform3d(182.73,177.10,52.00,new Rotation3d(0,0,120));
         aprilTagPositions[16] = new Transform3d(182.73,146.19,52.00,new Rotation3d(0,0,240));
+    
+        this.cameraPose = cameraPose;
     } 
 
     public void setLED(LimelightOn value) {
@@ -106,7 +110,9 @@ public class Limelight{
         final double VALID_AREA = 0.25;
         Transform3d aprilTagTransmorm3d;
 
-        data = limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        data = limelight.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+
+
         area = getArea();
         seesSomething = seesSomething();
         aprilTagID = getAprilTagID();
@@ -119,7 +125,8 @@ public class Limelight{
          */
         if(seesSomething && area > VALID_AREA) {
             aprilTagTransmorm3d = aprilTagPositions[aprilTagID];
-            fieldPosition = currentReading.transformBy(aprilTagTransmorm3d);
+            robotRelativeToAprilTag = currentReading.transformBy(cameraPose);
+            fieldPosition = robotRelativeToAprilTag.transformBy(aprilTagTransmorm3d);
         }
     }
     

@@ -5,6 +5,8 @@
 package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
@@ -20,7 +22,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public PracticeRobotNav() {
         super();
 
-        limelight = new Limelight();
+        limelight = new Limelight(new Transform3d(14,6.25,4, new Rotation3d(0,Math.toRadians(-30),0)));
         limelight.setPipeline(LimelightPipeline.AprilTag);
         limelight.setLED(LimelightOn.Off);
         
