@@ -32,7 +32,7 @@ public class RollerIntake extends IntakeSubsystem {
         if(isDisarmed()){
             return;
         }
-        driveMotor.set(1.0);
+        driveMotor.set(-.75);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class RollerIntake extends IntakeSubsystem {
         if(isDisarmed()){
             return;
         }
-        driveMotor.set(-1.0);
+        driveMotor.set(.5);
     }
 
 }

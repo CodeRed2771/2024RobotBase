@@ -166,27 +166,40 @@ public class Robot extends TimedRobot {
     myRobot.driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
 
     /* read gamepad and map inputs to robot functions */
-    runLauncher();
+   // runLauncher();
 
-    if (gamepad1.getXButton() && !myRobot.launcher.isLoaded()){
-      myRobot.intake.load();
-      myRobot.launcher.load();
+    if (gamepad1.getLeftBumper()) {
+      myRobot.launcher.prime(.5);
+    } else if(gamepad1.getLeftBumperReleased()) {
+      myRobot.launcher.stopLoader();
+    }  else {
+      myRobot.launcher.prime(0);
     }
-    else     if (gamepad1.getAButton()){
-      myRobot.intake.unload();
+
+    if (gamepad1.getAButton() && !myRobot.launcher.isLoaded()){
+      // myRobot.intake.load();
+      myRobot.launcher.load(.75);
+    }
+    else if (gamepad1.getYButton()) {
+      // myRobot.intake.unload();
       myRobot.launcher.unload();
+    } else if(gamepad1.getYButtonReleased()) {
+      myRobot.launcher.stopLoader();
     }
-    else
-    {
-      myRobot.intake.stop();
+    else if (gamepad1.getXButton()){
+      // myRobot.intake.stop();  
       myRobot.launcher.stopLoader();
     }
 
-    if (gamepad1.getLeftBumper()) {
+    if (myRobot.launcher.isLoaded() && !myRobot.launcher.isFiring()&& !myRobot.launcher.isUnloading()) {
+      // myRobot.intake.stop();  
+      myRobot.launcher.stopLoader();
+    }
+
+    if (gamepad1.getRightTriggerAxis() > .5) {
       // future - check if primed first - leaving that out for testing
       myRobot.launcher.fire();
     }
-
   }
 
   private double speed = 0;
