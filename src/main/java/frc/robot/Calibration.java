@@ -293,10 +293,10 @@ public class Calibration {
 
     public static void deleteSwerveDriveCalibration() {
         System.out.println("Deleting Calibration file!");
-        DT_A_ABS_ZERO = getInitialTurnZeroPos('A');;
-        DT_B_ABS_ZERO = getInitialTurnZeroPos('B');;
-        DT_C_ABS_ZERO = getInitialTurnZeroPos('C');;
-        DT_D_ABS_ZERO = getInitialTurnZeroPos('D');;
+        DT_A_ABS_ZERO = getInitialTurnZeroPos('A');
+        DT_B_ABS_ZERO = getInitialTurnZeroPos('B');
+        DT_C_ABS_ZERO = getInitialTurnZeroPos('C');
+        DT_D_ABS_ZERO = getInitialTurnZeroPos('D');
 
         File calibrationFile = new File("/home/lvuser/swerve.calibration");
         calibrationFile.delete();
