@@ -29,7 +29,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
    * assumed encoder type is the hall effect, or a sensor type and counts per revolution can be passed in to specify a
    * different kind of sensor. Here, it's a quadrature encoder with 4096 CPR.
    */
-  private RelativeEncoder m_turningEncoder;
   private AnalogEncoder turnAbsEncoder;
   private RelativeEncoder m_driveEncoder;
 
@@ -37,7 +36,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private double rotCmd = 0;
 
   private static final double kWheelRadius = 2.0 * 2.54/100;// Meters needed for kinematics
-  private static final int kEncoderResolution = 42;// 4096;
 
   public static final double kMaxAngularSpeed =  20.0 *  Math.PI; // 1/2 rotation per second
   private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
@@ -63,10 +61,9 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.setOpenLoopRampRate(1);
     m_turningMotor.setSmartCurrentLimit(40);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
-    m_turningEncoder = m_turningMotor.getEncoder();
 
     /************ SET PID VALUES HERE ******************/
-    m_drivePIDController = new PIDController(1.0 / 20 , 0, 0);
+    m_drivePIDController = new PIDController(1.0 / 30 , 0, 0);
     m_turningPIDController = new ProfiledPIDController(3.0, 0.0, 0.0,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
     m_turningPIDController.setIntegratorRange(-0.3,0.3);
@@ -80,11 +77,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_driveEncoder.setPositionConversionFactor(kWheelRadius);
     m_driveEncoder.setVelocityConversionFactor(kWheelRadius);
 
-    // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-    // This is the the angle through an entire rotation (2 * pi) divided by the
-    // encoder resolution.
-    m_turningEncoder.setPositionConversionFactor(Math.PI / kEncoderResolution);
-
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -96,6 +88,10 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   @Override
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(m_driveEncoder.getPosition(), getRotation());
+  }
+
+  public Rotation2d getAbsOrentation() {
+    return Rotation2d.fromRotations(turnAbsEncoder.getAbsolutePosition());
   }
 
   @Override
@@ -135,8 +131,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     SmartDashboard.putNumber(this.getName() + " Vel", m_driveEncoder.getVelocity());
     SmartDashboard.putNumber(this.getName() + " Pos", m_driveEncoder.getPosition());
     SmartDashboard.putNumber(this.getName() + " Cmd R", rotCmd);
-    SmartDashboard.putNumber(this.getName() + " Abs R", getRotation().getRotations());
-    SmartDashboard.putNumber(this.getName() + " Rel R", getRotation().getRotations());
+    SmartDashboard.putNumber(this.getName() + " Abs R", turnAbsEncoder.getAbsolutePosition());
   }
 
   @Override
@@ -151,13 +146,9 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
   public void setTurnOffset(double value) {
     turnAbsEncoder.setPositionOffset(value);
-    m_turningEncoder.setPosition(turnAbsEncoder.get());
   }
 
   public void resetEncoders() {
     m_driveEncoder.setPosition(0);
-    turnAbsEncoder.reset();
-    m_turningEncoder.setPosition(turnAbsEncoder.get());
-
   }
 }

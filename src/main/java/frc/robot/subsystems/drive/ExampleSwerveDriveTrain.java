@@ -42,7 +42,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
     super();
 
-    //Calibration.loadSwerveCalibration();
+    Calibration.loadSwerveCalibration();
 
     int TURN_ABS_ENC_A = wiring.get("A turn enc");
     int TURN_ABS_ENC_B = wiring.get("B turn enc");
@@ -63,7 +63,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C"); // Back right
     m_frontRight = new NewSwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, "D"); // Front left
 
-        setTurnOffsets( Calibration.getTurnZeroPos('A'), 
+    setTurnOffsets( Calibration.getTurnZeroPos('A'), 
                     Calibration.getTurnZeroPos('B'), 
                     Calibration.getTurnZeroPos('C'),
                     Calibration.getTurnZeroPos('D'));
@@ -92,8 +92,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.arm();
     m_backLeft.arm();
     m_frontRight.arm();
-    reset();
-
   }
 
   @Override
@@ -159,8 +157,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public double[] getAllAbsoluteTurnOrientations() {
-    return new double[] {m_frontLeft.getRotation().getRotations(), m_backRight.getRotation().getRotations(),
-        m_backLeft.getRotation().getRotations(), m_frontRight.getRotation().getRotations()};
+    return new double[] {m_frontLeft.getAbsOrentation().getRotations(), m_backRight.getAbsOrentation().getRotations(),
+        m_backLeft.getAbsOrentation().getRotations(), m_frontRight.getAbsOrentation().getRotations()};
   }
 
   public void setTurnOffsets(double FL, double BR, double BL, double FR) {
@@ -168,5 +166,12 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setTurnOffset(BR);
     m_backLeft.setTurnOffset(BL);
     m_frontRight.setTurnOffset(FR);
+  }
+
+  private void resetEncoders(){
+    m_frontLeft.resetEncoders();
+    m_backRight.resetEncoders();
+    m_backLeft.resetEncoders();
+    m_frontRight.resetEncoders();
   }
 }
