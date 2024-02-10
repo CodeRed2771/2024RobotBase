@@ -44,6 +44,9 @@ public class PracticeRobot extends RobotContainer {
 
     wiring.put("intakeMotorId", 16);
 
+    //PWM wiring
+    wiring.put("launcher led", 0);
+
     /* Set all of the subsystems */
     drive = new PracticeDriveTrain(wiring);
     intake = new DummyIntake();

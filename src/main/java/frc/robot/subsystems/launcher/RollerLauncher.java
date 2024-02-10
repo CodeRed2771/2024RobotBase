@@ -10,6 +10,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.libs.BlinkinLED;
+import frc.robot.libs.BlinkinLED.LEDColors;
 
 import com.revrobotics.CANSparkMax;
 
@@ -30,10 +32,11 @@ public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax loaderMotor;
     private AnalogInput loadSensor;
     private CANSparkMax intakeMotor;
+    private BlinkinLED launcherLED;
 
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
-    private double speedTolerance = 0.2;
+    private double speedTolerance = 0.05;
     private double motorSpeedBias = 0.06;
 
     private int notePresentThreshold = 1300; // < 1200 were starting to see a note
@@ -50,6 +53,8 @@ public class RollerLauncher extends LauncherSubsystem {
         int motorId = wiring.get("intakeMotorId");
 
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);
+
+        launcherLED = new BlinkinLED(wiring.get("launcher led"));
     }
 
     private void log(String text) {
@@ -131,7 +136,7 @@ public class RollerLauncher extends LauncherSubsystem {
         boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperMotor.get()) < speedTolerance;
         boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerMotor.get()) < speedTolerance;
 
-        return upperMotorTracking && lowerMotorTracking;
+        return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
     }
 
     public boolean isUnloading() {
@@ -143,6 +148,15 @@ public class RollerLauncher extends LauncherSubsystem {
 
     @Override
     public void periodic() {
-        
+        if(!isPrimed())
+            launcherLED.blink(0.5);
+        else
+            launcherLED.blink(1);
+        if(isLoaded())
+            launcherLED.set(LEDColors.GREEN);
+        else if(loadState == LoaderState.Loading)
+            launcherLED.set(LEDColors.YELLOW);
+        else
+            launcherLED.set(LEDColors.RED);
     }
 }
