@@ -40,9 +40,9 @@ public class PracticeRobot extends DefaultRobot {
     wiring.put("A turn", 2);
     wiring.put("A drive", 1);
     wiring.put("B turn", 8);
-    wiring.put("B drive", 7);
+    wiring.put("B drive", 5);
     wiring.put("C turn", 6);
-    wiring.put("C drive", 5);
+    wiring.put("C drive", 7);
     wiring.put("D turn", 4);
     wiring.put("D drive", 3);
 
@@ -138,7 +138,7 @@ public class PracticeRobot extends DefaultRobot {
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd, strafe, rotate,getPeriod());
+    drive.driveSpeedControl(fwd*0.5, strafe*0.5, rotate*0.5,getPeriod());
   }
 
 }

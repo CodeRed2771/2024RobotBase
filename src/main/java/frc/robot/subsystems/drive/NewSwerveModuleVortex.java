@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -33,13 +32,15 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private RelativeEncoder m_driveEncoder;
 
   private double velCmd = 0;
+  private double speedCmd = 0;
   private double rotCmd = 0;
 
   private static final double kWheelRadius = 2.0 * 2.54/100;// Meters needed for kinematics
+  private static final double kDriveMaxRPM = 6000;
 
-  public static final double kMaxAngularSpeed =  20.0 *  Math.PI; // 1/2 rotation per second
+  public static final double kMaxAngularSpeed =  2 *  (2 * Math.PI); // radians per second
   private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration = 40.0 * Math.PI; // radians per second squared
+  private static final double kModuleMaxAngularAcceleration = 5 * (2 * Math.PI); // radians per second squared
 
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
@@ -63,19 +64,19 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.setIdleMode(IdleMode.kBrake);
 
     /************ SET PID VALUES HERE ******************/
-    m_drivePIDController = new PIDController(1.0 / 30 , 0, 0);
-    m_turningPIDController = new ProfiledPIDController(3.0, 0.0, 0.0,
+    m_drivePIDController = new PIDController(0 , 0.0, 0);
+    m_turningPIDController = new ProfiledPIDController(10.0, 0.0, 0.5,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
-    m_turningPIDController.setIntegratorRange(-0.3,0.3);
+    m_turningPIDController.setIntegratorRange(-0.5,0.5);
 
-    m_driveFeedforward = new SimpleMotorFeedforward(0*1.0 / 100, 0*3.0 / 100);
-    m_turnFeedforward = new SimpleMotorFeedforward(0.8 * 1.0, 0.1 * 0.5);
+    m_driveFeedforward = new SimpleMotorFeedforward(0.0, 12.0);
+    m_turnFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
 
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
     // resolution.
     m_driveEncoder.setPositionConversionFactor(kWheelRadius);
-    m_driveEncoder.setVelocityConversionFactor(kWheelRadius);
+    m_driveEncoder.setVelocityConversionFactor(1/kDriveMaxRPM);
 
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
@@ -110,12 +111,13 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   }
 
   @Override
-  public void setDesiredState(SwerveModuleState desiredState) {
-    velCmd = desiredState.speedMetersPerSecond;
-    rotCmd = desiredState.angle.getRotations();
-    super.setDesiredState(desiredState);
+  protected void reportCmd(SwerveModuleState targetState){
+    velCmd = targetState.speedMetersPerSecond;
+    rotCmd = targetState.angle.getRotations();
   }
+
   protected void applySwerveModuleState(double driveCmd, double turnCmd) {
+    speedCmd = driveCmd;
 
     if (isArmed()) {
       m_driveMotor.setVoltage(driveCmd);
@@ -128,6 +130,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber(this.getName() + " Cmd V", velCmd);
+    SmartDashboard.putNumber(this.getName() + " Cmd S", speedCmd);
     SmartDashboard.putNumber(this.getName() + " Vel", m_driveEncoder.getVelocity());
     SmartDashboard.putNumber(this.getName() + " Pos", m_driveEncoder.getPosition());
     SmartDashboard.putNumber(this.getName() + " Cmd R", rotCmd);
@@ -150,5 +153,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
   public void resetEncoders() {
     m_driveEncoder.setPosition(0);
+    m_driveEncoder.getPosition();
+    m_driveEncoder.getVelocity();
   }
 }

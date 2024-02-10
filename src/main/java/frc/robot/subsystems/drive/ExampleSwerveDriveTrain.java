@@ -17,7 +17,7 @@ import frc.robot.Wiring;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
-  private static final double kMaxSpeed = 3.0; // 3 meters per second
+  private static final double kMaxSpeed = 1.0; // normalized full Speed
 
   private NewSwerveModuleVortex m_frontLeft; // Front Left
   private NewSwerveModuleVortex m_backRight; // Back Right
@@ -111,8 +111,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   /**
    * Method to drive the robot with robot framed commands.
    *
-   * @param xSpeed Speed of the robot in the x direction (forward).
-   * @param ySpeed Speed of the robot in the y direction (sideways).
+   * @param xSpeed Speed of the robot in the x direction (forward) (-1,1).
+   * @param ySpeed Speed of the robot in the y direction (sideways)(-1,1).
    * @param rot    Angular rate of the robot.
    */
   public void driveSpeedControl(double xSpeed, double ySpeed, double rot, double periodSeconds) {

@@ -51,7 +51,8 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
     // direction of travel that can occur when modules change directions. This
     // results in smoother
     // driving.
-    targetState.speedMetersPerSecond *= targetState.angle.minus(swerveState.angle).getCos();
+    targetState.speedMetersPerSecond *= Math.pow(targetState.angle.minus(swerveState.angle).getCos(),1);
+    reportCmd(targetState);
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput = m_drivePIDController.calculate(swerveState.speedMetersPerSecond,
@@ -67,6 +68,8 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
 
     applySwerveModuleState(driveOutput + driveFeedforward, turnOutput + turnFeedforward);
   }
+
+  protected void reportCmd(SwerveModuleState targetState){}
 
   protected abstract void applySwerveModuleState(double driveCmd, double turnCmd);
 

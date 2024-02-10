@@ -81,10 +81,10 @@ public class DefaultRobot extends TimedRobot {
 
 
   public void SpeedDriveByJotstick(){
-      double fwd = MathUtil.applyDeadband(-gamepad1.getLeftY(),0.02);
-      double strafe = MathUtil.applyDeadband(-gamepad1.getLeftX(),0.02);
-      double rotate = MathUtil.applyDeadband(gamepad1.getRightX(),0.02);
-      driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
+      double fwd = MathUtil.applyDeadband(-gamepad1.getLeftY(),0.05);
+      double strafe = MathUtil.applyDeadband(-gamepad1.getLeftX(),0.05);
+      double rotate = MathUtil.applyDeadband(-gamepad1.getRightX(),0.05);
+      driveSpeedControl(fwd, strafe, rotate);
 
   }
 }
