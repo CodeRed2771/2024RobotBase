@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
@@ -63,7 +64,7 @@ public class PracticeRobot extends DefaultRobot {
 
     /* Set all of the subsystems */
     nav = new PracticeRobotNav();
-    drive = new PracticeDriveTrain(wiring);
+    drive = new ExampleSwerveDriveTrain(wiring);
     intake = new RollerIntake(wiring);
     launcher = new DummyLauncher();
 
@@ -85,6 +86,8 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
+
+    drive.updateOdometry(new Rotation2d(nav.getAngle()));
   }
 
   /*
@@ -112,14 +115,13 @@ public class PracticeRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     SpeedDriveByJotstick();
-    RunIntakeByJoystick();
+    //RunIntakeByJoystick();
   }
 
   @Override
   public void restoreRobotToDefaultState() {
     nav.reset();
     drive.reset(); // sets encoders based on absolute encoder positions
-    drive.setAllTurnOrientation(0, false);
   }
 
   private void RunIntakeByJoystick() {
@@ -136,7 +138,7 @@ public class PracticeRobot extends DefaultRobot {
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd, strafe, rotate);
+    drive.driveSpeedControl(fwd, strafe, rotate,getPeriod());
   }
 
 }
