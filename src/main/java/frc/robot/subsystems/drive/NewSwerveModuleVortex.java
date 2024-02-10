@@ -36,12 +36,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private double velCmd = 0;
   private double rotCmd = 0;
 
-  private static final double kWheelRadius = 2.0;// Inches
+  private static final double kWheelRadius = 2.0 * 2.54/100;// Meters needed for kinematics
   private static final int kEncoderResolution = 42;// 4096;
 
-  public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second
+  public static final double kMaxAngularSpeed =  20.0 *  Math.PI; // 1/2 rotation per second
   private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
+  private static final double kModuleMaxAngularAcceleration = 40.0 * Math.PI; // radians per second squared
 
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
@@ -63,15 +63,16 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.setOpenLoopRampRate(1);
     m_turningMotor.setSmartCurrentLimit(40);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
-    // m_turningMotor.setInverted(true);
     m_turningEncoder = m_turningMotor.getEncoder();
 
     /************ SET PID VALUES HERE ******************/
-    m_drivePIDController = new PIDController(1.0 / 100, 0, 0);
-    m_turningPIDController = new ProfiledPIDController(1.0, 0, 0,
+    m_drivePIDController = new PIDController(1.0 / 20 , 0, 0);
+    m_turningPIDController = new ProfiledPIDController(3.0, 0.0, 0.0,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
-    m_driveFeedforward = new SimpleMotorFeedforward(1.0 / 100, 3.0 / 100);
-    m_turnFeedforward = new SimpleMotorFeedforward(0 * 1.0, 0 * 0.5);
+    m_turningPIDController.setIntegratorRange(-0.3,0.3);
+
+    m_driveFeedforward = new SimpleMotorFeedforward(0*1.0 / 100, 0*3.0 / 100);
+    m_turnFeedforward = new SimpleMotorFeedforward(0.8 * 1.0, 0.1 * 0.5);
 
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
@@ -112,12 +113,16 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     return new SwerveModuleState(m_driveEncoder.getVelocity(), getRotation());
   }
 
-  protected void commandSwerveModuleState(double driveCmd, double turnCmd) {
-    velCmd = driveCmd;
-    rotCmd = turnCmd;
+  @Override
+  public void setDesiredState(SwerveModuleState desiredState) {
+    velCmd = desiredState.speedMetersPerSecond;
+    rotCmd = desiredState.angle.getRotations();
+    super.setDesiredState(desiredState);
+  }
+  protected void applySwerveModuleState(double driveCmd, double turnCmd) {
 
     if (isArmed()) {
-      // m_driveMotor.set(driveCmd);
+      m_driveMotor.setVoltage(driveCmd);
       m_turningMotor.setVoltage(turnCmd);
     }
   }
@@ -141,7 +146,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
   @Override
   public void doDisarm() {
-    commandSwerveModuleState(0, 0);
+    applySwerveModuleState(0, 0);
   }
 
   public void setTurnOffset(double value) {

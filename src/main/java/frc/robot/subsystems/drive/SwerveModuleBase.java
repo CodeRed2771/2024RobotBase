@@ -65,9 +65,9 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
 
     final double turnFeedforward = m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
-    commandSwerveModuleState(driveOutput + driveFeedforward, turnOutput + turnFeedforward);
+    applySwerveModuleState(driveOutput + driveFeedforward, turnOutput + turnFeedforward);
   }
 
-  protected abstract void commandSwerveModuleState(double driveCmd, double turnCmd);
+  protected abstract void applySwerveModuleState(double driveCmd, double turnCmd);
 
 }

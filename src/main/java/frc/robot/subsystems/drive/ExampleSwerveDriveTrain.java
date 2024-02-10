@@ -27,11 +27,12 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   // Robot Center is 0,0 anchor point for coordinates (where NavX is)
   // +X = out intake
   // +Y = out right side of robot
-  private final double wheel_position_offset = (15.0 - 3.25) * (2.54 / 1.0);
-  private final Translation2d m_frontLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
-  private final Translation2d m_frontRightLocation = new Translation2d(-wheel_position_offset, -wheel_position_offset);
-  private final Translation2d m_backLeftLocation = new Translation2d(wheel_position_offset, wheel_position_offset);
-  private final Translation2d m_backRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
+  private final double wheel_position_offset = (15.0 - 3.25) * (2.54 / 100.0);
+
+  private final Translation2d m_frontLeftLocation = new Translation2d(wheel_position_offset, wheel_position_offset);
+  private final Translation2d m_frontRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
+  private final Translation2d m_backLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
+  private final Translation2d m_backRightLocation = new Translation2d(-wheel_position_offset, -wheel_position_offset);
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
       m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
@@ -41,7 +42,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
     super();
 
-    Calibration.loadSwerveCalibration();
+    //Calibration.loadSwerveCalibration();
 
     int TURN_ABS_ENC_A = wiring.get("A turn enc");
     int TURN_ABS_ENC_B = wiring.get("B turn enc");
@@ -62,7 +63,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C"); // Back right
     m_frontRight = new NewSwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, "D"); // Front left
 
-    setTurnOffsets( Calibration.getTurnZeroPos('A'), 
+        setTurnOffsets( Calibration.getTurnZeroPos('A'), 
                     Calibration.getTurnZeroPos('B'), 
                     Calibration.getTurnZeroPos('C'),
                     Calibration.getTurnZeroPos('D'));
