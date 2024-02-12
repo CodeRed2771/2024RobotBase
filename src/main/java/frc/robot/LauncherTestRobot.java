@@ -5,14 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import frc.robot.subsystems.drive.DummyDrive;
-import frc.robot.subsystems.drive.PracticeDriveTrain;
-import frc.robot.subsystems.intake.DummyIntake;
-import frc.robot.subsystems.intake.RollerIntake;
-import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
-import frc.robot.subsystems.nav.DummyNav;
-import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class LauncherTestRobot extends PracticeRobot {
 
@@ -20,6 +13,7 @@ public class LauncherTestRobot extends PracticeRobot {
   @SuppressWarnings("this-escape")
   public LauncherTestRobot() {
     super();
+    launcher = new RollerLauncher(wiring);
   }
 
     /** This function is called periodically during operator control. */

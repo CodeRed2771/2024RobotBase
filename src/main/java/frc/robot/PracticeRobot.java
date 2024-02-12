@@ -116,7 +116,7 @@ public class PracticeRobot extends DefaultRobot {
   public void restoreRobotToDefaultState() {
     nav.reset();
     drive.reset(); // sets encoders based on absolute encoder positions
-    ((PracticeDriveTrain) drive).setAllTurnOrientation(0, false);
+    drive.setAllTurnOrientation(0, false);
   }
 
   private void RunIntakeByJoystick(){
