@@ -4,20 +4,33 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.subsystems.drive.PracticeDriveTrain;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
-import frc.robot.subsystems.launcher.RollerLauncher;
+import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
-public class PracticeRobot extends RobotContainer {
+public class PracticeRobot extends DefaultRobot {
+
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+
+  /* Be sure to register all subsystems after they are created */
+  protected ExampleSwerveDriveTrain drive;
+  protected RollerIntake intake;
+  protected LauncherSubsystem launcher;
+  protected PracticeRobotNav nav;
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public PracticeRobot() {
     super();
+    wiring = new HashMap<>();
 
     /* Define all of the wiring for the robot in a common spot here and then pass it around */
     wiring.put("A turn", 2);
@@ -48,11 +61,28 @@ public class PracticeRobot extends RobotContainer {
     wiring.put("launcher led", 0);
 
     /* Set all of the subsystems */
-    drive = new PracticeDriveTrain(wiring);
-    intake = new DummyIntake();
-    launcher = new RollerLauncher(wiring);
     nav = new PracticeRobotNav();
-    registerSubsystems();
+    drive = new PracticeDriveTrain(wiring);
+    intake = new RollerIntake(wiring);
+    launcher = new DummyLauncher();
+
+  }
+  
+  /**
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
+   */
+  @Override
+  public void robotInit() {
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("My Auto", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
+  }
+
+  /* By default just pass commands to the drive system */
+  @Override
+  public void driveSpeedControl(double fwd, double strafe, double rotate){
+    drive.driveSpeedControl(fwd,strafe,rotate);
   }
 
   /*
@@ -60,23 +90,26 @@ public class PracticeRobot extends RobotContainer {
    * subsystem.
    */
   @Override
-  public void doArm() {
+  public void teleopInit() {
     intake.arm();
     launcher.arm();
     drive.arm();
     nav.reset();
+
+    restoreRobotToDefaultState();
   }
 
   @Override
-  public void doDisarm() {
+  public void teleopExit() {
     intake.disarm();
     launcher.disarm();
     drive.disarm();
   }
 
   @Override
-  public void periodic() {
+  public void teleopPeriodic() {
     // This method will be called once per scheduler run
+    SpeedDriveByJotstick();
   }
 
   @Override
@@ -86,4 +119,14 @@ public class PracticeRobot extends RobotContainer {
     ((PracticeDriveTrain) drive).setAllTurnOrientation(0, false);
   }
 
+  private void RunIntakeByJoystick(){
+        /* read gamepad and map inputs to robot functions*/
+        if(gamepad2.getXButton()) {
+          intake.load();
+        } else if(gamepad2.getYButton()){
+          intake.unload();
+        } else if(gamepad2.getAButton()){
+          intake.stop();
+        }
+  }
 }

@@ -4,42 +4,37 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.drive.DummyDrive;
 import frc.robot.subsystems.intake.RollerIntake;
-import frc.robot.subsystems.launcher.DummyLauncher;
-import frc.robot.subsystems.nav.DummyNav;
 
-public class IntakeTestRobot extends RobotContainer {
+public class IntakeTestRobot extends PracticeRobot {
 
+  
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public IntakeTestRobot() {
     super();
+  }
 
-    wiring.put("intakeMotorId", 16);
   
-    /* Set all of the subsystems */
-    drive = new DummyDrive();
-    intake = new RollerIntake(wiring);
-    launcher = new DummyLauncher();
-    nav = new DummyNav();
-    registerSubsystems();
-  }
-
-  /* On program start, initialize any device settings or internal states of the subsystem. */
-  @Override
-  public void doArm() {
-    intake.arm();
-  }
+    /** This function is called once when teleop is enabled. */
+    @Override
+    public void teleopInit() {
+      intake.arm();
+    }
+        @Override
+    public void teleopExit() {
+      intake.disarm();
+    }
 
   @Override
-  public void doDisarm() {
-    intake.disarm();
-  }
-
-  @Override
-  public void periodic() {
+  public void teleopPeriodic() {
     // This method will be called once per scheduler run
+
+    
+
   }
 
+  public void driveSpeedControl(double fwd, double strafe, double rotate){
+    // Test robot has no drive system  
+  }
 }

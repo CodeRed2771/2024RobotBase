@@ -12,6 +12,14 @@ import edu.wpi.first.wpilibj.RobotBase;
  * call.
  */
 public final class Main {
+
+  public enum RobotType{
+    Dummy,
+    IntakeTest,
+    DriveTest,
+    None
+  }
+
   private Main() {}
 
   /**
@@ -20,6 +28,18 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    RobotBase.startRobot(Robot::new);
+    /* Replace this with the robot selection from pin strapping */
+    var botType = RobotType.DriveTest;
+
+    switch (botType) {
+      case DriveTest:
+        RobotBase.startRobot(PracticeRobot::new);
+        break;
+      case IntakeTest:
+        RobotBase.startRobot(IntakeTestRobot::new);
+        break;
+      default:
+        RobotBase.startRobot(DefaultRobot::new);
+    }
   }
 }
