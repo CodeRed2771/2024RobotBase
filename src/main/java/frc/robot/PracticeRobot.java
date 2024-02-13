@@ -9,6 +9,7 @@ import java.util.HashMap;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -117,7 +118,7 @@ public class PracticeRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     SpeedDriveByJoystick(gamepad1);
-    runLauncher();
+    runLauncher(gamepad2);
   }
 
   @Override
@@ -138,24 +139,24 @@ public class PracticeRobot extends DefaultRobot {
   private double speed = 0;
   private double bias = 0;
 
-  public void runLauncher() {
-    if (gamepad1.getLeftBumper()) {
+  public void runLauncher(Gamepad gp) {
+    if (gp.getLeftBumper()) {
       launcher.prime(.5);
-    } else if(gamepad1.getLeftBumperReleased()) {
+    } else if(gp.getLeftBumperReleased()) {
       launcher.stopLoader();
     }  else {
       launcher.prime(0);
     }
 
-    if (gamepad1.getAButton() && !launcher.isLoaded()){
+    if (gp.getAButton() && !launcher.isLoaded()){
       launcher.load(.75);
     }
-    else if (gamepad1.getYButton()) {
+    else if (gp.getYButton()) {
       launcher.unload();
-    } else if(gamepad1.getYButtonReleased()) {
+    } else if(gp.getYButtonReleased()) {
       launcher.stopLoader();
     }
-    else if (gamepad1.getXButton()){
+    else if (gp.getXButton()){
       launcher.stopLoader();
     }
 
@@ -163,7 +164,7 @@ public class PracticeRobot extends DefaultRobot {
       launcher.stopLoader();
     }
 
-    if (gamepad1.getRightTriggerAxis() > .5) {
+    if (gp.getRightTriggerAxis() > .5) {
       launcher.fire();
     }
   }

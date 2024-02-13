@@ -29,7 +29,7 @@ public class LauncherTestRobot extends PracticeRobot {
     driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
 
     /* read gamepad and map inputs to robot functions */
-    runLauncher();
+    runLauncher(gamepad1);
   }
 
 }
