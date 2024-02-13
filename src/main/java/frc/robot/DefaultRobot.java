@@ -47,7 +47,7 @@ public class DefaultRobot extends TimedRobot {
      * orientation of the robot
      */
     Translation2d command = new Translation2d(fwd, strafe);
-    command = command.rotateBy(Rotation2d.fromDegrees(-this.getAngle()));
+    command = command.rotateBy(Rotation2d.fromDegrees(getAngle()));
 
     driveSpeedControl(command.getX(), command.getY(), rotate);
   }
@@ -84,7 +84,7 @@ public class DefaultRobot extends TimedRobot {
       double fwd = MathUtil.applyDeadband(-gp.getLeftY(),0.05);
       double strafe = MathUtil.applyDeadband(-gp.getLeftX(),0.05);
       double rotate = MathUtil.applyDeadband(-gp.getRightX(),0.05);
-      driveSpeedControl(fwd, strafe, rotate);
+      driveSpeedControlFieldCentric(fwd, strafe, rotate);
 
   }
 }

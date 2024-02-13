@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
 import frc.robot.subsystems.launcher.LauncherSubsystem;
+import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class PracticeRobot extends DefaultRobot {
@@ -23,7 +25,7 @@ public class PracticeRobot extends DefaultRobot {
 
   /* Be sure to register all subsystems after they are created */
   protected ExampleSwerveDriveTrain drive;
-  protected RollerIntake intake;
+  protected IntakeSubsystem intake;
   protected LauncherSubsystem launcher;
   protected PracticeRobotNav nav;
 
@@ -65,8 +67,8 @@ public class PracticeRobot extends DefaultRobot {
     /* Set all of the subsystems */
     nav = new PracticeRobotNav();
     drive = new ExampleSwerveDriveTrain(wiring);
-    intake = new RollerIntake(wiring);
-    launcher = new DummyLauncher();
+    intake = new DummyIntake();
+    launcher = new RollerLauncher(wiring);
 
   }
 
@@ -123,6 +125,9 @@ public class PracticeRobot extends DefaultRobot {
     nav.reset();
     drive.reset(); // sets encoders based on absolute encoder positions
   }
+
+  @Override
+  public double getAngle(){return nav.getAngle();}
 
   /* By default just pass commands to the drive system */
   @Override
