@@ -29,9 +29,19 @@ public class IntakeTestRobot extends PracticeRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
-
+    RunIntakeByJoystick();
     
 
+  }
+  private void RunIntakeByJoystick() {
+    /* read gamepad and map inputs to robot functions */
+    if (gamepad2.getXButton()) {
+      intake.load();
+    } else if (gamepad2.getYButton()) {
+      intake.unload();
+    } else if (gamepad2.getAButton()) {
+      intake.stop();
+    }
   }
 
   public void driveSpeedControl(double fwd, double strafe, double rotate){

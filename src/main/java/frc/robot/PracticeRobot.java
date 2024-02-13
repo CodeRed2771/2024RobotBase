@@ -114,8 +114,8 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
-    SpeedDriveByJotstick();
-    //RunIntakeByJoystick();
+    SpeedDriveByJoystick(gamepad1);
+    runLauncher();
   }
 
   @Override
@@ -124,21 +124,43 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
   }
 
-  private void RunIntakeByJoystick() {
-    /* read gamepad and map inputs to robot functions */
-    if (gamepad2.getXButton()) {
-      intake.load();
-    } else if (gamepad2.getYButton()) {
-      intake.unload();
-    } else if (gamepad2.getAButton()) {
-      intake.stop();
-    }
-  }
-
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
     drive.driveSpeedControl(fwd*0.5, strafe*0.5, rotate*0.5,getPeriod());
+  }
+
+  private double speed = 0;
+  private double bias = 0;
+
+  public void runLauncher() {
+    if (gamepad1.getLeftBumper()) {
+      launcher.prime(.5);
+    } else if(gamepad1.getLeftBumperReleased()) {
+      launcher.stopLoader();
+    }  else {
+      launcher.prime(0);
+    }
+
+    if (gamepad1.getAButton() && !launcher.isLoaded()){
+      launcher.load(.75);
+    }
+    else if (gamepad1.getYButton()) {
+      launcher.unload();
+    } else if(gamepad1.getYButtonReleased()) {
+      launcher.stopLoader();
+    }
+    else if (gamepad1.getXButton()){
+      launcher.stopLoader();
+    }
+
+    if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
+      launcher.stopLoader();
+    }
+
+    if (gamepad1.getRightTriggerAxis() > .5) {
+      launcher.fire();
+    }
   }
 
 }

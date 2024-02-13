@@ -29,47 +29,7 @@ public class LauncherTestRobot extends PracticeRobot {
     driveSpeedControlFieldCentric(fwd*0.5, strafe*0.5, rotate*0.5);
 
     /* read gamepad and map inputs to robot functions */
-   // runLauncher();
-
-    if (gamepad1.getLeftBumper()) {
-      launcher.prime(.5);
-    } else if(gamepad1.getLeftBumperReleased()) {
-      launcher.stopLoader();
-    }  else {
-      launcher.prime(0);
-    }
-
-    if (gamepad1.getAButton() && !launcher.isLoaded()){
-      // myRobot.intake.load();
-      launcher.load(.75);
-    }
-    else if (gamepad1.getYButton()) {
-      // myRobot.intake.unload();
-      launcher.unload();
-    } else if(gamepad1.getYButtonReleased()) {
-      launcher.stopLoader();
-    }
-    else if (gamepad1.getXButton()){
-      // myRobot.intake.stop();  
-      launcher.stopLoader();
-    }
-
-    if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
-      // myRobot.intake.stop();  
-      launcher.stopLoader();
-    }
-
-    if (gamepad1.getRightTriggerAxis() > .5) {
-      // future - check if primed first - leaving that out for testing
-      launcher.fire();
-    }
-  }
-
-  private double speed = 0;
-  private double bias = 0;
-
-  public void runLauncher() {
-    launcher.prime(gamepad1.getRightTriggerAxis());
+    runLauncher();
   }
 
 }
