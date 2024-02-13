@@ -16,11 +16,12 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
   // public void load(){loadState = LoaderState.Loading;}
   public void load(double power){loadState = LoaderState.Loading;}
   public void unload() {loadState = LoaderState.Unloading;}
-  public void stopLoader() {loadState = LoaderState.Stopped;}
+  public void stopLoader() {loadState = LoaderState.Stopping;}
   public boolean isLoaded() {return true;}
   public enum LoaderState {
     Loading, 
     Firing,
+    Stopping,
     Stopped,
     Unloading
   } 

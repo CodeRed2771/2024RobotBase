@@ -41,6 +41,8 @@ public class RollerLauncher extends LauncherSubsystem {
 
     private int notePresentThreshold = 1300; // < 1200 were starting to see a note
   
+    private static final int STOP_DELAY = 2;
+    private int loaderStopDelay = 0;
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
 
@@ -74,7 +76,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void load(double power) {
         super.load(power);
 
-        loaderMotor.set(power);
+        loaderMotor.set(power*1.10);
         intakeMotor.set(-power);
     }
 
@@ -108,9 +110,9 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void stopLoader() {
-        super.unload();
+        super.stopLoader();
+        loaderStopDelay = STOP_DELAY;
 
-        loaderMotor.set(0);
         intakeMotor.set(0);
     }
 
@@ -148,6 +150,15 @@ public class RollerLauncher extends LauncherSubsystem {
 
     @Override
     public void periodic() {
+        if (loadState == LoaderState.Stopping) {
+            if (loaderStopDelay == 0) {
+                loaderMotor.set(0);
+                loadState = LoaderState.Stopped;
+            } else {
+                loaderStopDelay--;
+            }
+        }
+
         if(!isPrimed())
             launcherLED.blink(0.5);
         else
