@@ -17,6 +17,7 @@ import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
 import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
+import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class PracticeRobot extends DefaultRobot {
@@ -27,7 +28,7 @@ public class PracticeRobot extends DefaultRobot {
   /* Be sure to register all subsystems after they are created */
   protected ExampleSwerveDriveTrain drive;
   protected IntakeSubsystem intake;
-  protected LauncherSubsystem launcher;
+  protected RollerLauncher launcher;
   protected PracticeRobotNav nav;
 
   /** Creates a new RobotContainer. */
@@ -140,16 +141,21 @@ public class PracticeRobot extends DefaultRobot {
   private double bias = 0;
 
   public void runLauncher(Gamepad gp) {
-    if (gp.getLeftBumper()) {
-      launcher.prime(.5);
-    } else if(gp.getLeftBumperReleased()) {
-      launcher.stopLoader();
-    }  else {
+    if (gp.getDPadRightRestricted()) {
+      launcher.setSpeedBias(0);
+      launcher.prime(LauncherSpeeds.SUBWOOFER.get());
+    } else if(gp.getDPadLeftRestricted()) {
+      launcher.setSpeedBias(0);
+      launcher.prime(LauncherSpeeds.SPEAKER.get());
+    } else if(gp.getDPadUpRestricted()) {
+      launcher.setSpeedBias(.15);
+      launcher.prime(LauncherSpeeds.AMP.get());
+    } else if(gp.getDPadDownRestricted()) {
       launcher.prime(0);
     }
 
     if (gp.getAButton() && !launcher.isLoaded()){
-      launcher.load(.75);
+      launcher.load(.45);
     }
     else if (gp.getYButton()) {
       launcher.unload();
