@@ -41,6 +41,7 @@ public class Limelight{
         }
     }
     private LimelightPipeline currentPipeline = LimelightPipeline.Unknown;
+    
     public static enum LimelightOn {
         BasedOnPipeline(0),
         Off(1),

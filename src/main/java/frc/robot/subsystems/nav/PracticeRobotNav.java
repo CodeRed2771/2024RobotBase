@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
 import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
+import frc.robot.subsystems.nav.Limelight.Target;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
@@ -27,6 +28,7 @@ public class PracticeRobotNav extends NavSubsystem {
         limelight.setLED(LimelightOn.Off);
         
         gyro = new NavXGyro(SPI.Port.kMXP);
+        useRedTargets();
     }
 
     @Override
@@ -42,6 +44,8 @@ public class PracticeRobotNav extends NavSubsystem {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
+        SmartDashboard.putNumber("Yaw Offset Red Aliance April Tags", 
+            limelight.getOffsetToTarget(Target.SPEAKER, targetPositions).getRotation().getZ());
 
         
     }
