@@ -3,12 +3,13 @@ package frc.robot.subsystems.nav;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
 
-public class Limelight{
+public class Limelight extends NavSubsystem{
     private final double INCHES_TO_METERS = 39.3701;
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
@@ -24,7 +25,7 @@ public class Limelight{
 
     public static enum LimelightPipeline {
         Unknown(-1),
-        AprilTag(1), 
+        AprilTag(0), 
         NoteTracker(2);
 
         public final int value;
@@ -58,7 +59,10 @@ public class Limelight{
     private Pose3d fieldPosition;
     public Limelight(Transform3d cameraPose) {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
+        fieldPosition = new Pose3d();
 
+        // Layout Markings Locations: https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
+        // April Tag Relative to Elements: https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/Apriltag_Images_and_User_Guide.pdf 
         aprilTagPositions[1] = new Transform3d(593.68,9.68,53.38, new Rotation3d(0,0,120));
         aprilTagPositions[2] = new Transform3d(637.21,34.79,53.38,new Rotation3d(0,0,120));
         aprilTagPositions[3] = new Transform3d(652.21,196.17,57.13, new Rotation3d(0,0,180));
@@ -95,14 +99,14 @@ public class Limelight{
     }
 
     public LimelightPipeline getPipeline() {
-        int pipeline = (int)limelight.getEntry("getpip").getInteger(0);
+        int pipeline = (int)limelight.getEntry("getpipe").getInteger(-1);
         return LimelightPipeline.fromInt(pipeline);
     }
     
     public double getArea() {
         return limelight.getEntry("ta").getDouble(0);
     }
-
+    Pose3d currentReading;
     private void updatePose(){
         double[] data;
         double area;
@@ -118,7 +122,7 @@ public class Limelight{
         seesSomething = seesSomething();
         aprilTagID = getAprilTagID();
 
-        Pose3d currentReading = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
+        currentReading = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
         /*  gain read
          * get validation info (area/valid/target id)
          * set valid flag to true - check each validation info - if false set value to false
@@ -131,7 +135,9 @@ public class Limelight{
         }
     }
     
-
+    public Pose3d getRawData() {
+        return currentReading;
+    }
     public Pose3d getFieldPose() {
         return fieldPosition;
     }
@@ -159,7 +165,7 @@ public class Limelight{
     }
     
     public Transform3d getOffsetToTarget(Target target, fieldPositions targetPositions) {
-        Transform3d pose = new Transform3d();
+        Transform3d pose = new Transform3d(100,100,100, new Rotation3d(50,50,50));
         switch (target) {
             case AMP:
                 pose = new Transform3d(getFieldPose(), targetPositions.ampPose);
@@ -169,6 +175,12 @@ public class Limelight{
                 break;
         }
         return pose;
+    }
+
+    @Override
+    public Translation2d getPosition() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
     }
     
 }

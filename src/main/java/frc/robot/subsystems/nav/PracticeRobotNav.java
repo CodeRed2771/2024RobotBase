@@ -43,11 +43,12 @@ public class PracticeRobotNav extends NavSubsystem {
 
     @Override
     public void periodic() {
+        limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
+        SmartDashboard.putNumber("Raw Limelight Data", limelight.getRawData().getRotation().getZ());
+        SmartDashboard.putNumber("Field Pose", limelight.getFieldPose().getRotation().getZ());
         SmartDashboard.putNumber("Yaw Offset Red Aliance April Tags", 
             limelight.getOffsetToTarget(Target.SPEAKER, targetPositions).getRotation().getZ());
-
-        
     }
 
     @Override
