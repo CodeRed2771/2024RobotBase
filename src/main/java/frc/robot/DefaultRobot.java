@@ -79,12 +79,19 @@ public class DefaultRobot extends TimedRobot {
 
   }
 
+  protected boolean bDriveFieldCentric = true;
+  protected void fieldCentricDriveMode(boolean mode) {
+      bDriveFieldCentric = mode;
+  }
 
-  public void SpeedDriveByJoystick( Gamepad gp){
-      double fwd = MathUtil.applyDeadband(-gp.getLeftY(),0.05);
-      double strafe = MathUtil.applyDeadband(-gp.getLeftX(),0.05);
-      double rotate = MathUtil.applyDeadband(-gp.getRightX(),0.05);
+  protected void SpeedDriveByJoystick(Gamepad gp) {
+    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+    if (bDriveFieldCentric) {
       driveSpeedControlFieldCentric(fwd, strafe, rotate);
-
+    } else {
+      driveSpeedControl(fwd, strafe, rotate);
+    }
   }
 }
