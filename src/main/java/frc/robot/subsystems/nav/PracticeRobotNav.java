@@ -20,6 +20,10 @@ public class PracticeRobotNav extends NavSubsystem {
         gyro = new NavXGyro(SPI.Port.kMXP);
     }
 
+    public void zeroYaw(){
+        gyro.zeroYaw();
+    }
+
     @Override
     public void reset() {
         gyro.reset();

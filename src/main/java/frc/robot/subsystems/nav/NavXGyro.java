@@ -102,6 +102,10 @@ public class NavXGyro {
         return distance;
     }
 
+    public void zeroYaw()
+    {
+        mGyro.zeroYaw();
+    }
     public void reset() {
         mGyro.reset();
         pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface

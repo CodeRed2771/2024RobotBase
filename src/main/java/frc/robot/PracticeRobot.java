@@ -139,6 +139,8 @@ public class PracticeRobot extends DefaultRobot {
 
     if(gp.getDPadDown()) driveSpeedGain = 0.25;
     if(gp.getDPadUp()) driveSpeedGain = 0.5;
+
+    if(gp.getXButton()) nav.zeroYaw();
   }
 
   @Override
@@ -174,7 +176,7 @@ public class PracticeRobot extends DefaultRobot {
     }
     else if (gp.getDPadLeft()) {
       launcher.unload();
-    } else if(gp.getDPadDown()) {
+    } else if(gp.getDPadDown() || gp.getDPadUp()) {
       launcher.stopLoader();
     }
 
