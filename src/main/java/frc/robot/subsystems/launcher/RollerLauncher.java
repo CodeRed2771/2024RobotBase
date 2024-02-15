@@ -58,7 +58,7 @@ public class RollerLauncher extends LauncherSubsystem {
         }
     }
   
-    private static final int STOP_DELAY = 2;
+    private static final int STOP_DELAY = 1;
     private int loaderStopDelay = 0;
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
@@ -129,10 +129,10 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public void stopLoader() {
         super.stopLoader();
-      //  loaderStopDelay = STOP_DELAY;
+        loaderStopDelay = STOP_DELAY;
 
         intakeMotor.set(0);
-         loaderMotor.set(0);
+        loaderMotor.set(0);
     }
 
     public void prime(double speed) {
@@ -172,6 +172,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void periodic() {
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay == 0) {
+                intakeMotor.set(0);
                 loaderMotor.set(0);
                 loadState = LoaderState.Stopped;
             } else {
