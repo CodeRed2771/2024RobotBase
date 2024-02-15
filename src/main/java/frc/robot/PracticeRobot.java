@@ -106,6 +106,8 @@ public class PracticeRobot extends DefaultRobot {
     nav.reset();
 
     restoreRobotToDefaultState();
+    fieldCentricDriveMode(true);
+
   }
 
   @Override
@@ -118,9 +120,12 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
+    driveAuxJoystick(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
+
+
 
   @Override
   public void restoreRobotToDefaultState() {
@@ -128,13 +133,23 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
   }
 
+  protected void driveAuxJoystick(Gamepad gp){
+    // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
+    // if(gp.getDPadRight()) fieldCentricDriveMode(false);
+
+    if(gp.getDPadDown()) driveSpeedGain = 0.25;
+    if(gp.getDPadUp()) driveSpeedGain = 0.5;
+  }
+
   @Override
   public double getAngle(){return nav.getAngle();}
 
+  protected double driveSpeedGain = 0.5;
+  protected double rotateSpeedGain = 0.5;
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd*0.5, strafe*0.5, rotate*0.5,getPeriod());
+    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = 0;
