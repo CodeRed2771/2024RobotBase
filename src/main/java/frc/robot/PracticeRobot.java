@@ -156,28 +156,25 @@ public class PracticeRobot extends DefaultRobot {
   private double bias = 0;
 
   public void runLauncher(Gamepad gp) {
-    if (gp.getDPadRightRestricted()) {
+    if (gp.getXButton()) {
       launcher.setSpeedBias(0);
       launcher.prime(LauncherSpeeds.SUBWOOFER.get());
-    } else if(gp.getDPadLeftRestricted()) {
+    } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
       launcher.prime(LauncherSpeeds.SPEAKER.get());
-    } else if(gp.getDPadUpRestricted()) {
+    } else if(gp.getBButton()) {
       launcher.setSpeedBias(.15);
       launcher.prime(LauncherSpeeds.AMP.get());
-    } else if(gp.getDPadDownRestricted()) {
+    } else if(gp.getYButton()) {
       launcher.prime(0);
     }
 
-    if (gp.getAButton() && !launcher.isLoaded()){
+    if (gp.getDPadRight() && !launcher.isLoaded()){
       launcher.load(.45);
     }
-    else if (gp.getYButton()) {
+    else if (gp.getDPadLeft()) {
       launcher.unload();
-    } else if(gp.getYButtonReleased()) {
-      launcher.stopLoader();
-    }
-    else if (gp.getXButton()){
+    } else if(gp.getDPadDown()) {
       launcher.stopLoader();
     }
 
