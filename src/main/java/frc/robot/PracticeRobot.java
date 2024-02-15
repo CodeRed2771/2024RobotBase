@@ -174,6 +174,9 @@ public class PracticeRobot extends DefaultRobot {
     if (gp.getDPadRight() && !launcher.isLoaded()){
       launcher.load(.45);
     }
+    else if (gp.getDPadUp()){
+      launcher.load(.25);
+    }
     else if (gp.getDPadLeft()) {
       launcher.unload();
     } else if(gp.getDPadDown() || gp.getDPadUp()) {
