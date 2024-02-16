@@ -39,7 +39,7 @@ public class RollerLauncher extends LauncherSubsystem {
     private double speedTolerance = 0.05;
     private double motorSpeedBias = 0.06;
 
-    private int notePresentThreshold = 1300; // < 1200 were starting to see a note
+    private int notePresentThreshold = 1100; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
         SUBWOOFER(0.3),
