@@ -29,7 +29,7 @@ import com.revrobotics.CANSparkMax;
 public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax upperMotor;
     private CANSparkMax lowerMotor;
-    private CANSparkMax loaderMotor;
+    private CANSparkMax shooterMotor;
     private AnalogInput loadSensor;
     private CANSparkMax intakeMotor;
     private BlinkinLED launcherLED;
@@ -39,7 +39,7 @@ public class RollerLauncher extends LauncherSubsystem {
     private double speedTolerance = 0.05;
     private double motorSpeedBias = 0.06;
 
-    private int notePresentThreshold = 1900; // < 1200 were starting to see a note
+    private int notePresentThreshold = 1550; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
         SUBWOOFER(0.3),
@@ -65,7 +65,7 @@ public class RollerLauncher extends LauncherSubsystem {
 
         upperMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
         lowerMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
-        loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
+        shooterMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
 
@@ -93,7 +93,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void load(double power) {
         super.load(power);
 
-        loaderMotor.set(power*1.10);
+        shooterMotor.set(power*1.10);
         intakeMotor.set(-power);
     }
 
@@ -122,7 +122,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void unload() {
         super.unload();
 
-        loaderMotor.set(-.5);
+        shooterMotor.set(-.5);
         intakeMotor.set(.5);
         loadState = LoaderState.Unloading;
     }
@@ -132,7 +132,7 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderStopDelay = STOP_DELAY;
 
         intakeMotor.set(0);
-        loaderMotor.set(0);
+        shooterMotor.set(0);
     }
 
     public void prime(double speed) {
@@ -173,7 +173,7 @@ public class RollerLauncher extends LauncherSubsystem {
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay == 0) {
                 intakeMotor.set(0);
-                loaderMotor.set(0);
+                shooterMotor.set(0);
                 loadState = LoaderState.Stopped;
             } else {
                 loaderStopDelay--;
@@ -190,5 +190,7 @@ public class RollerLauncher extends LauncherSubsystem {
             launcherLED.set(LEDColors.YELLOW);
         else
             launcherLED.set(LEDColors.RED);
+
+        SmartDashboard.putNumber("intake speed", lowerMotor.getEncoder().getVelocity());
     }
 }
