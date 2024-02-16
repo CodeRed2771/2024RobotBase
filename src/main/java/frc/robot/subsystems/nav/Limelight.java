@@ -177,6 +177,31 @@ public class Limelight extends NavSubsystem{
         return pose;
     }
 
+    public Pose3d getRedAlliance() {
+        Pose3d pose;
+        double data[];
+        data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+        pose = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
+        return pose;
+    }
+
+    public Transform3d getTargetOffset(Target target) {
+        Pose3d targetPose = new Pose3d(0,0,0, new Rotation3d(0,0,0));
+        useRedTargets();
+        switch (target) {
+            case AMP:
+                targetPose = targetPositions.ampPose;
+                break;
+            case SPEAKER:
+                targetPose = targetPositions.supwofferPose;
+                break;
+        }
+        return new Transform3d(getRedAlliance(), targetPose);
+    }
+
+    
+
+
     @Override
     public Translation2d getPosition() {
         // TODO Auto-generated method stub
