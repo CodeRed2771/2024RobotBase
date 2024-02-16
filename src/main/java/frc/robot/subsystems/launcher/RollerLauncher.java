@@ -39,9 +39,26 @@ public class RollerLauncher extends LauncherSubsystem {
     private double speedTolerance = 0.05;
     private double motorSpeedBias = 0.06;
 
-    private int notePresentThreshold = 1300; // < 1200 were starting to see a note
+    private int notePresentThreshold = 1100; // < 1200 were starting to see a note
+
+    public enum LauncherSpeeds {
+        SUBWOOFER(0.3),
+        SPEAKER(0.45),
+        AMP(0.18),
+        OFF(0);
+
+        private double speed;
+        
+        private LauncherSpeeds(double newSpeed) {
+            speed = newSpeed;
+        }
+
+        public double get() {
+            return speed;
+        }
+    }
   
-    private static final int STOP_DELAY = 2;
+    private static final int STOP_DELAY = 1;
     private int loaderStopDelay = 0;
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
@@ -95,6 +112,7 @@ public class RollerLauncher extends LauncherSubsystem {
         if (isPrimed())
             {
             loadState = LoaderState.Firing;
+
             load(1); // run the loader which will put note into shooter
             }  
         else
@@ -114,15 +132,16 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderStopDelay = STOP_DELAY;
 
         intakeMotor.set(0);
+        loaderMotor.set(0);
     }
 
-    public void prime(double power) {
+    public void prime(double speed) {
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
-        upperSpeedCmd = -power;
-        if (Math.abs(power)>.01)
-            lowerSpeedCmd = (power) + motorSpeedBias;
+        upperSpeedCmd = -speed;
+        if (Math.abs(speed)>.01)
+            lowerSpeedCmd = (speed) + motorSpeedBias;
         else  
             lowerSpeedCmd = 0;
 
@@ -138,7 +157,8 @@ public class RollerLauncher extends LauncherSubsystem {
         boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperMotor.get()) < speedTolerance;
         boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerMotor.get()) < speedTolerance;
 
-        return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
+        return true;
+        // return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
     }
 
     public boolean isUnloading() {
@@ -152,6 +172,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void periodic() {
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay == 0) {
+                intakeMotor.set(0);
                 loaderMotor.set(0);
                 loadState = LoaderState.Stopped;
             } else {

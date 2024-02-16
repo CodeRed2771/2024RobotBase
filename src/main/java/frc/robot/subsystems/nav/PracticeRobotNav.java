@@ -31,6 +31,10 @@ public class PracticeRobotNav extends NavSubsystem {
         useRedTargets();
     }
 
+    public void zeroYaw(){
+        gyro.zeroYaw();
+    }
+
     @Override
     public void reset() {
         gyro.reset();

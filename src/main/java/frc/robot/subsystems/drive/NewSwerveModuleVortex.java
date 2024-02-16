@@ -38,9 +38,9 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private static final double kWheelRadius = 2.0 * 2.54/100;// Meters needed for kinematics
   private static final double kDriveMaxRPM = 6000;
 
-  public static final double kMaxAngularSpeed =  2 *  (2 * Math.PI); // radians per second
+  public static final double kMaxAngularSpeed =  1000* 2 *  (2 * Math.PI); // radians per second
   private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration = 5 * (2 * Math.PI); // radians per second squared
+  private static final double kModuleMaxAngularAcceleration = 1000 * 5 * (2 * Math.PI); // radians per second squared
 
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
@@ -65,7 +65,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     /************ SET PID VALUES HERE ******************/
     m_drivePIDController = new PIDController(0 , 0.0, 0);
-    m_turningPIDController = new ProfiledPIDController(10.0, 0.0, 0.5,
+    m_turningPIDController = new ProfiledPIDController(5.0, 0.0, 0.5,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
     m_turningPIDController.setIntegratorRange(-0.5,0.5);
 

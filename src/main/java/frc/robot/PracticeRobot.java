@@ -17,6 +17,7 @@ import frc.robot.subsystems.intake.RollerIntake;
 import frc.robot.subsystems.launcher.DummyLauncher;
 import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
+import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class PracticeRobot extends DefaultRobot {
@@ -27,7 +28,7 @@ public class PracticeRobot extends DefaultRobot {
   /* Be sure to register all subsystems after they are created */
   protected ExampleSwerveDriveTrain drive;
   protected IntakeSubsystem intake;
-  protected LauncherSubsystem launcher;
+  protected RollerLauncher launcher;
   protected PracticeRobotNav nav;
 
   /** Creates a new RobotContainer. */
@@ -105,6 +106,8 @@ public class PracticeRobot extends DefaultRobot {
     nav.reset();
 
     restoreRobotToDefaultState();
+    fieldCentricDriveMode(true);
+
   }
 
   @Override
@@ -117,9 +120,12 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
+    driveAuxJoystick(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
+
+
 
   @Override
   public void restoreRobotToDefaultState() {
@@ -127,36 +133,53 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
   }
 
+  protected void driveAuxJoystick(Gamepad gp){
+    // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
+    // if(gp.getDPadRight()) fieldCentricDriveMode(false);
+
+    if(gp.getDPadDown()) driveSpeedGain = 0.25;
+    if(gp.getDPadUp()) driveSpeedGain = 0.5;
+
+    if(gp.getXButton()) nav.zeroYaw();
+  }
+
   @Override
   public double getAngle(){return nav.getAngle();}
 
+  protected double driveSpeedGain = 0.5;
+  protected double rotateSpeedGain = 0.5;
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd*0.5, strafe*0.5, rotate*0.5,getPeriod());
+    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = 0;
   private double bias = 0;
 
   public void runLauncher(Gamepad gp) {
-    if (gp.getLeftBumper()) {
-      launcher.prime(.5);
-    } else if(gp.getLeftBumperReleased()) {
-      launcher.stopLoader();
-    }  else {
+    if (gp.getXButton()) {
+      launcher.setSpeedBias(0);
+      launcher.prime(LauncherSpeeds.SUBWOOFER.get());
+    } else if(gp.getAButton()) {
+      launcher.setSpeedBias(0);
+      launcher.prime(LauncherSpeeds.SPEAKER.get());
+    } else if(gp.getBButton()) {
+      launcher.setSpeedBias(.15);
+      launcher.prime(LauncherSpeeds.AMP.get());
+    } else if(gp.getYButton()) {
       launcher.prime(0);
     }
 
-    if (gp.getAButton() && !launcher.isLoaded()){
-      launcher.load(.75);
+    if (gp.getDPadRight() && !launcher.isLoaded()){
+      launcher.load(.45);
     }
-    else if (gp.getYButton()) {
+    else if (gp.getDPadUp()){
+      launcher.load(.25);
+    }
+    else if (gp.getDPadLeft()) {
       launcher.unload();
-    } else if(gp.getYButtonReleased()) {
-      launcher.stopLoader();
-    }
-    else if (gp.getXButton()){
+    } else if(gp.getDPadDown() || gp.getDPadUp()) {
       launcher.stopLoader();
     }
 
