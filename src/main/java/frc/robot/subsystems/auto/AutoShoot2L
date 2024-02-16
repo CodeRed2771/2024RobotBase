@@ -1,0 +1,78 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.drive;
+
+public class AutoShoot2L {
+
+  DefaultRobot myRobot;
+
+  public AutoShoot2L(DefaultRobot robot) {
+    myRobot = this.robot;
+  }
+  public void start() {
+		super.start();
+	}  
+  public void stop() {
+    super.stop();
+  }
+  public void tick() {
+    if (isRunning()) {
+        SmartDashboard.putNumber("Auto Step", getCurrentStep());
+        switch (getCurrentStep()) {
+              case 0:
+                myRobot.launcher.prime(0);
+                break;
+            case 1:
+                break;
+            case 2:
+                // Claw.setClawPosition(ClawPresets.OPEN);
+                // Claw2.open();
+                Arm.presetShoulder(shoulderPresets.PLACING_HIGH);
+                // Arm.presetExtend(extenderPresets.HIGH);
+                setTimerAndAdvanceStep(1000);
+                break;
+            case 3:
+                // Claw.stopClawTO();
+                break;
+            case 4:
+                Arm.presetExtend(extenderPresets.HIGH);
+                setTimerAndAdvanceStep(1700);
+                break;
+            case 5:
+                break;
+            case 6:
+                Claw2.open();
+                setTimerAndAdvanceStep(100);
+                break;
+            case 7:
+                break;
+            case 8:
+                setStep(10);
+                // Claw.setClawPosition(ClawPresets.CLOSE);
+                // setTimerAndAdvanceStep(1000);
+                break;
+            case 9:
+                break;
+            case 10:
+                // Claw.stopClawTO();
+                Arm.presetExtend(extenderPresets.RETRACTED);
+                setTimerAndAdvanceStep(1000);
+                break;
+            case 11:
+                break;
+            case 12:
+                driveInches(156, 0, 1);
+                setTimerAndAdvanceStep(6000);
+                break;
+            case 13:
+                if(driveCompleted())
+                    advanceStep();
+                break;
+            case 14:
+                stop();
+                break;
+        }
+      }
+}
