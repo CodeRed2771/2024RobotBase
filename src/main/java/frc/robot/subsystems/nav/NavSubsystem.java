@@ -35,7 +35,7 @@ public abstract class NavSubsystem extends SubsystemBase {
   }
   public class redFieldPositions extends fieldPositions {
     public redFieldPositions() {
-      ampPose = new Pose3d(72.5,323.00,41.38,new Rotation3d(0,0,Math.toRadians(270)));
+      ampPose = new Pose3d(72.5,0,0,new Rotation3d(0,0,Math.toRadians(90)));
       supwofferPose = new Pose3d(-1.50,218.42,57.13,new Rotation3d(0,0,0));
       trapPose[1] = new Pose3d(209.48,161.62,43.00,new Rotation3d(0,0,0));
       trapPose[2] = new Pose3d(182.73,177.10,43.00,new Rotation3d(0,0,Math.toRadians(120)));
