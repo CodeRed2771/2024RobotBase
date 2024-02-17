@@ -21,6 +21,13 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class NewSwerveModuleVortex extends SwerveModuleBase {
+  // Gains are zero'd in abstract class. Update in particular Swerve constructor
+  protected PIDController m_drivePIDController;
+  protected ProfiledPIDController m_turningPIDController;
+  protected SimpleMotorFeedforward m_driveFeedforward;
+  protected SimpleMotorFeedforward m_turnFeedforward;
+
+  
   private CANSparkFlex m_driveMotor;
   private CANSparkMax m_turningMotor;
   /**
@@ -87,6 +94,26 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   }
 
   @Override
+  protected void applySwerveState(SwerveModuleState targetState) {
+    reportCmd(targetState);
+    var swerveState = getState();
+
+    // Calculate the drive output from the drive PID controller.
+    final double driveOutput = m_drivePIDController.calculate(swerveState.speedMetersPerSecond,
+        targetState.speedMetersPerSecond);
+
+    final double driveFeedforward = m_driveFeedforward.calculate(targetState.speedMetersPerSecond);
+
+    // Calculate the turning motor output from the turning PID controller.
+    final double turnOutput = m_turningPIDController.calculate(swerveState.angle.getRadians(),
+        targetState.angle.getRadians());
+
+    final double turnFeedforward = m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+
+    commandSwerveMotors(driveOutput + driveFeedforward, turnOutput + turnFeedforward);
+  }
+
+  @Override
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(m_driveEncoder.getPosition(), getRotation());
   }
@@ -110,13 +137,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     return new SwerveModuleState(m_driveEncoder.getVelocity(), getRotation());
   }
 
-  @Override
   protected void reportCmd(SwerveModuleState targetState){
     velCmd = targetState.speedMetersPerSecond;
     rotCmd = targetState.angle.getRotations();
   }
 
-  protected void applySwerveModuleState(double driveCmd, double turnCmd) {
+  protected void commandSwerveMotors(double driveCmd, double turnCmd) {
     speedCmd = driveCmd;
 
     if (isArmed()) {
@@ -144,7 +170,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
   @Override
   public void doDisarm() {
-    applySwerveModuleState(0, 0);
+    commandSwerveMotors(0, 0);
   }
 
   public void setTurnOffset(double value) {
