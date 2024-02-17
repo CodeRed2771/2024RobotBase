@@ -45,21 +45,24 @@ public class PracticeRobotNav extends NavSubsystem {
     public double getAngle() {
         return gyro.getAngle();
     }
-    
+    private void updateTestPoint(Pose3d currentTarget) {
+        SmartDashboard.putNumber("X Test Point", currentTarget.getX());
+        SmartDashboard.putNumber("Y Test Point", currentTarget.getY());
+        SmartDashboard.putNumber("Z Test Point", currentTarget.getZ());
+        SmartDashboard.putNumber("Roll Test Point", Math.toDegrees(currentTarget.getRotation().getX()));
+        SmartDashboard.putNumber("Pitch Test Point", Math.toDegrees(currentTarget.getRotation().getY()));
+        SmartDashboard.putNumber("Yaw Test Point", Math.toDegrees(currentTarget.getRotation().getZ()));
+
+    }
     @Override
     public void periodic() {
-        Pose3d currentTarget = limelight.getPositionRedAlliance();
-        limelight.pollLimelight();
+        Pose3d currentPosition = limelight.getPositionRedAlliance();
+        // limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
-        SmartDashboard.putNumber("Raw Limelight Data", 
-            Math.toDegrees(limelight.getPositionRedAlliance().getRotation().getZ()));
-        // SmartDashboard.putNumber("Field Pose", limelight.getFieldPose().getRotation().getZ());
-        SmartDashboard.putNumber("X Offset Red Aliance April Tags", currentTarget.getX());
-        SmartDashboard.putNumber("Y Offset Red Aliance April Tags", currentTarget.getY());
-        SmartDashboard.putNumber("Z Offset Red Aliance April Tags", currentTarget.getZ());
-        SmartDashboard.putNumber("Roll Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getX()));
-        SmartDashboard.putNumber("Pitch Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getY()));
-        SmartDashboard.putNumber("Yaw Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getZ()));
+        // updateTestPoint(currentPosition);
+
+        Transform3d currentTarget = limelight.getRedTargetOffset(Target.AMP);
+        updateTestPoint(new Pose3d(currentTarget.getTranslation(), currentTarget.getRotation()));
     }
 
     @Override
