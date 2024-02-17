@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -18,15 +15,13 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
     super();
   }
 
+  protected double curDriveSpeed = 0.0;
+  protected double curDriveDistance = 0.0;
+  protected double curTurnAngle = 0.0;
+  /* UpdateSwerveState reads all of the sensors and stores the values into the current state readings. */
+  public abstract void updateSwerveState();
   public abstract SwerveModulePosition getPosition();
-
   public abstract Rotation2d getRotation();
-
-  /**
-   * Returns the current state of the module.
-   *
-   * @return The current state of the module.
-   */
   public abstract SwerveModuleState getState();
 
   /**
@@ -36,6 +31,8 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
 
+    logState(desiredState);
+    
     var swerveState = getState();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState targetState = SwerveModuleState.optimize(desiredState, swerveState.angle);
@@ -47,9 +44,9 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
     // driving.
     targetState.speedMetersPerSecond *= Math.pow(targetState.angle.minus(swerveState.angle).getCos(),1);
 
-    applySwerveState(targetState);
+    commandSwerveState(targetState);
   }
 
-  protected abstract void applySwerveState(SwerveModuleState targetState);
-
+  protected abstract void commandSwerveState(SwerveModuleState targetState);
+  protected void logState(SwerveModuleState cmd){}
 }
