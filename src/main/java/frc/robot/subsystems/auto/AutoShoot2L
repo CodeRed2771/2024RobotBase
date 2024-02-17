@@ -7,6 +7,7 @@ package frc.robot.subsystems.drive;
 public class AutoShoot2L {
 
   DefaultRobot myRobot;
+  private int drivenTicks = 0;
 
   public AutoShoot2L(DefaultRobot robot) {
     myRobot = this.robot;
@@ -22,55 +23,40 @@ public class AutoShoot2L {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
               case 0:
-                myRobot.launcher.prime(0);
-                break;
+              myRobot.launcher.prime(0.3);
+              // setTimerAndAdvanceStep(750);
+              break;
             case 1:
-                break;
+              break;
             case 2:
-                // Claw.setClawPosition(ClawPresets.OPEN);
-                // Claw2.open();
-                Arm.presetShoulder(shoulderPresets.PLACING_HIGH);
-                // Arm.presetExtend(extenderPresets.HIGH);
-                setTimerAndAdvanceStep(1000);
-                break;
+              myRobot.launcher.fire();
+              // setTimerAndAdvanceStep(250);
+              break;
             case 3:
-                // Claw.stopClawTO();
-                break;
+              break;
             case 4:
-                Arm.presetExtend(extenderPresets.HIGH);
-                setTimerAndAdvanceStep(1700);
-                break;
+              myRobot.launcher.stop();
+              myRobot.drive.driveSpeedControl(0.75,0,0,1);
+              myRobot.launcher.load(0.45);
+              // setTimerAndAdvanceStep(2500);
+              break;
             case 5:
-                break;
+              drivenTicks++;
+              if(myRobot.launcher.isLoaded)
+                // advanceStep();
+              break;
             case 6:
-                Claw2.open();
-                setTimerAndAdvanceStep(100);
-                break;
+              myRobot.launcher.prime(0.3);
+              myRobot.drive.driveSpeedControl(-0.75,0,0,1);
+              // setTimerAndAdvanceStep(drivenTicks+150);
+              break;
             case 7:
-                break;
+              break;
             case 8:
-                setStep(10);
-                // Claw.setClawPosition(ClawPresets.CLOSE);
-                // setTimerAndAdvanceStep(1000);
-                break;
+              myRobot.fire();
+              break;
             case 9:
-                break;
-            case 10:
-                // Claw.stopClawTO();
-                Arm.presetExtend(extenderPresets.RETRACTED);
-                setTimerAndAdvanceStep(1000);
-                break;
-            case 11:
-                break;
-            case 12:
-                driveInches(156, 0, 1);
-                setTimerAndAdvanceStep(6000);
-                break;
-            case 13:
-                if(driveCompleted())
-                    advanceStep();
-                break;
-            case 14:
+                myRobot.launcher.stop();
                 stop();
                 break;
         }
