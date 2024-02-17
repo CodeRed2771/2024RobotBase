@@ -4,12 +4,13 @@
 
 package frc.robot.subsystems.drive;
 
-public class AutoShoot2L {
+public class AutoShoot2L extends AutoBaseClass {
 
   DefaultRobot myRobot;
   private int drivenTicks = 0;
 
   public AutoShoot2L(DefaultRobot robot) {
+    super();
     myRobot = this.robot;
   }
   public void start() {
@@ -24,13 +25,13 @@ public class AutoShoot2L {
         switch (getCurrentStep()) {
               case 0:
               myRobot.launcher.prime(0.3);
-              // setTimerAndAdvanceStep(750);
+              setTimerAndAdvanceStep(750);
               break;
             case 1:
               break;
             case 2:
               myRobot.launcher.fire();
-              // setTimerAndAdvanceStep(250);
+              setTimerAndAdvanceStep(250);
               break;
             case 3:
               break;
@@ -38,17 +39,17 @@ public class AutoShoot2L {
               myRobot.launcher.stop();
               myRobot.drive.driveSpeedControl(0.75,0,0,1);
               myRobot.launcher.load(0.45);
-              // setTimerAndAdvanceStep(2500);
+              setTimerAndAdvanceStep(2500);
               break;
             case 5:
               drivenTicks++;
               if(myRobot.launcher.isLoaded)
-                // advanceStep();
+                advanceStep();
               break;
             case 6:
               myRobot.launcher.prime(0.3);
               myRobot.drive.driveSpeedControl(-0.75,0,0,1);
-              // setTimerAndAdvanceStep(drivenTicks+150);
+              setTimerAndAdvanceStep(drivenTicks+150);
               break;
             case 7:
               break;
