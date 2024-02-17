@@ -25,22 +25,22 @@ public abstract class NavSubsystem extends SubsystemBase {
   public class blueFieldPositions extends fieldPositions {
     public blueFieldPositions() {
       
-        feederStation = new Pose3d(613.05,26.46,53.38, new Rotation3d(0,0,120));
-        supwofferPose = new Pose3d(652.73,218.42,40.13,new Rotation3d(0,0,180));
-        ampPose = new Pose3d(578.77,323.00,41.38,new Rotation3d(0,0,270));
-        trapPose[1] = new Pose3d(468.69,146.19,43.00,new Rotation3d(0,0,300));
-        trapPose[2] = new Pose3d(468.69,177.10,43.00,new Rotation3d(0,0,60));
-        trapPose[3] = new Pose3d(441.74,161.62,43.00,new Rotation3d(0,0,180));
+        feederStation = new Pose3d(613.05,26.46,53.38, new Rotation3d(0,0,Math.toRadians(120)));
+        supwofferPose = new Pose3d(652.73,218.42,40.13,new Rotation3d(0,0,Math.toRadians(180)));
+        ampPose = new Pose3d(578.77,323.00,41.38,new Rotation3d(0,0,Math.toRadians(270)));
+        trapPose[1] = new Pose3d(468.69,146.19,43.00,new Rotation3d(0,0,Math.toRadians(300)));
+        trapPose[2] = new Pose3d(468.69,177.10,43.00,new Rotation3d(0,0,Math.toRadians(60)));
+        trapPose[3] = new Pose3d(441.74,161.62,43.00,new Rotation3d(0,0,Math.toRadians(180)));
     }
   }
   public class redFieldPositions extends fieldPositions {
     public redFieldPositions() {
-      ampPose = new Pose3d(72.5,323.00,41.38,new Rotation3d(0,0,270));
+      ampPose = new Pose3d(72.5,323.00,41.38,new Rotation3d(0,0,Math.toRadians(270)));
       supwofferPose = new Pose3d(-1.50,218.42,57.13,new Rotation3d(0,0,0));
       trapPose[1] = new Pose3d(209.48,161.62,43.00,new Rotation3d(0,0,0));
-      trapPose[2] = new Pose3d(182.73,177.10,43.00,new Rotation3d(0,0,120));
-      trapPose[3] = new Pose3d(182.73,146.19,43.00,new Rotation3d(0,0,240));
-      feederStation = new Pose3d(38.17,26.46,53.38,new Rotation3d(0,0,60));
+      trapPose[2] = new Pose3d(182.73,177.10,43.00,new Rotation3d(0,0,Math.toRadians(120)));
+      trapPose[3] = new Pose3d(182.73,146.19,43.00,new Rotation3d(0,0,Math.toRadians(240)));
+      feederStation = new Pose3d(38.17,26.46,53.38,new Rotation3d(0,0,Math.toRadians(60)));
     }
   }
   protected fieldPositions targetPositions;

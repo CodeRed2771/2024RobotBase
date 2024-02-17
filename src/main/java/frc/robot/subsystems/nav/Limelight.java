@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
 
 public class Limelight extends NavSubsystem{
-    private final double INCHES_TO_METERS = 39.3701;
+    private final double METERS_TO_INCHES = 39.3701;
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
 
@@ -26,7 +26,7 @@ public class Limelight extends NavSubsystem{
     public static enum LimelightPipeline {
         Unknown(-1),
         AprilTag(0), 
-        NoteTracker(2);
+        NoteTracker(1);
 
         public final int value;
         private LimelightPipeline(int value) {
@@ -122,7 +122,7 @@ public class Limelight extends NavSubsystem{
         seesSomething = seesSomething();
         aprilTagID = getAprilTagID();
 
-        currentReading = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
+        currentReading = new Pose3d(data[0], data[1], data[2], new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
         /*  gain read
          * get validation info (area/valid/target id)
          * set valid flag to true - check each validation info - if false set value to false
@@ -177,16 +177,16 @@ public class Limelight extends NavSubsystem{
         return pose;
     }
 
-    public Pose3d getRedAlliance() {
+    public Pose3d getPositionRedAlliance() {
         Pose3d pose;
         double data[];
         data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-        pose = new Pose3d(data[0], data[1], data[2], new Rotation3d(data[3], data[4], data[5]));
+        pose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
         return pose;
     }
 
-    public Transform3d getTargetOffset(Target target) {
-        Pose3d targetPose = new Pose3d(0,0,0, new Rotation3d(0,0,0));
+    public Transform3d getRedTargetOffset(Target target) {
+        Pose3d targetPose;
         useRedTargets();
         switch (target) {
             case AMP:
@@ -195,8 +195,11 @@ public class Limelight extends NavSubsystem{
             case SPEAKER:
                 targetPose = targetPositions.supwofferPose;
                 break;
+            default:
+                targetPose = new Pose3d();
+                break;
         }
-        return new Transform3d(getRedAlliance(), targetPose);
+        return new Transform3d(getPositionRedAlliance(), targetPose);
     }
 
     
