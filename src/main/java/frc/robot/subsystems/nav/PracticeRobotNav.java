@@ -5,6 +5,7 @@
 package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
@@ -44,15 +45,21 @@ public class PracticeRobotNav extends NavSubsystem {
     public double getAngle() {
         return gyro.getAngle();
     }
-
+    
     @Override
     public void periodic() {
+        Pose3d currentTarget = limelight.getPositionRedAlliance();
         limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
-        SmartDashboard.putNumber("Raw Limelight Data", limelight.getRedAlliance().getRotation().getZ());
+        SmartDashboard.putNumber("Raw Limelight Data", 
+            Math.toDegrees(limelight.getPositionRedAlliance().getRotation().getZ()));
         // SmartDashboard.putNumber("Field Pose", limelight.getFieldPose().getRotation().getZ());
-        SmartDashboard.putNumber("Yaw Offset Red Aliance April Tags", 
-            limelight.getTargetOffset(Target.SPEAKER).getRotation().getZ());
+        SmartDashboard.putNumber("X Offset Red Aliance April Tags", currentTarget.getX());
+        SmartDashboard.putNumber("Y Offset Red Aliance April Tags", currentTarget.getY());
+        SmartDashboard.putNumber("Z Offset Red Aliance April Tags", currentTarget.getZ());
+        SmartDashboard.putNumber("Roll Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getX()));
+        SmartDashboard.putNumber("Pitch Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getY()));
+        SmartDashboard.putNumber("Yaw Offset Red Aliance April Tags", Math.toDegrees(currentTarget.getRotation().getZ()));
     }
 
     @Override
