@@ -27,9 +27,9 @@ import com.revrobotics.CANSparkMax;
  * 
  */
 public class RollerLauncher extends LauncherSubsystem {
-    private CANSparkMax upperMotor;
-    private CANSparkMax lowerMotor;
-    private CANSparkMax shooterMotor;
+    private CANSparkMax upperShooterMotor;
+    private CANSparkMax lowerShooterMotor;
+    private CANSparkMax loaderMotor;
     private AnalogInput loadSensor;
     private CANSparkMax intakeMotor;
     private BlinkinLED launcherLED;
@@ -63,9 +63,9 @@ public class RollerLauncher extends LauncherSubsystem {
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
 
-        upperMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
-        lowerMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
-        shooterMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
+        upperShooterMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
+        lowerShooterMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
+        loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
 
@@ -93,7 +93,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void load(double power) {
         super.load(power);
 
-        shooterMotor.set(power*1.10);
+        loaderMotor.set(power*1.10);
         intakeMotor.set(-power);
     }
 
@@ -122,7 +122,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void unload() {
         super.unload();
 
-        shooterMotor.set(-.5);
+        loaderMotor.set(-.5);
         intakeMotor.set(.5);
         loadState = LoaderState.Unloading;
     }
@@ -132,7 +132,7 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderStopDelay = STOP_DELAY;
 
         intakeMotor.set(0);
-        shooterMotor.set(0);
+        loaderMotor.set(0);
     }
 
     public void prime(double speed) {
@@ -145,8 +145,8 @@ public class RollerLauncher extends LauncherSubsystem {
         else  
             lowerSpeedCmd = 0;
 
-        upperMotor.set(upperSpeedCmd);
-        lowerMotor.set(lowerSpeedCmd);
+        upperShooterMotor.set(upperSpeedCmd);
+        lowerShooterMotor.set(lowerSpeedCmd);
     }
 
     public void setSpeedBias(double newBias) {
@@ -154,8 +154,8 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public boolean isPrimed() {
-        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperMotor.get()) < speedTolerance;
-        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerMotor.get()) < speedTolerance;
+        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperShooterMotor.get()) < speedTolerance;
+        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerShooterMotor.get()) < speedTolerance;
 
         return true;
         // return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
@@ -173,7 +173,7 @@ public class RollerLauncher extends LauncherSubsystem {
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay == 0) {
                 intakeMotor.set(0);
-                shooterMotor.set(0);
+                loaderMotor.set(0);
                 loadState = LoaderState.Stopped;
             } else {
                 loaderStopDelay--;
@@ -191,6 +191,6 @@ public class RollerLauncher extends LauncherSubsystem {
         else
             launcherLED.set(LEDColors.RED);
 
-        SmartDashboard.putNumber("intake speed", lowerMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("intake speed", lowerShooterMotor.getEncoder().getVelocity());
     }
 }
