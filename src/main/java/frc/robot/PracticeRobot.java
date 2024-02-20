@@ -138,7 +138,7 @@ public class PracticeRobot extends DefaultRobot {
     // if(gp.getDPadRight()) fieldCentricDriveMode(false);
 
     if(gp.getDPadDown()) driveSpeedGain = 0.25;
-    if(gp.getDPadUp()) driveSpeedGain = 0.5;
+    if(gp.getDPadUp()) driveSpeedGain = 0.7;
 
     if(gp.getXButton()) nav.zeroYaw();
   }
@@ -146,8 +146,8 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public double getAngle(){return nav.getAngle();}
 
-  protected double driveSpeedGain = 0.5;
-  protected double rotateSpeedGain = 0.5;
+  protected double driveSpeedGain = 0.7;
+  protected double rotateSpeedGain = 0.9;
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
