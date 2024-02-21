@@ -1,5 +1,6 @@
-package frc.robot;
+package frc.robot.subsystems.auto;
 
+import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.libs.Timer;
@@ -41,9 +42,6 @@ public abstract class AutoBaseClass {
 
     public boolean isRunning() {
         mAutoTimer.tick(); // we need to tick the timer and this is a good place to do it.
-        if(autoMode == AutoType.DriveAuto) {
-            DriveAuto.tick();
-        }
         return mIsRunning;
     }
 
@@ -102,10 +100,6 @@ public abstract class AutoBaseClass {
         return mDirection;
     }
 
-    public boolean autoPlace(){
-        return mAutoPlace;
-    }
-
     public void advanceStep() {
         mAutoTimer.stopTimerAndAdvanceStep();
     }
@@ -127,7 +121,7 @@ public abstract class AutoBaseClass {
         return mAutoTimer.timeExpired();
     }
 
-    public Alliance getAlliance() {
+    public Optional<Alliance> getAlliance() {
         return DriverStation.getAlliance();
     }
 

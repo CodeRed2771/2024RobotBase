@@ -19,17 +19,20 @@ import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
+import frc.robot.subsystems.auto.AutoBaseClass;
 
 public class PracticeRobot extends DefaultRobot {
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
 
+  private AutoBaseClass mAutoProgram = null;
+
   /* Be sure to register all subsystems after they are created */
-  protected ExampleSwerveDriveTrain drive;
-  protected IntakeSubsystem intake;
-  protected RollerLauncher launcher;
-  protected PracticeRobotNav nav;
+  public ExampleSwerveDriveTrain drive; // Changed from protected to public for autos
+  public IntakeSubsystem intake;
+  public RollerLauncher launcher;
+  public PracticeRobotNav nav;
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
@@ -92,6 +95,15 @@ public class PracticeRobot extends DefaultRobot {
     super.robotPeriodic();
 
     drive.updateOdometry(new Rotation2d(nav.getAngle()));
+  }
+
+  @Override
+  public void autonomousInit() {
+    
+  }
+  @Override
+  public void autonomousPeriodic() {
+    //blah
   }
 
   /*

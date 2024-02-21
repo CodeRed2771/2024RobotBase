@@ -2,16 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.drive;
+package frc.robot.subsystems.auto;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.DefaultRobot;
+import frc.robot.PracticeRobot;
 
 public class AutoShoot2L extends AutoBaseClass {
 
-  DefaultRobot myRobot;
+  PracticeRobot myRobot;
   private int drivenTicks = 0;
 
-  public AutoShoot2L(DefaultRobot robot) {
+  public AutoShoot2L(PracticeRobot robot) {
     super();
-    myRobot = this.robot;
+    myRobot = robot;
   }
   public void start() {
 		super.start();
@@ -42,7 +46,7 @@ public class AutoShoot2L extends AutoBaseClass {
               setTimerAndAdvanceStep(6000);
               break;
             case 5:
-              if(myRobot.drive.hasDriveCompleted)
+              // if(myRobot.drive.driveCompleted)
                 advanceStep();
               break;
             case 6:
@@ -51,11 +55,11 @@ public class AutoShoot2L extends AutoBaseClass {
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
-              if(myRobot.drive.hasDriveCompleted)
+              // if(myRobot.drive.driveCompleted)
                 advanceStep();
               break;
             case 8:
-              myRobot.fire();
+              myRobot.launcher.fire();
               break;
             case 9:
               myRobot.launcher.stop();
@@ -63,4 +67,5 @@ public class AutoShoot2L extends AutoBaseClass {
               break;
         }
       }
+    }
 }
