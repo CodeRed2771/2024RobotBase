@@ -24,7 +24,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public PracticeRobotNav() {
         super();
 
-        limelight = new Limelight(new Transform3d(14,6.25,4, new Rotation3d(0,Math.toRadians(-30),0)));
+        limelight = new Limelight(new Transform3d(-12,-6.25,2, new Rotation3d(0,Math.toRadians(-45),Math.toRadians(180))));
         limelight.setPipeline(LimelightPipeline.AprilTag);
         limelight.setLED(LimelightOn.Off);
         

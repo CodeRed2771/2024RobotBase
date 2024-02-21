@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -171,17 +172,24 @@ public class Limelight extends NavSubsystem{
                 pose = new Transform3d(getFieldPose(), targetPositions.ampPose);
                 break;
             case SPEAKER:
-                pose = new Transform3d(getFieldPose(), targetPositions.supwofferPose);
+                pose = new Transform3d(getFieldPose(), targetPositions.speakerPose);
                 break;
         }
         return pose;
     }
-
-    public Pose3d getPositionRedAlliance() {
-        Pose3d pose;
+    
+    public Pose3d getRawRedAllaince() {
+        Pose3d rawPose;
         double data[];
         data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-        pose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
+        rawPose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
+        return rawPose;
+    }
+    public Pose3d getPositionRedAlliance() {      
+        Pose3d rawPose = getRawRedAllaince();
+        Transform3d cameraOffset = cameraPose.inverse();
+        cameraOffset = new Transform3d(rawPose.getTranslation(), rawPose.getRotation()).plus(new Transform3d(cameraOffset.getTranslation(), cameraOffset.getRotation()));
+        Pose3d pose = new Pose3d(cameraOffset.getTranslation(), cameraOffset.getRotation());
         return pose;
     }
 
@@ -193,7 +201,7 @@ public class Limelight extends NavSubsystem{
                 targetPose = targetPositions.ampPose;
                 break;
             case SPEAKER:
-                targetPose = targetPositions.supwofferPose;
+                targetPose = targetPositions.speakerPose;
                 break;
             default:
                 targetPose = new Pose3d();
