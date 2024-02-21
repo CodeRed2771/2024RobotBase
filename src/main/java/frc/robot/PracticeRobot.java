@@ -160,15 +160,15 @@ public class PracticeRobot extends DefaultRobot {
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER.get());
+      launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SPEAKER.get());
+      launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getBButton()) {
       launcher.setSpeedBias(.15);
-      launcher.prime(LauncherSpeeds.AMP.get());
+      launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
-      launcher.prime(0);
+      launcher.prime(LauncherSpeeds.OFF);
     }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){

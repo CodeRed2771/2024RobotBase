@@ -14,6 +14,8 @@ import frc.robot.libs.BlinkinLED;
 import frc.robot.libs.BlinkinLED.LEDColors;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 /** Add your docs 
  * When load is command - run loader motor until note is in loader position
@@ -34,17 +36,27 @@ public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax intakeMotor;
     private BlinkinLED launcherLED;
 
+    private SparkPIDController upperPIDCtrl = null;
+    private SparkPIDController lowerPIDCtrl = null;
+    
+    private RelativeEncoder upperEncoder = null;
+    private RelativeEncoder lowerEncoder = null;
+
+    public double kP, kI, kD, kIz, kFF;
+    
+    public double kMaxOutput, kMinOutput, maxRPM;
+    
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
-    private double speedTolerance = 0.05;
+    private double speedTolerance = 100;
     private double motorSpeedBias = 0.06;
 
     private int notePresentThreshold = 1550; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
-        SUBWOOFER(0.3),
-        SPEAKER(0.45),
-        AMP(0.18),
+        SUBWOOFER(1900),
+        SAFE_ZONE(2200),
+        AMP(1000),
         OFF(0);
 
         private double speed;
@@ -60,6 +72,7 @@ public class RollerLauncher extends LauncherSubsystem {
   
     private static final int STOP_DELAY = 1;
     private int loaderStopDelay = 0;
+
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
 
@@ -74,6 +87,40 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);
 
         launcherLED = new BlinkinLED(wiring.get("launcher led"));
+
+        // Setup Shooter Motor Closed Loop Control
+        upperShooterMotor.restoreFactoryDefaults();
+        lowerShooterMotor.restoreFactoryDefaults();
+
+        upperPIDCtrl = upperShooterMotor.getPIDController();
+        lowerPIDCtrl = lowerShooterMotor.getPIDController();
+
+        upperEncoder = upperShooterMotor.getEncoder();
+        lowerEncoder = lowerShooterMotor.getEncoder();
+
+        kP = .003; 
+        kI = 0;
+        kD = 0.01; 
+        kIz = 0; 
+        kFF = 0.000150; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+        maxRPM = 5700;
+
+        // set PID coefficients
+        upperPIDCtrl.setP(kP);
+        upperPIDCtrl.setI(kI);
+        upperPIDCtrl.setD(kD);
+        upperPIDCtrl.setIZone(kIz);
+        upperPIDCtrl.setFF(kFF);
+        upperPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
+
+        lowerPIDCtrl.setP(kP);
+        lowerPIDCtrl.setI(kI);
+        lowerPIDCtrl.setD(kD);
+        lowerPIDCtrl.setIZone(kIz);
+        lowerPIDCtrl.setFF(kFF);
+        lowerPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
     }
 
     private void log(String text) {
@@ -135,18 +182,19 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderMotor.set(0);
     }
 
-    public void prime(double speed) {
+    public void prime(LauncherSpeeds commandSpeed) {
+        double speed = commandSpeed.get();
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
         upperSpeedCmd = -speed;
-        if (Math.abs(speed)>.01)
-            lowerSpeedCmd = (speed) + motorSpeedBias;
+        if (Math.abs(speed)>100)
+            lowerSpeedCmd = (speed) *(1+motorSpeedBias);
         else  
             lowerSpeedCmd = 0;
 
-        upperShooterMotor.set(upperSpeedCmd);
-        lowerShooterMotor.set(lowerSpeedCmd);
+        upperPIDCtrl.setReference(upperSpeedCmd, CANSparkMax.ControlType.kVelocity);
+        lowerPIDCtrl.setReference(lowerSpeedCmd, CANSparkMax.ControlType.kVelocity);
     }
 
     public void setSpeedBias(double newBias) {
@@ -154,10 +202,10 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public boolean isPrimed() {
-        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperShooterMotor.get()) < speedTolerance;
-        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerShooterMotor.get()) < speedTolerance;
+        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperEncoder.getVelocity()) < speedTolerance;
+        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerEncoder.getVelocity()) < speedTolerance;
 
-        return true;
+        return upperMotorTracking || lowerMotorTracking;
         // return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
     }
 
