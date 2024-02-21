@@ -30,9 +30,9 @@ public class PracticeRobot extends DefaultRobot {
 
   /* Be sure to register all subsystems after they are created */
   public ExampleSwerveDriveTrain drive; // Changed from protected to public for autos
-  public IntakeSubsystem intake;
-  public RollerLauncher launcher;
-  public PracticeRobotNav nav;
+  public IntakeSubsystem intake; // Changed from protected to public for autos
+  public RollerLauncher launcher; // Changed from protected to public for autos
+  public PracticeRobotNav nav; // Changed from protected to public for autos
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")

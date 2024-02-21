@@ -138,13 +138,13 @@ public class PracticeDriveTrain extends DriveSubsystem {
         moduleD.setDriveMaxVelocity(velocity);
     }
 
-    public boolean hasDriveCompleted(double inchesError) {
+    public boolean driveCompleted(double inchesError) {
         // just checking two of the modules to see if they are within the desired accuracy
         return moduleB.hasDriveCompleted(inchesError) && moduleA.hasDriveCompleted(inchesError);
     }
 
-    public boolean hasDriveCompleted() {
-        return hasDriveCompleted(0.25);
+    public boolean driveCompleted() {
+        return driveCompleted(0.25);
     }
 
     public void setTurnPower(double modAPower, double modBPower, double modCPower, double modDPower) {

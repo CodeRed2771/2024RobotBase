@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
 import frc.robot.PracticeRobot;
 
-public class AutoShoot2L extends AutoBaseClass {
+public class AutoShoot2 extends AutoBaseClass {
 
   PracticeRobot myRobot;
   private int drivenTicks = 0;
 
-  public AutoShoot2L(PracticeRobot robot) {
+  public AutoShoot2(PracticeRobot robot) {
     super();
     myRobot = robot;
   }
@@ -46,7 +46,7 @@ public class AutoShoot2L extends AutoBaseClass {
               setTimerAndAdvanceStep(6000);
               break;
             case 5:
-              // if(myRobot.drive.driveCompleted)
+              if(myRobot.drive.driveCompleted(0.5))
                 advanceStep();
               break;
             case 6:
@@ -55,7 +55,7 @@ public class AutoShoot2L extends AutoBaseClass {
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
-              // if(myRobot.drive.driveCompleted)
+              if(myRobot.drive.driveCompleted(0.5))
                 advanceStep();
               break;
             case 8:

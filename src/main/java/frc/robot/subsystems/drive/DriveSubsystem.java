@@ -19,6 +19,8 @@ public abstract class DriveSubsystem extends ArmedSubsystem {
 
   public void driveInches(double inches, double speedFactor, double turnAngle){}
 
+  public boolean driveCompleted(double inchesError){return true;}
+
   public void rotateDegrees(double degrees, double speedFactor){}
 
   public void strafeInches(double inches, double speedFactor){}
