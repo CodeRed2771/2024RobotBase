@@ -37,9 +37,9 @@ public class AutoShoot2L extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stop();
-              myRobot.drive.driveInches(40,0,0.7);
+              myRobot.drive.driveInches(114,0.7,0);
               myRobot.launcher.load(0.45);
-              setTimerAndAdvanceStep(2500);
+              setTimerAndAdvanceStep(6000);
               break;
             case 5:
               if(myRobot.drive.hasDriveCompleted)
@@ -47,18 +47,20 @@ public class AutoShoot2L extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.prime(0.3);
-              myRobot.drive.driveInches(40,180,0.7);
-              setTimerAndAdvanceStep(2500);
+              myRobot.drive.driveInches(-114,0.7,0);
+              setTimerAndAdvanceStep(6000);
               break;
             case 7:
+              if(myRobot.drive.hasDriveCompleted)
+                advanceStep();
               break;
             case 8:
               myRobot.fire();
               break;
             case 9:
-                myRobot.launcher.stop();
-                stop();
-                break;
+              myRobot.launcher.stop();
+              stop();
+              break;
         }
       }
 }
