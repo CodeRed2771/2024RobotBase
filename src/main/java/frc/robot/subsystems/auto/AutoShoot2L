@@ -37,19 +37,18 @@ public class AutoShoot2L extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stop();
-              myRobot.drive.driveSpeedControl(0.75,0,0,1);
+              myRobot.drive.driveInches(40,0,0.7);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(2500);
               break;
             case 5:
-              drivenTicks++;
-              if(myRobot.launcher.isLoaded)
+              if(myRobot.drive.hasDriveCompleted)
                 advanceStep();
               break;
             case 6:
               myRobot.launcher.prime(0.3);
-              myRobot.drive.driveSpeedControl(-0.75,0,0,1);
-              setTimerAndAdvanceStep(drivenTicks+150);
+              myRobot.drive.driveInches(40,180,0.7);
+              setTimerAndAdvanceStep(2500);
               break;
             case 7:
               break;
