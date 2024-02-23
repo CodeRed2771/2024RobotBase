@@ -54,10 +54,10 @@ public class RollerLauncher extends LauncherSubsystem {
     private int notePresentThreshold = 1550; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
-        SUBWOOFER(1900),
-        SAFE_ZONE(2200),
+        OFF(0),
         AMP(1000),
-        OFF(0);
+        SUBWOOFER(2200), // tested 2/22/24
+        SAFE_ZONE(2700); // untested
 
         private double speed;
         
@@ -92,17 +92,20 @@ public class RollerLauncher extends LauncherSubsystem {
         upperShooterMotor.restoreFactoryDefaults();
         lowerShooterMotor.restoreFactoryDefaults();
 
+        upperShooterMotor.setInverted(true);
+        lowerShooterMotor.setInverted(true);
+
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();
 
         upperEncoder = upperShooterMotor.getEncoder();
         lowerEncoder = lowerShooterMotor.getEncoder();
 
-        kP = .003; 
+        kP = .0001 ; 
         kI = 0;
         kD = 0.01; 
         kIz = 0; 
-        kFF = 0.000150; 
+        kFF = 0.000170; 
         kMaxOutput = 1; 
         kMinOutput = -1;
         maxRPM = 5700;
@@ -121,6 +124,14 @@ public class RollerLauncher extends LauncherSubsystem {
         lowerPIDCtrl.setIZone(kIz);
         lowerPIDCtrl.setFF(kFF);
         lowerPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
+
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
     }
 
     private void log(String text) {
@@ -239,6 +250,27 @@ public class RollerLauncher extends LauncherSubsystem {
         else
             launcherLED.set(LEDColors.RED);
 
-        SmartDashboard.putNumber("intake speed", lowerShooterMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter SetPoint", lowerSpeedCmd);
+                    // read PID coefficients from SmartDashboard
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { upperPIDCtrl.setP(p); lowerPIDCtrl.setP(p); kP = p; }
+        if((i != kI)) { upperPIDCtrl.setI(i); lowerPIDCtrl.setI(i); kI = i; }
+        if((d != kD)) { upperPIDCtrl.setD(d); lowerPIDCtrl.setD(d); kD = d; }
+        if((iz != kIz)) { upperPIDCtrl.setIZone(iz); lowerPIDCtrl.setIZone(iz);kIz = iz; }
+        if((ff != kFF)) { upperPIDCtrl.setFF(ff); lowerPIDCtrl.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) { 
+            upperPIDCtrl.setOutputRange(min, max);
+            lowerPIDCtrl.setOutputRange(min, max);  
+            kMinOutput = min; kMaxOutput = max; 
+        }
     }
 }
