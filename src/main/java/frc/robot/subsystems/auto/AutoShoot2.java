@@ -27,7 +27,7 @@ public class AutoShoot2 extends AutoBaseClass {
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
-              case 0:
+            case 0:
               myRobot.launcher.prime(0.3);
               setTimerAndAdvanceStep(750);
               break;
@@ -51,7 +51,7 @@ public class AutoShoot2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.prime(0.3);
-              myRobot.drive.driveInches(-114,0.7,0);
+              myRobot.drive.driveInches(-116,0.7,0);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
