@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
 import frc.robot.PracticeRobot;
 
-public class AutoShoot2 extends AutoBaseClass {
+public class AutoShoot2Center extends AutoBaseClass {
 
   PracticeRobot myRobot;
   private int drivenTicks = 0;
 
-  public AutoShoot2(PracticeRobot robot) {
+  public AutoShoot2Center(PracticeRobot robot) {
     super();
     myRobot = robot;
   }
@@ -23,7 +23,7 @@ public class AutoShoot2 extends AutoBaseClass {
   public void stop() {
     super.stop();
   }
-  public void tick() {
+  public void periodic() {
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
@@ -41,7 +41,7 @@ public class AutoShoot2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stop();
-              myRobot.drive.driveInches(114,0.7,0);
+              myRobot.drive.driveInches(36,0.7,0);//90
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(6000);
               break;
@@ -51,7 +51,7 @@ public class AutoShoot2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.prime(0.3);
-              myRobot.drive.driveInches(-116,0.7,0);
+              myRobot.drive.driveInches(0,0.7,0);//-92
               setTimerAndAdvanceStep(6000);
               break;
             case 7:

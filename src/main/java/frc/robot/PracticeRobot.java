@@ -5,9 +5,10 @@
 package frc.robot;
 
 import java.util.HashMap;
-
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
@@ -20,10 +21,17 @@ import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
+import frc.robot.subsystems.auto.AutoDoNothing;
+import frc.robot.subsystems.auto.AutoShoot2Center;
 
 public class PracticeRobot extends DefaultRobot {
 
+  SendableChooser<String> autoChooser;
+  SendableChooser<String> positionChooser;
+  String autoSelected;
   private static final String kDefaultAuto = "Default";
+  private final String autoShoot2 = "Auto Shoot 2 (Center)";
+  private final String autoDoNothing = "Auto Do Nothing";
   private static final String kCustomAuto = "My Auto";
 
   private AutoBaseClass mAutoProgram = null;
@@ -93,17 +101,30 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
-
+    autoSelected = (String) autoChooser.getSelected();
     drive.updateOdometry(new Rotation2d(nav.getAngle()));
   }
 
   @Override
   public void autonomousInit() {
-    
+    String selectedPos = positionChooser.getSelected();
+    SmartDashboard.putString("Position Chooser Selected", selectedPos);
+    char robotPosition = selectedPos.toCharArray()[0];
+    System.out.println("Robot position: " + robotPosition);
+
+    autoSelected = (String) autoChooser.getSelected();
+    SmartDashboard.putString("Auto Selected: ", autoSelected);
+
+    // mAutoProgram = new AutoDoNothing();
+    // mAutoProgram.start();
+
+    mAutoProgram = new AutoShoot2Center(this);
+    mAutoProgram.start();
   }
   @Override
   public void autonomousPeriodic() {
-    //blah
+    if (mAutoProgram.isRunning())
+      mAutoProgram.periodic();
   }
 
   /*

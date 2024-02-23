@@ -23,7 +23,7 @@ public abstract class AutoBaseClass {
         mAutoTimer = new Timer();
     }
 
-    public abstract void tick();
+    public abstract void periodic();
 
     public void start() {
         mAutoTimer.setStep(0);
