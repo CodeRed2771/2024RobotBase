@@ -7,6 +7,14 @@ package frc.robot.subsystems.auto;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
 import frc.robot.PracticeRobot;
+/*
+  This auto (that starts in the center position):
+  Primes & shoots 1 note,
+  Drives forward and picks up another note (Leaving the starting area in the process)
+  Drives back and aligns with subwoofer
+  Primes & shoots the other note
+ */
+
 
 public class AutoShoot2Center extends AutoBaseClass {
 

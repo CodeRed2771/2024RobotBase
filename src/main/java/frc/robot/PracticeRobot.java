@@ -26,7 +26,7 @@ import frc.robot.subsystems.auto.AutoShoot2Center;
 
 public class PracticeRobot extends DefaultRobot {
 
-  SendableChooser<String> autoChooser;
+  // SendableChooser<String> autoChooser;
   SendableChooser<String> positionChooser;
   String autoSelected;
   private static final String kDefaultAuto = "Default";
@@ -101,8 +101,9 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
-    autoSelected = (String) autoChooser.getSelected();
+    // autoSelected = (String) autoChooser.getSelected();
     drive.updateOdometry(new Rotation2d(nav.getAngle()));
+    setupAutoChoices();
   }
 
   @Override
@@ -112,7 +113,7 @@ public class PracticeRobot extends DefaultRobot {
     char robotPosition = selectedPos.toCharArray()[0];
     System.out.println("Robot position: " + robotPosition);
 
-    autoSelected = (String) autoChooser.getSelected();
+    // autoSelected = (String) autoChooser.getSelected();
     SmartDashboard.putString("Auto Selected: ", autoSelected);
 
     // mAutoProgram = new AutoDoNothing();
@@ -126,6 +127,32 @@ public class PracticeRobot extends DefaultRobot {
     if (mAutoProgram.isRunning())
       mAutoProgram.periodic();
   }
+
+  private void setupAutoChoices() {
+    // Position Chooser
+    positionChooser = new SendableChooser<String>();
+    positionChooser.addOption("Left", "L");
+    positionChooser.setDefaultOption("Center", "C");
+    positionChooser.addOption("Right", "R");
+    SmartDashboard.putData("Position", positionChooser);
+
+    // autoChooser = new SendableChooser<String>();
+    // // autoChooser.addOption(autoCalibrator, autoCalibrator);
+    // //autoChooser.addOption(autoWheelAlign, autoWheelAlign);
+    // // autoChooser.addOption(autoAlign, autoAlign);
+    // //autoChooser.addOption(ballPickUp, ballPickUp);
+    // autoChooser.addOption(AutoCommunity, AutoCommunity);
+    // autoChooser.addOption(AutoCPlace1, AutoCPlace1);
+    // // autoChooser.addOption(AutoCPlace2Wings, AutoCPlace2Wings);
+    // autoChooser.addOption(AutoCP2RailRider, AutoCP2RailRider);
+    // autoChooser.setDefaultOption(AutoCP1CB, AutoCP1CB);
+    // autoChooser.addOption(AutoC_CB, AutoC_CB);
+    // // autoChooser.addOption(AutoCPlace3VROOOM, AutoCPlace3VROOOM);
+    
+ 
+    // SmartDashboard.putData("Auto Chose:", autoChooser);
+
+}
 
   /*
    * On program start, initialize any device settings or internal states of the
