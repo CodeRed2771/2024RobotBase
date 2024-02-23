@@ -70,8 +70,9 @@ public class RollerLauncher extends LauncherSubsystem {
         }
     }
   
-    private static final int STOP_DELAY = 1;
+    private static final int STOP_DELAY = 100;
     private int loaderStopDelay = 0;
+    private int loaderFireStopDelay = 0;
 
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
@@ -155,6 +156,10 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor.set(-power);
     }
 
+    public void stopShooter() {
+        prime(LauncherSpeeds.OFF);
+    }
+
     public boolean isLoaded() {
         // value goes down as object gets closer to sensor
         SmartDashboard.putNumber("Note Sensor", loadSensor.getAverageValue());
@@ -170,6 +175,7 @@ public class RollerLauncher extends LauncherSubsystem {
         if (isPrimed())
             {
             loadState = LoaderState.Firing;
+            loaderFireStopDelay = STOP_DELAY;
 
             load(1); // run the loader which will put note into shooter
             }  
@@ -230,7 +236,7 @@ public class RollerLauncher extends LauncherSubsystem {
     @Override
     public void periodic() {
         if (loadState == LoaderState.Stopping) {
-            if (loaderStopDelay == 0) {
+            if (loaderStopDelay <= 0) {
                 intakeMotor.set(0);
                 loaderMotor.set(0);
                 loadState = LoaderState.Stopped;
@@ -238,6 +244,15 @@ public class RollerLauncher extends LauncherSubsystem {
                 loaderStopDelay--;
             }
         }
+
+        if (loaderFireStopDelay == 1) {
+            stopShooter();
+            intakeMotor.set(0);
+            loaderMotor.set(0);
+            loaderFireStopDelay--;
+        } else 
+            if (loaderFireStopDelay > 0)
+            loaderFireStopDelay--;
 
         if(!isPrimed())
             launcherLED.blink(0.5);
@@ -250,6 +265,15 @@ public class RollerLauncher extends LauncherSubsystem {
         else
             launcherLED.set(LEDColors.RED);
 
+        SmartDashboard.putNumber("FIRE STOP DELAY", loaderFireStopDelay);
+        if (loadState == LoaderState.Firing) 
+            SmartDashboard.putString("LOADER STATE", "FIRING");
+        else if (loadState == LoaderState.Stopped) 
+            SmartDashboard.putString("LOADER STATE", "STOPPED");
+        else 
+            SmartDashboard.putString("LOADER STATE","SOMETHING ELSE");
+        
+        
         SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter SetPoint", lowerSpeedCmd);
                     // read PID coefficients from SmartDashboard
