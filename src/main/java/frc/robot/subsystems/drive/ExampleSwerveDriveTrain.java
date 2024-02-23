@@ -174,4 +174,57 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backLeft.resetEncoders();
     m_frontRight.resetEncoders();
   }
+
+  public double getDriveEnc() {
+    return (m_frontLeft.getDriveEnc() + m_backRight.getDriveEnc() + m_backLeft.getDriveEnc() + m_frontRight.getDriveEnc()) / 4;
+}
+
+  public void addToAllDrivePositions(double ticks) {
+    setDrivePosition(m_frontLeft.getDriveEnc() + ticks,
+            m_backRight.getDriveEnc() + ticks,
+            m_backLeft.getDriveEnc() + ticks,
+            m_frontRight.getDriveEnc() + ticks);
+  }
+
+  @Override
+    public void driveInches(double inches, double speedFactor){
+        driveInches(inches, speedFactor, 0);
+    }
+
+    private double inchesToTicks(double inches) {
+        return (double) (inches * TICKS_PER_INCH);
+    }
+
+    private double degreesToTicks(double degrees) {
+        return (double) ((degrees / 4.42) * TICKS_PER_INCH);
+    }
+
+    @Override
+    public void driveInches(double inches, double speedFactor, double turnAngle){
+        setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+        setAllTurnOrientation(angleToPosition(turnAngle),true);
+
+        //waiting for motors to rotate to position
+        try{
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        addToAllDrivePositions(inchesToTicks(inches));
+    }
+
+    @Override
+    public void rotateDegrees(double degrees, double speedFactor){
+        setTurnOrientation(angleToPosition(-133.6677), angleToPosition(46.3322), angleToPosition(133.6677), angleToPosition(-46.3322), true);
+        
+        //wait for turn
+        try{
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        addToAllDrivePositions(degreesToTicks(-degrees));
+    }
 }

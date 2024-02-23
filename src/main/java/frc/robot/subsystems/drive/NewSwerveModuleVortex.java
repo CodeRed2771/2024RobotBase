@@ -156,4 +156,8 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_driveEncoder.getPosition();
     m_driveEncoder.getVelocity();
   }
+
+  public double getDriveEnc() {
+		return m_driveEncoder.getPosition();
+	}
 }
