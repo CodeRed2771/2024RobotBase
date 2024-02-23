@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
 import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
@@ -20,6 +21,7 @@ public class PracticeRobotNav extends NavSubsystem {
     Translation2d position = new Translation2d();
     private NavXGyro gyro;
     private Limelight limelight;
+    double yawRotationNudge;
 
     public PracticeRobotNav() {
         super();
@@ -56,15 +58,24 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     @Override
     public void periodic() {
-        Pose3d currentPosition = limelight.getPositionRedAlliance();
+        Pose3d currentPosition = limelight.getPositioninField();
         // limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         // updateTestPoint(currentPosition);
 
         Transform3d currentTarget = limelight.getRedTargetOffset(Target.AMP);
         updateTestPoint(new Pose3d(currentTarget.getTranslation(), currentTarget.getRotation()));
+        yawRotationNudge = (currentTarget.getRotation().getZ()/180);   
+        SmartDashboard.putNumber("Yaw Rotation Nudge", yawRotationNudge);
+        SmartDashboard.putBoolean("Sees April Tag", isSeeingAprilTags());     
     }
 
+    public double yawRotationNudge() {
+        return yawRotationNudge;
+    }
+    public boolean isSeeingAprilTags() {
+        return limelight.seesSomething() && limelight.getPipeline() == LimelightPipeline.AprilTag;
+    } 
     @Override
     public Translation2d getPosition() {
         return position;

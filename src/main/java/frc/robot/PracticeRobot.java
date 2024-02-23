@@ -132,7 +132,7 @@ public class PracticeRobot extends DefaultRobot {
     nav.reset();
     drive.reset(); // sets encoders based on absolute encoder positions
   }
-
+  boolean ampNudge = false;
   protected void driveAuxJoystick(Gamepad gp){
     // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
     // if(gp.getDPadRight()) fieldCentricDriveMode(false);
@@ -141,6 +141,12 @@ public class PracticeRobot extends DefaultRobot {
     if(gp.getDPadUp()) driveSpeedGain = 0.5;
 
     if(gp.getXButton()) nav.zeroYaw();
+
+    if(gp.getAButton()) {
+      ampNudge = true;
+    } else {
+      ampNudge = false;
+    }
   }
 
   @Override
@@ -149,9 +155,14 @@ public class PracticeRobot extends DefaultRobot {
   protected double driveSpeedGain = 0.5;
   protected double rotateSpeedGain = 0.5;
   /* By default just pass commands to the drive system */
+
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
+    if(ampNudge && nav.isSeeingAprilTags()) {
+      drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, (rotate*rotateSpeedGain) + nav.yawRotationNudge(),getPeriod());
+    } else {
+      drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
+    }
   }
 
   private double speed = 0;

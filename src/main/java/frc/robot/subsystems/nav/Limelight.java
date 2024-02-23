@@ -4,18 +4,20 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
+// import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
+// import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Limelight extends NavSubsystem{
     private final double METERS_TO_INCHES = 39.3701;
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
 
-    private Pose3d currentPose;
+    // private Pose3d currentPose;
     private Transform3d  cameraPose;
     private Pose3d robotRelativeToAprilTag;
     
@@ -185,8 +187,22 @@ public class Limelight extends NavSubsystem{
         rawPose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
         return rawPose;
     }
-    public Pose3d getPositionRedAlliance() {      
-        Pose3d rawPose = getRawRedAllaince();
+
+    public Pose3d getRawBlueAllaince() {
+        Pose3d rawPose;
+        double data[];
+        data = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        rawPose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
+        return rawPose;
+    }
+
+    public Pose3d getPositioninField() { 
+        Pose3d rawPose; 
+        if(DriverStation.getAlliance().get() == Alliance.Red){
+            rawPose = getRawRedAllaince();
+        } else {
+            rawPose = getRawBlueAllaince();
+        }
         Transform3d cameraOffset = cameraPose.inverse();
         cameraOffset = new Transform3d(rawPose.getTranslation(), rawPose.getRotation()).plus(new Transform3d(cameraOffset.getTranslation(), cameraOffset.getRotation()));
         Pose3d pose = new Pose3d(cameraOffset.getTranslation(), cameraOffset.getRotation());
@@ -207,7 +223,7 @@ public class Limelight extends NavSubsystem{
                 targetPose = new Pose3d();
                 break;
         }
-        return new Transform3d(getPositionRedAlliance(), targetPose);
+        return new Transform3d(getPositioninField(), targetPose);
     }
 
     
@@ -218,5 +234,8 @@ public class Limelight extends NavSubsystem{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
     }
+
+    // Goes in SpeedDriveByJoystick function in Practice Robot (@Override)
+    // check what data gets 
     
 }
