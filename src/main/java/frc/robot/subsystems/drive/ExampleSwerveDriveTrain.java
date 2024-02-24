@@ -239,11 +239,12 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public void setDriveMMVelocity(int velocity) {
-    moduleA.setDriveMaxVelocity(velocity);
-    moduleB.setDriveMaxVelocity(velocity);
-    moduleC.setDriveMaxVelocity(velocity);
-    moduleD.setDriveMaxVelocity(velocity);
+    m_frontLeft.setDriveMaxVelocity(velocity);
+    m_frontRight.setDriveMaxVelocity(velocity);
+    m_backLeft.setDriveMaxVelocity(velocity);
+    m_backRight.setDriveMaxVelocity(velocity);
   }
+
   private double angleToPosition(double angle) {
     if (angle < 0) {
         return .5d + ((180d - Math.abs(angle)) / 360d);
@@ -259,23 +260,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private void setTurnOrientation(double modAPosition, double modBPosition, double modCPosition,
           double modDPosition, boolean optimizeTurn) {
 
-      // position is a value from 0 to 1 that indicates
-      // where in the rotation of the module the wheel should be set.
-      // e.g. a value of .5 indicates a half turn from the zero position
-
-      m_frontLeft.setTurnOrientation(modAPosition, optimizeTurn);
-      m_frontRight.setTurnOrientation(modBPosition, optimizeTurn);
-      m_backLeft.setTurnOrientation(modCPosition, optimizeTurn);
-      m_backRight.setTurnOrientation(modDPosition, optimizeTurn);
-
-      SmartDashboard.putNumber("A pos call", round(modAPosition,3));
-      SmartDashboard.putNumber("B pos call", round(modBPosition,3));
-      SmartDashboard.putNumber("C pos call", round(modCPosition,3));
-      SmartDashboard.putNumber("D pos call", round(modDPosition,3));
-      // SmartDashboard.putNumber("Mod A ABS Rotations", moduleA.getABSRotations());
-      // SmartDashboard.putNumber("Mod B ABS Rotations", moduleB.getABSRotations());
-      // SmartDashboard.putNumber("Mod C ABS Rotations", moduleC.getABSRotations());
-      // SmartDashboard.putNumber("Mod D ABS Rotations", moduleD.getABSRotations());
+    m_frontLeft.setTurnOrientation(modAPosition, optimizeTurn);
+    m_frontRight.setTurnOrientation(modBPosition, optimizeTurn);
+    m_backLeft.setTurnOrientation(modCPosition, optimizeTurn);
+    m_backRight.setTurnOrientation(modDPosition, optimizeTurn);
   }
 
   private static Double round(Double val, int scale) {

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.drive;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -47,6 +48,8 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
   private static final double kModuleMaxAngularAcceleration = 1000 * 5 * (2 * Math.PI); // radians per second squared
 
+  private double currentDriveSetpoint = 0; // used for simple auto driving
+
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
     super();
@@ -69,7 +72,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.setIdleMode(IdleMode.kBrake);
 
     /************ SET PID VALUES HERE ******************/
-    m_drivePIDController = new SparkPIDController(m_driveMotor);
+    m_drivePIDController = m_driveMotor.getPIDController();
     m_turningPIDController = new ProfiledPIDController(5.0, 0.0, 0.5,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
     m_turningPIDController.setIntegratorRange(-0.5,0.5);
@@ -171,8 +174,13 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   public void setDriveMaxAccel(final int accel) {
     m_drivePIDController.setSmartMotionMaxAccel(accel, 0);
   }
+  
   public void setDriveMaxVelocity(final int velocity) {
     m_drivePIDController.setSmartMotionMaxVelocity(velocity, 0);
   }
 
+  public void setDrivePIDToSetPoint(final double setpoint) {
+    currentDriveSetpoint = setpoint;
+    m_drivePIDController.setReference(setpoint, ControlType.kSmartMotion);
+  }
 }
