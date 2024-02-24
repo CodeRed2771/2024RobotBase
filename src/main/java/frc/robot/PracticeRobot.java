@@ -31,6 +31,9 @@ public class PracticeRobot extends DefaultRobot {
   protected RollerLauncher launcher;
   protected PracticeRobotNav nav;
 
+  protected double driveSpeedGain = 1.0;
+  protected double rotateSpeedGain = 0.9;
+
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public PracticeRobot() {
@@ -120,12 +123,10 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
-    driveAuxJoystick(gamepad1);
+    adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
-
-
 
   @Override
   public void restoreRobotToDefaultState() {
@@ -133,12 +134,20 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
   }
 
-  protected void driveAuxJoystick(Gamepad gp){
+  protected void adjustDriveSpeed(Gamepad gp){
     // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
     // if(gp.getDPadRight()) fieldCentricDriveMode(false);
 
-    if(gp.getDPadDown()) driveSpeedGain = 0.25;
-    if(gp.getDPadUp()) driveSpeedGain = 0.7;
+    if(gp.getRightBumper()) {
+      driveSpeedGain = 0.25;
+      rotateSpeedGain = 0.25;
+    } else if (gp.getLeftBumper()) {
+      driveSpeedGain = 0.7;
+      rotateSpeedGain = 0.7;
+    } else {
+      driveSpeedGain = 1.0;
+      rotateSpeedGain = 1.0;
+    }
 
     if(gp.getXButton()) nav.zeroYaw();
   }
@@ -146,8 +155,6 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public double getAngle(){return nav.getAngle();}
 
-  protected double driveSpeedGain = 0.7;
-  protected double rotateSpeedGain = 0.9;
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
