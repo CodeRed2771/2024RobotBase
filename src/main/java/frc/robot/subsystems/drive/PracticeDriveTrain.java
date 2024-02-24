@@ -220,9 +220,9 @@ public class PracticeDriveTrain extends DriveSubsystem {
                 moduleD.getDriveEnc() + ((moduleD.modulesReversed() ? -1 : 1) * ticks));
     }
 
-    public double getDriveEnc() {
-        return (moduleA.getDriveEnc() + moduleB.getDriveEnc() + moduleC.getDriveEnc() + moduleD.getDriveEnc()) / 4;
-    }
+    // public double getDriveEnc() {
+    //     return (moduleA.getDriveEnc() + moduleB.getDriveEnc() + moduleC.getDriveEnc() + moduleD.getDriveEnc()) / 4;
+    // }
 
     public void autoSetRot(double rot) {
         swerveDrive(0, 0, rot);

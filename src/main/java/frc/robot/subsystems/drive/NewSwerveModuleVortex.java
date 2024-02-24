@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkRelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -23,6 +25,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class NewSwerveModuleVortex extends SwerveModuleBase {
   private CANSparkFlex m_driveMotor;
   private CANSparkMax m_turningMotor;
+
+  private SparkPIDController m_drivePIDController;
+
   /**
    * A RelativeEncoder object is constructed using the GetEncoder() method on an existing CANSparkMax object. The
    * assumed encoder type is the hall effect, or a sensor type and counts per revolution can be passed in to specify a
@@ -64,7 +69,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.setIdleMode(IdleMode.kBrake);
 
     /************ SET PID VALUES HERE ******************/
-    m_drivePIDController = new PIDController(0 , 0.0, 0);
+    m_drivePIDController = new SparkPIDController(m_driveMotor);
     m_turningPIDController = new ProfiledPIDController(5.0, 0.0, 0.5,
         new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
     m_turningPIDController.setIntegratorRange(-0.5,0.5);
@@ -160,4 +165,14 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   public double getDriveEnc() {
 		return m_driveEncoder.getPosition();
 	}
+
+  // auto related routines
+  
+  public void setDriveMaxAccel(final int accel) {
+    m_drivePIDController.setSmartMotionMaxAccel(accel, 0);
+  }
+  public void setDriveMaxVelocity(final int velocity) {
+    m_drivePIDController.setSmartMotionMaxVelocity(velocity, 0);
+  }
+
 }

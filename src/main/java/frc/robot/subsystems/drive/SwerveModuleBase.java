@@ -15,7 +15,6 @@ import frc.robot.subsystems.ArmedSubsystem;
 public abstract class SwerveModuleBase extends ArmedSubsystem {
 
   // Gains are zero'd in abstract class. Update in particular Swerve constructor
-  protected PIDController m_drivePIDController;
   protected ProfiledPIDController m_turningPIDController;
   protected SimpleMotorFeedforward m_driveFeedforward;
   protected SimpleMotorFeedforward m_turnFeedforward;

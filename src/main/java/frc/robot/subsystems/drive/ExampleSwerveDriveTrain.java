@@ -39,6 +39,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   private SwerveDriveOdometry m_odometry;
 
+  private final double TICKS_PER_INCH = .511; //estimated -- needs to be calculated
+
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
     super();
 
@@ -175,9 +177,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRight.resetEncoders();
   }
 
-  public double getDriveEnc() {
-    return (m_frontLeft.getDriveEnc() + m_backRight.getDriveEnc() + m_backLeft.getDriveEnc() + m_frontRight.getDriveEnc()) / 4;
-}
+  // dvv commented out b/c it doesn't make sense and isn't used. 2-24-24
+  // public double getDriveEnc() {
+  //   return (m_frontLeft.getDriveEnc() + m_backRight.getDriveEnc() + m_backLeft.getDriveEnc() + m_frontRight.getDriveEnc()) / 4;
+  // }
 
   public void addToAllDrivePositions(double ticks) {
     setDrivePosition(m_frontLeft.getDriveEnc() + ticks,
@@ -187,44 +190,95 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   @Override
-    public void driveInches(double inches, double speedFactor){
-        driveInches(inches, speedFactor, 0);
+  public void driveInches(double inches, double speedFactor){
+      driveInches(inches, speedFactor, 0);
+  }
+
+  private double inchesToTicks(double inches) {
+      return (double) (inches * TICKS_PER_INCH);
+  }
+
+  private double degreesToTicks(double degrees) {
+      return (double) ((degrees / 4.42) * TICKS_PER_INCH);
+  }
+
+  @Override
+  public void driveInches(double inches, double speedFactor, double turnAngle){
+      setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+      setAllTurnOrientation(angleToPosition(turnAngle),true);
+
+      //waiting for motors to rotate to position
+      try{
+          Thread.sleep(150);
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+
+      addToAllDrivePositions(inchesToTicks(inches));
+  }
+
+  @Override
+  public void rotateDegrees(double degrees, double speedFactor){
+      setTurnOrientation(angleToPosition(-133.6677), angleToPosition(46.3322), angleToPosition(133.6677), angleToPosition(-46.3322), true);
+      
+      //wait for turn
+      try{
+          Thread.sleep(100);
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+
+      addToAllDrivePositions(degreesToTicks(-degrees));
+  }
+
+  private void setDrivePosition(double modAPosition, double modBPosition, double modCPosition, double modDPosition) {
+      m_frontLeft.setDrivePIDToSetPoint(modAPosition);
+      m_frontRight.setDrivePIDToSetPoint(modBPosition);
+      m_backLeft.setDrivePIDToSetPoint(modCPosition);
+      m_backRight.setDrivePIDToSetPoint(modDPosition);
+  }
+
+  public void setDriveMMVelocity(int velocity) {
+    moduleA.setDriveMaxVelocity(velocity);
+    moduleB.setDriveMaxVelocity(velocity);
+    moduleC.setDriveMaxVelocity(velocity);
+    moduleD.setDriveMaxVelocity(velocity);
+  }
+  private double angleToPosition(double angle) {
+    if (angle < 0) {
+        return .5d + ((180d - Math.abs(angle)) / 360d);
+    } else {
+        return angle / 360d;
     }
+  }
 
-    private double inchesToTicks(double inches) {
-        return (double) (inches * TICKS_PER_INCH);
-    }
+  private void setAllTurnOrientation(double turnPosition, boolean optimizeTurn) {
+    setTurnOrientation(turnPosition, turnPosition, turnPosition, turnPosition, optimizeTurn);
+  }
 
-    private double degreesToTicks(double degrees) {
-        return (double) ((degrees / 4.42) * TICKS_PER_INCH);
-    }
+  private void setTurnOrientation(double modAPosition, double modBPosition, double modCPosition,
+          double modDPosition, boolean optimizeTurn) {
 
-    @Override
-    public void driveInches(double inches, double speedFactor, double turnAngle){
-        setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
-        setAllTurnOrientation(angleToPosition(turnAngle),true);
+      // position is a value from 0 to 1 that indicates
+      // where in the rotation of the module the wheel should be set.
+      // e.g. a value of .5 indicates a half turn from the zero position
 
-        //waiting for motors to rotate to position
-        try{
-            Thread.sleep(150);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+      m_frontLeft.setTurnOrientation(modAPosition, optimizeTurn);
+      m_frontRight.setTurnOrientation(modBPosition, optimizeTurn);
+      m_backLeft.setTurnOrientation(modCPosition, optimizeTurn);
+      m_backRight.setTurnOrientation(modDPosition, optimizeTurn);
 
-        addToAllDrivePositions(inchesToTicks(inches));
-    }
+      SmartDashboard.putNumber("A pos call", round(modAPosition,3));
+      SmartDashboard.putNumber("B pos call", round(modBPosition,3));
+      SmartDashboard.putNumber("C pos call", round(modCPosition,3));
+      SmartDashboard.putNumber("D pos call", round(modDPosition,3));
+      // SmartDashboard.putNumber("Mod A ABS Rotations", moduleA.getABSRotations());
+      // SmartDashboard.putNumber("Mod B ABS Rotations", moduleB.getABSRotations());
+      // SmartDashboard.putNumber("Mod C ABS Rotations", moduleC.getABSRotations());
+      // SmartDashboard.putNumber("Mod D ABS Rotations", moduleD.getABSRotations());
+  }
 
-    @Override
-    public void rotateDegrees(double degrees, double speedFactor){
-        setTurnOrientation(angleToPosition(-133.6677), angleToPosition(46.3322), angleToPosition(133.6677), angleToPosition(-46.3322), true);
-        
-        //wait for turn
-        try{
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        addToAllDrivePositions(degreesToTicks(-degrees));
-    }
+  private static Double round(Double val, int scale) {
+    return new BigDecimal(val.toString()).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+  }
 }
