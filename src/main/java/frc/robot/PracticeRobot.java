@@ -186,11 +186,9 @@ public class PracticeRobot extends DefaultRobot {
     }
     else if (gp.getDPadLeft()) {
       launcher.unload();
-    } else if(gp.getDPadDown() || gp.getDPadUp()) {
+    } else if(gp.getDPadDown()) {
       launcher.stopLoader();
-    }
-
-    if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
+    } else if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
       launcher.stopLoader();
     }
 
