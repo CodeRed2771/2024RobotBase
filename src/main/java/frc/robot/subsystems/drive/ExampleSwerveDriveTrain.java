@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
@@ -126,6 +127,26 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public void driveFixedOrientation(double xSpeed, double ySpeed)
+  {
+    Rotation2d ang = new Rotation2d(xSpeed, ySpeed);
+    Translation2d Speed = new Translation2d(xSpeed,ySpeed);
+    SwerveModuleState desiredState = new SwerveModuleState(Speed.getNorm(), ang);
+
+    m_frontLeft.setDesiredState(desiredState);
+    m_frontRight.setDesiredState(desiredState);
+    m_backLeft.setDesiredState(desiredState);
+    m_backRight.setDesiredState(desiredState);
+
+  }
+
+  public void driveParkControl(){
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+    m_backLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
+    m_backRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+  }
+
   @Override
   public void periodic() {
 
@@ -166,6 +187,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setTurnOffset(BR);
     m_backLeft.setTurnOffset(BL);
     m_frontRight.setTurnOffset(FR);
+    resetEncoders();
   }
 
   private void resetEncoders(){

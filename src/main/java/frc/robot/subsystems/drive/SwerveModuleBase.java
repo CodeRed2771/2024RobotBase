@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -14,25 +11,17 @@ import frc.robot.subsystems.ArmedSubsystem;
 
 public abstract class SwerveModuleBase extends ArmedSubsystem {
 
-  // Gains are zero'd in abstract class. Update in particular Swerve constructor
-  protected PIDController m_drivePIDController;
-  protected ProfiledPIDController m_turningPIDController;
-  protected SimpleMotorFeedforward m_driveFeedforward;
-  protected SimpleMotorFeedforward m_turnFeedforward;
-
   protected SwerveModuleBase() {
     super();
   }
 
+  protected double curDriveSpeed = 0.0;
+  protected double curDriveDistance = 0.0;
+  protected double curTurnAngle = 0.0;
+  /* UpdateSwerveState reads all of the sensors and stores the values into the current state readings. */
+  public abstract void updateSwerveState();
   public abstract SwerveModulePosition getPosition();
-
   public abstract Rotation2d getRotation();
-
-  /**
-   * Returns the current state of the module.
-   *
-   * @return The current state of the module.
-   */
   public abstract SwerveModuleState getState();
 
   /**
@@ -42,6 +31,8 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
 
+    logState(desiredState);
+    
     var swerveState = getState();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState targetState = SwerveModuleState.optimize(desiredState, swerveState.angle);
@@ -52,25 +43,10 @@ public abstract class SwerveModuleBase extends ArmedSubsystem {
     // results in smoother
     // driving.
     targetState.speedMetersPerSecond *= Math.pow(targetState.angle.minus(swerveState.angle).getCos(),1);
-    reportCmd(targetState);
 
-    // Calculate the drive output from the drive PID controller.
-    final double driveOutput = m_drivePIDController.calculate(swerveState.speedMetersPerSecond,
-        targetState.speedMetersPerSecond);
-
-    final double driveFeedforward = m_driveFeedforward.calculate(targetState.speedMetersPerSecond);
-
-    // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = m_turningPIDController.calculate(swerveState.angle.getRadians(),
-        targetState.angle.getRadians());
-
-    final double turnFeedforward = m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-
-    applySwerveModuleState(driveOutput + driveFeedforward, turnOutput + turnFeedforward);
+    commandSwerveState(targetState);
   }
 
-  protected void reportCmd(SwerveModuleState targetState){}
-
-  protected abstract void applySwerveModuleState(double driveCmd, double turnCmd);
-
+  protected abstract void commandSwerveState(SwerveModuleState targetState);
+  protected void logState(SwerveModuleState cmd){}
 }
