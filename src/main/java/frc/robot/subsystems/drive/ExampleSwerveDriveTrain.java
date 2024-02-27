@@ -155,6 +155,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
       if (Calibration.shouldCalibrateSwerve()) {
         double[] pos = getAllAbsoluteTurnOrientations();
         Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
+        ApplyCalibration();
       }
 
       // see if we want to reset the calibration to whatever is in the program
@@ -170,12 +171,16 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     }
     doEncoderAction = SmartDashboard.getBoolean("Use Offset Encoder", false);
     if (doEncoderAction){
-      setTurnOffsets( Calibration.getTurnZeroPos('A'), 
-                      Calibration.getTurnZeroPos('B'), 
-                      Calibration.getTurnZeroPos('C'),
-                      Calibration.getTurnZeroPos('D'));
+      ApplyCalibration();
       SmartDashboard.putBoolean("Use Offset Encoder", false);
     }
+  }
+
+  public void ApplyCalibration(){
+    setTurnOffsets( Calibration.getTurnZeroPos('A'), 
+                    Calibration.getTurnZeroPos('B'), 
+                    Calibration.getTurnZeroPos('C'),
+                    Calibration.getTurnZeroPos('D'));
   }
 
   public double[] getAllAbsoluteTurnOrientations() {
