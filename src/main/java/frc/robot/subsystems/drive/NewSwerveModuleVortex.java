@@ -316,6 +316,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_driveEncoder.setPosition(0);
     m_driveEncoder.getPosition();
     m_driveEncoder.getVelocity();
+    turnAbsEncoder.reset();
     m_turnEncoder.setPosition(turnAbsEncoder.get());
   }
 }
