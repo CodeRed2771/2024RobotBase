@@ -1,9 +1,8 @@
 package frc.robot.subsystems.drive;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,10 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
-import frc.robot.Wiring;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
@@ -107,6 +104,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   public void updateOdometry(Rotation2d robot_orentiation) {
     m_odometry.update(robot_orentiation, new SwerveModulePosition[] { // Maintain order from m_odometry creation
         m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
+  }
+
+  public Pose2d getOdometryPosition(){
+    return m_odometry.getPoseMeters();
   }
 
   /**

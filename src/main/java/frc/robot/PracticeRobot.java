@@ -5,8 +5,9 @@
 package frc.robot;
 
 import java.util.HashMap;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
@@ -24,6 +25,7 @@ public class PracticeRobot extends DefaultRobot {
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final double kMetersToInches = 100.0/2.54;
 
   /* Be sure to register all subsystems after they are created */
   protected ExampleSwerveDriveTrain drive;
@@ -95,6 +97,10 @@ public class PracticeRobot extends DefaultRobot {
     super.robotPeriodic();
 
     drive.updateOdometry(new Rotation2d(nav.getAngle()));
+    Pose2d pos = drive.getOdometryPosition();
+    SmartDashboard.putNumber("Fx",pos.getX()*kMetersToInches);
+    SmartDashboard.putNumber("Fy",pos.getY()*kMetersToInches);
+    SmartDashboard.putNumber("Fa",pos.getRotation().getRotations());
   }
 
   /*
