@@ -166,7 +166,7 @@ public class Calibration {
         if (isPracticeBot())
             return .00115;  // zuni
         else    
-            return 0.000190;  // competition was .3// was .00019
+            return 0;  // competition was .3// was .00019
     }
     public static double getDriveI() { 
         if (isPracticeBot())
@@ -200,16 +200,10 @@ public class Calibration {
     public final static double DT_ROT_PID_IZONE = 18;
 	
     public final static int getDT_MM_ACCEL() {
-        if(isPracticeBot())
-            return(8000);
-        else
-            return(5000);
+        return(5);
     }
 	public final static int getDT_MM_VELOCITY() {
-        if(isPracticeBot())
-            return(35000);
-        else
-            return(7000);
+        return(8);
     }
 
 	// COMPETIION AND PRACTICE

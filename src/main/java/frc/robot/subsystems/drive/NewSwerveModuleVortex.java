@@ -297,6 +297,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
       SmartDashboard.putNumber(this.getName() + " Vel", m_driveEncoder.getVelocity());
       SmartDashboard.putNumber(this.getName() + " Pos", m_driveEncoder.getPosition());
       SmartDashboard.putNumber(this.getName() + " D Output", m_driveMotor.getAppliedOutput());
+      SmartDashboard.putNumber(this.getName() + " D Setpoint", getDriveSetPoint());
     }
   }
 
@@ -351,5 +352,9 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   public void setDrivePIDToSetPoint(final double setpoint) {
     currentDriveSetpoint = setpoint;
     m_drivePIDController.setReference(setpoint, ControlType.kSmartMotion);
+  }
+
+  public double getDriveSetPoint() {
+    return currentDriveSetpoint;
   }
 }

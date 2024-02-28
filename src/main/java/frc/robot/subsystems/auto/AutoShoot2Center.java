@@ -49,7 +49,7 @@ public class AutoShoot2Center extends AutoBaseClass {
             //   break;
             case 0:
               // myRobot.launcher.stop();
-              myRobot.drive.driveInches(36,0.7,0);//90
+              myRobot.drive.driveInches(10,0.2,0);//90
               // myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;

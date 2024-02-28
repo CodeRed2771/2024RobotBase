@@ -235,6 +235,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   @Override
   public void driveInches(double inches, double speedFactor, double turnAngle){
       setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+      setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
       setAllTurnOrientation(angleToPosition(turnAngle),true);
 
       //waiting for motors to rotate to position
@@ -273,6 +274,13 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRight.setDriveMaxVelocity(velocity);
     m_backLeft.setDriveMaxVelocity(velocity);
     m_backRight.setDriveMaxVelocity(velocity);
+  }
+
+  public void setDriveMMAccel(int accel) {
+    m_frontLeft.setDriveMaxAccel(accel);
+    m_frontRight.setDriveMaxAccel(accel);
+    m_backLeft.setDriveMaxAccel(accel);
+    m_backRight.setDriveMaxAccel(accel);
   }
 
   private double angleToPosition(double angle) {
