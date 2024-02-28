@@ -31,8 +31,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private CANSparkFlex m_driveMotor;
   private CANSparkMax m_turningMotor;
 
-  private SparkPIDController m_drivePIDController;
-
   /**
    * A RelativeEncoder object is constructed using the GetEncoder() method on an existing CANSparkMax object. The
    * assumed encoder type is the hall effect, or a sensor type and counts per revolution can be passed in to specify a
