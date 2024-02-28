@@ -35,41 +35,41 @@ public class AutoShoot2Center extends AutoBaseClass {
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
+            // case 0:
+            //   myRobot.launcher.prime(0.3);
+            //   setTimerAndAdvanceStep(750);
+            //   break;
+            // case 1:
+            //   break;
+            // case 2:
+            //   myRobot.launcher.fire();
+            //   setTimerAndAdvanceStep(250);
+            //   break;
+            // case 3:
+            //   break;
             case 0:
-              myRobot.launcher.prime(0.3);
-              setTimerAndAdvanceStep(750);
+              // myRobot.launcher.stop();
+              myRobot.drive.driveInches(36,0.7,0);//90
+              // myRobot.launcher.load(0.45);
+              setTimerAndAdvanceStep(4000);
               break;
             case 1:
+              if(myRobot.drive.driveCompleted(0.5))
+                advanceStep();
               break;
+            // case 6:
+            //   myRobot.launcher.prime(0.3);
+            //   myRobot.drive.driveInches(0,0.7,0);//-92
+            //   setTimerAndAdvanceStep(6000);
+            //   break;
+            // case 7:
+            //   if(myRobot.drive.driveCompleted(0.5))
+            //     advanceStep();
+            //   break;
+            // case 8:
+            //   myRobot.launcher.fire();
+            //   break;
             case 2:
-              myRobot.launcher.fire();
-              setTimerAndAdvanceStep(250);
-              break;
-            case 3:
-              break;
-            case 4:
-              myRobot.launcher.stop();
-              myRobot.drive.driveInches(36,0.7,0);//90
-              myRobot.launcher.load(0.45);
-              setTimerAndAdvanceStep(6000);
-              break;
-            case 5:
-              if(myRobot.drive.driveCompleted(0.5))
-                advanceStep();
-              break;
-            case 6:
-              myRobot.launcher.prime(0.3);
-              myRobot.drive.driveInches(0,0.7,0);//-92
-              setTimerAndAdvanceStep(6000);
-              break;
-            case 7:
-              if(myRobot.drive.driveCompleted(0.5))
-                advanceStep();
-              break;
-            case 8:
-              myRobot.launcher.fire();
-              break;
-            case 9:
               myRobot.launcher.stop();
               stop();
               break;

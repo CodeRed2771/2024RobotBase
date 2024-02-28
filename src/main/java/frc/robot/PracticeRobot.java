@@ -124,7 +124,7 @@ public class PracticeRobot extends DefaultRobot {
     System.out.println("Robot position: " + robotPosition);
 
     // autoSelected = (String) autoChooser.getSelected();
-    SmartDashboard.putString("Auto Selected: ", autoSelected);
+    // SmartDashboard.putString("Auto Selected: ", autoSelected);
 
     // mAutoProgram = new AutoDoNothing();
     // mAutoProgram.start();
