@@ -48,7 +48,7 @@ public class RollerLauncher extends LauncherSubsystem {
     
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
-    private double speedTolerance = 100;
+    private double speedTolerance = 300;
     private double motorSpeedBias = 0.06;
 
     private int notePresentThreshold = 1800; // < 1200 were starting to see a note
@@ -102,7 +102,7 @@ public class RollerLauncher extends LauncherSubsystem {
         upperEncoder = upperShooterMotor.getEncoder();
         lowerEncoder = lowerShooterMotor.getEncoder();
 
-        kP = .0001 ; 
+        kP = .0002 ; 
         kI = 0;
         kD = 0.01; 
         kIz = 0; 
