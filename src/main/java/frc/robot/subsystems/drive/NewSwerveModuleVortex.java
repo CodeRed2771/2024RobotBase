@@ -209,6 +209,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     }
   }
 
+  public void setTurnOrientation(double position) {
+    if(isArmed()) {
+      m_turningPIDController.setReference(position, ControlType.kPosition);
+    }
+  }
+
   private void postTuneParams(String prefix, PIDGains gains){
     SmartDashboard.putNumber(prefix + " P", gains.kP);
     SmartDashboard.putNumber(prefix + " I", gains.kI);

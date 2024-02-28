@@ -290,10 +290,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private void setTurnOrientation(double modAPosition, double modBPosition, double modCPosition,
           double modDPosition, boolean optimizeTurn) {
 
-    m_frontLeft.setTurnOrientation(modAPosition, optimizeTurn);
-    m_frontRight.setTurnOrientation(modBPosition, optimizeTurn);
-    m_backLeft.setTurnOrientation(modCPosition, optimizeTurn);
-    m_backRight.setTurnOrientation(modDPosition, optimizeTurn);
+    m_frontLeft.setTurnOrientation(modAPosition);
+    m_frontRight.setTurnOrientation(modBPosition);
+    m_backLeft.setTurnOrientation(modCPosition);
+    m_backRight.setTurnOrientation(modDPosition);
   }
 
   private static Double round(Double val, int scale) {
