@@ -14,6 +14,8 @@ import frc.robot.libs.BlinkinLED;
 import frc.robot.libs.BlinkinLED.LEDColors;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 /** Add your docs 
  * When load is command - run loader motor until note is in loader position
@@ -34,18 +36,28 @@ public class RollerLauncher extends LauncherSubsystem {
     private CANSparkMax intakeMotor;
     private BlinkinLED launcherLED;
 
+    private SparkPIDController upperPIDCtrl = null;
+    private SparkPIDController lowerPIDCtrl = null;
+    
+    private RelativeEncoder upperEncoder = null;
+    private RelativeEncoder lowerEncoder = null;
+
+    public double kP, kI, kD, kIz, kFF;
+    
+    public double kMaxOutput, kMinOutput, maxRPM;
+    
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
-    private double speedTolerance = 0.05;
+    private double speedTolerance = 100;
     private double motorSpeedBias = 0.06;
 
-    private int notePresentThreshold = 1550; // < 1200 were starting to see a note
+    private int notePresentThreshold = 1800; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
-        SUBWOOFER(0.3),
-        SPEAKER(0.45),
-        AMP(0.18),
-        OFF(0);
+        OFF(0),
+        AMP(1000),
+        SUBWOOFER(2200), // tested 2/22/24
+        SAFE_ZONE(2700); // untested
 
         private double speed;
         
@@ -58,8 +70,10 @@ public class RollerLauncher extends LauncherSubsystem {
         }
     }
   
-    private static final int STOP_DELAY = 1;
+    private static final int STOP_DELAY = 100;
     private int loaderStopDelay = 0;
+    private int loaderFireStopDelay = 0;
+
     public RollerLauncher(Map<String,Integer> wiring) {
         super();
 
@@ -74,6 +88,51 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);
 
         launcherLED = new BlinkinLED(wiring.get("launcher led"));
+
+        // Setup Shooter Motor Closed Loop Control
+        upperShooterMotor.restoreFactoryDefaults();
+        lowerShooterMotor.restoreFactoryDefaults();
+
+        upperShooterMotor.setInverted(true);
+        lowerShooterMotor.setInverted(true);
+
+        upperPIDCtrl = upperShooterMotor.getPIDController();
+        lowerPIDCtrl = lowerShooterMotor.getPIDController();
+
+        upperEncoder = upperShooterMotor.getEncoder();
+        lowerEncoder = lowerShooterMotor.getEncoder();
+
+        kP = .0001 ; 
+        kI = 0;
+        kD = 0.01; 
+        kIz = 0; 
+        kFF = 0.000170; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+        maxRPM = 5700;
+
+        // set PID coefficients
+        upperPIDCtrl.setP(kP);
+        upperPIDCtrl.setI(kI);
+        upperPIDCtrl.setD(kD);
+        upperPIDCtrl.setIZone(kIz);
+        upperPIDCtrl.setFF(kFF);
+        upperPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
+
+        lowerPIDCtrl.setP(kP);
+        lowerPIDCtrl.setI(kI);
+        lowerPIDCtrl.setD(kD);
+        lowerPIDCtrl.setIZone(kIz);
+        lowerPIDCtrl.setFF(kFF);
+        lowerPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
+
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
     }
 
     private void log(String text) {
@@ -97,6 +156,10 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor.set(-power);
     }
 
+    public void stopShooter() {
+        prime(LauncherSpeeds.OFF);
+    }
+
     public boolean isLoaded() {
         // value goes down as object gets closer to sensor
         SmartDashboard.putNumber("Note Sensor", loadSensor.getAverageValue());
@@ -112,6 +175,7 @@ public class RollerLauncher extends LauncherSubsystem {
         if (isPrimed())
             {
             loadState = LoaderState.Firing;
+            loaderFireStopDelay = STOP_DELAY;
 
             load(1); // run the loader which will put note into shooter
             }  
@@ -135,18 +199,19 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderMotor.set(0);
     }
 
-    public void prime(double speed) {
+    public void prime(LauncherSpeeds commandSpeed) {
+        double speed = commandSpeed.get();
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
         upperSpeedCmd = -speed;
-        if (Math.abs(speed)>.01)
-            lowerSpeedCmd = (speed) + motorSpeedBias;
+        if (Math.abs(speed)>100)
+            lowerSpeedCmd = (speed) *(1+motorSpeedBias);
         else  
             lowerSpeedCmd = 0;
 
-        upperShooterMotor.set(upperSpeedCmd);
-        lowerShooterMotor.set(lowerSpeedCmd);
+        upperPIDCtrl.setReference(upperSpeedCmd, CANSparkMax.ControlType.kVelocity);
+        lowerPIDCtrl.setReference(lowerSpeedCmd, CANSparkMax.ControlType.kVelocity);
     }
 
     public void setSpeedBias(double newBias) {
@@ -154,10 +219,10 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public boolean isPrimed() {
-        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperShooterMotor.get()) < speedTolerance;
-        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerShooterMotor.get()) < speedTolerance;
+        boolean upperMotorTracking = Math.abs(upperSpeedCmd - upperEncoder.getVelocity()) < speedTolerance;
+        boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerEncoder.getVelocity()) < speedTolerance;
 
-        return true;
+        return upperMotorTracking || lowerMotorTracking;
         // return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
     }
 
@@ -171,7 +236,7 @@ public class RollerLauncher extends LauncherSubsystem {
     @Override
     public void periodic() {
         if (loadState == LoaderState.Stopping) {
-            if (loaderStopDelay == 0) {
+            if (loaderStopDelay <= 0) {
                 intakeMotor.set(0);
                 loaderMotor.set(0);
                 loadState = LoaderState.Stopped;
@@ -179,6 +244,15 @@ public class RollerLauncher extends LauncherSubsystem {
                 loaderStopDelay--;
             }
         }
+
+        if (loaderFireStopDelay == 1) {
+            stopShooter();
+            intakeMotor.set(0);
+            loaderMotor.set(0);
+            loaderFireStopDelay--;
+        } else 
+            if (loaderFireStopDelay > 0)
+            loaderFireStopDelay--;
 
         if(!isPrimed())
             launcherLED.blink(0.5);
@@ -191,6 +265,36 @@ public class RollerLauncher extends LauncherSubsystem {
         else
             launcherLED.set(LEDColors.RED);
 
-        SmartDashboard.putNumber("intake speed", lowerShooterMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("FIRE STOP DELAY", loaderFireStopDelay);
+        if (loadState == LoaderState.Firing) 
+            SmartDashboard.putString("LOADER STATE", "FIRING");
+        else if (loadState == LoaderState.Stopped) 
+            SmartDashboard.putString("LOADER STATE", "STOPPED");
+        else 
+            SmartDashboard.putString("LOADER STATE","SOMETHING ELSE");
+        
+        
+        SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter SetPoint", lowerSpeedCmd);
+                    // read PID coefficients from SmartDashboard
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { upperPIDCtrl.setP(p); lowerPIDCtrl.setP(p); kP = p; }
+        if((i != kI)) { upperPIDCtrl.setI(i); lowerPIDCtrl.setI(i); kI = i; }
+        if((d != kD)) { upperPIDCtrl.setD(d); lowerPIDCtrl.setD(d); kD = d; }
+        if((iz != kIz)) { upperPIDCtrl.setIZone(iz); lowerPIDCtrl.setIZone(iz);kIz = iz; }
+        if((ff != kFF)) { upperPIDCtrl.setFF(ff); lowerPIDCtrl.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) { 
+            upperPIDCtrl.setOutputRange(min, max);
+            lowerPIDCtrl.setOutputRange(min, max);  
+            kMinOutput = min; kMaxOutput = max; 
+        }
     }
 }

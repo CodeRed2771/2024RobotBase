@@ -5,8 +5,10 @@
 package frc.robot;
 
 import java.util.HashMap;
+import edu.wpi.first.math.geometry.Pose2d;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,7 @@ public class PracticeRobot extends DefaultRobot {
   private final String autoShoot2 = "Auto Shoot 2 (Center)";
   private final String autoDoNothing = "Auto Do Nothing";
   private static final String kCustomAuto = "My Auto";
+  private static final double kMetersToInches = 100.0/2.54;
 
   private AutoBaseClass mAutoProgram = null;
 
@@ -41,6 +44,9 @@ public class PracticeRobot extends DefaultRobot {
   public IntakeSubsystem intake; // Changed from protected to public for autos
   public RollerLauncher launcher; // Changed from protected to public for autos
   public PracticeRobotNav nav; // Changed from protected to public for autos
+
+  protected double driveSpeedGain = 1.0;
+  protected double rotateSpeedGain = 0.9;
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
@@ -103,6 +109,10 @@ public class PracticeRobot extends DefaultRobot {
     super.robotPeriodic();
     // autoSelected = (String) autoChooser.getSelected();
     drive.updateOdometry(new Rotation2d(nav.getAngle()));
+    Pose2d pos = drive.getOdometryPosition();
+    SmartDashboard.putNumber("Fx",pos.getX()*kMetersToInches);
+    SmartDashboard.putNumber("Fy",pos.getY()*kMetersToInches);
+    SmartDashboard.putNumber("Fa",pos.getRotation().getRotations());
     setupAutoChoices();
   }
 
@@ -180,12 +190,10 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
-    driveAuxJoystick(gamepad1);
+    adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
-
-
 
   @Override
   public void restoreRobotToDefaultState() {
@@ -193,12 +201,20 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
   }
 
-  protected void driveAuxJoystick(Gamepad gp){
+  protected void adjustDriveSpeed(Gamepad gp){
     // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
     // if(gp.getDPadRight()) fieldCentricDriveMode(false);
 
-    if(gp.getDPadDown()) driveSpeedGain = 0.25;
-    if(gp.getDPadUp()) driveSpeedGain = 0.7;
+    if(gp.getRightBumper()) {
+      driveSpeedGain = 0.25;
+      rotateSpeedGain = 0.25;
+    } else if (gp.getLeftBumper()) {
+      driveSpeedGain = 0.7;
+      rotateSpeedGain = 0.7;
+    } else {
+      driveSpeedGain = 1.0;
+      rotateSpeedGain = 1.0;
+    }
 
     if(gp.getXButton()) nav.zeroYaw();
   }
@@ -206,8 +222,6 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public double getAngle(){return nav.getAngle();}
 
-  protected double driveSpeedGain = 0.7;
-  protected double rotateSpeedGain = 0.9;
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
@@ -220,15 +234,15 @@ public class PracticeRobot extends DefaultRobot {
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER.get());
+      launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SPEAKER.get());
+      launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getBButton()) {
       launcher.setSpeedBias(.15);
-      launcher.prime(LauncherSpeeds.AMP.get());
+      launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
-      launcher.prime(0);
+      launcher.prime(LauncherSpeeds.OFF);
     }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
@@ -239,11 +253,9 @@ public class PracticeRobot extends DefaultRobot {
     }
     else if (gp.getDPadLeft()) {
       launcher.unload();
-    } else if(gp.getDPadDown() || gp.getDPadUp()) {
+    } else if(gp.getDPadDown()) {
       launcher.stopLoader();
-    }
-
-    if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
+    } else if (launcher.isLoaded() && !launcher.isFiring()&& !launcher.isUnloading()) {
       launcher.stopLoader();
     }
 

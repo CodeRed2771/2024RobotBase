@@ -1,19 +1,17 @@
 package frc.robot.subsystems.drive;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
-import frc.robot.Wiring;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
@@ -110,6 +108,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
         m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
   }
 
+  public Pose2d getOdometryPosition(){
+    return m_odometry.getPoseMeters();
+  }
+
   /**
    * Method to drive the robot with robot framed commands.
    *
@@ -128,6 +130,26 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public void driveFixedOrientation(double xSpeed, double ySpeed)
+  {
+    Rotation2d ang = new Rotation2d(xSpeed, ySpeed);
+    Translation2d Speed = new Translation2d(xSpeed,ySpeed);
+    SwerveModuleState desiredState = new SwerveModuleState(Speed.getNorm(), ang);
+
+    m_frontLeft.setDesiredState(desiredState);
+    m_frontRight.setDesiredState(desiredState);
+    m_backLeft.setDesiredState(desiredState);
+    m_backRight.setDesiredState(desiredState);
+
+  }
+
+  public void driveParkControl(){
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+    m_backLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
+    m_backRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+  }
+
   @Override
   public void periodic() {
 
@@ -135,6 +157,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
       if (Calibration.shouldCalibrateSwerve()) {
         double[] pos = getAllAbsoluteTurnOrientations();
         Calibration.saveSwerveCalibration(pos[0], pos[1], pos[2], pos[3]);
+        ApplyCalibration();
       }
 
       // see if we want to reset the calibration to whatever is in the program
@@ -150,12 +173,16 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     }
     doEncoderAction = SmartDashboard.getBoolean("Use Offset Encoder", false);
     if (doEncoderAction){
-      setTurnOffsets( Calibration.getTurnZeroPos('A'), 
-                      Calibration.getTurnZeroPos('B'), 
-                      Calibration.getTurnZeroPos('C'),
-                      Calibration.getTurnZeroPos('D'));
+      ApplyCalibration();
       SmartDashboard.putBoolean("Use Offset Encoder", false);
     }
+  }
+
+  public void ApplyCalibration(){
+    setTurnOffsets( Calibration.getTurnZeroPos('A'), 
+                    Calibration.getTurnZeroPos('B'), 
+                    Calibration.getTurnZeroPos('C'),
+                    Calibration.getTurnZeroPos('D'));
   }
 
   public double[] getAllAbsoluteTurnOrientations() {
@@ -168,6 +195,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setTurnOffset(BR);
     m_backLeft.setTurnOffset(BL);
     m_frontRight.setTurnOffset(FR);
+    resetEncoders();
   }
 
   private void resetEncoders(){
