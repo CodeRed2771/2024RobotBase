@@ -20,6 +20,7 @@ public abstract class NavSubsystem extends SubsystemBase {
     Pose3d speakerPose;
     Pose3d[] trapPose = new Pose3d[4];
     Pose3d feederStation;
+    // Pose3d[] speakerAngledPose = new Pose3d[2];
   }
 
   public class blueFieldPositions extends fieldPositions {
@@ -41,6 +42,8 @@ public abstract class NavSubsystem extends SubsystemBase {
       trapPose[2] = new Pose3d(182.73,177.10,43.00,new Rotation3d(0,0,Math.toRadians(120)));
       trapPose[3] = new Pose3d(182.73,146.19,43.00,new Rotation3d(0,0,Math.toRadians(240)));
       feederStation = new Pose3d(38.17,26.46,53.38,new Rotation3d(0,0,Math.toRadians(60)));
+      // speakerAngledPose[1] = new Pose3d(34.50,218.42,0,new Rotation3d(0,0,30));
+      // speakerAngledPose[2] = new Pose3d(34.50,218.42,0,new Rotation3d(0,0,-30));
     }
   }
   protected fieldPositions targetPositions;

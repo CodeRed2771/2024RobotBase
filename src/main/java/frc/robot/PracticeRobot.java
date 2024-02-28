@@ -5,7 +5,7 @@
 package frc.robot;
 
 import java.util.HashMap;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -125,7 +125,22 @@ public class PracticeRobot extends DefaultRobot {
     runLauncher(gamepad2);
   }
 
+  @Override
+  protected void SpeedDriveByJoystick(Gamepad gp) {
+    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
 
+    if(ampNudge) {
+      rotate+=nav.yawRotationNudge();
+    }
+
+    if (bDriveFieldCentric) {
+      driveSpeedControlFieldCentric(fwd, strafe, rotate);
+    } else {
+      driveSpeedControl(fwd, strafe, rotate);
+    }
+  }
 
   @Override
   public void restoreRobotToDefaultState() {
@@ -158,11 +173,7 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    if(ampNudge && nav.isSeeingAprilTags()) {
-      drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, (rotate*rotateSpeedGain) + nav.yawRotationNudge(),getPeriod());
-    } else {
-      drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
-    }
+    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = 0;
@@ -202,5 +213,4 @@ public class PracticeRobot extends DefaultRobot {
       launcher.fire();
     }
   }
-
 }

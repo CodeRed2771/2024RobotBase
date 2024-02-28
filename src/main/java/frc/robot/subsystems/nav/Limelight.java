@@ -1,5 +1,6 @@
 package frc.robot.subsystems.nav;
 
+import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -198,7 +199,8 @@ public class Limelight extends NavSubsystem{
 
     public Pose3d getPositioninField() { 
         Pose3d rawPose; 
-        if(DriverStation.getAlliance().get() == Alliance.Red){
+        Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
+        if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
             rawPose = getRawRedAllaince();
         } else {
             rawPose = getRawBlueAllaince();
@@ -209,7 +211,7 @@ public class Limelight extends NavSubsystem{
         return pose;
     }
 
-    public Transform3d getRedTargetOffset(Target target) {
+    public Transform3d getTargetOffset(Target target) {
         Pose3d targetPose;
         useRedTargets();
         switch (target) {

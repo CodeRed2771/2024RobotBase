@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
 import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
@@ -58,16 +58,31 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     @Override
     public void periodic() {
-        Pose3d currentPosition = limelight.getPositioninField();
+        // Pose3d currentPosition = limelight.getPositioninField();
         // limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         // updateTestPoint(currentPosition);
+        if(isSeeingAprilTags()) {
+            computeYawNudge();
+        } else {
+            yawRotationNudge = 0;
+        }
 
-        Transform3d currentTarget = limelight.getRedTargetOffset(Target.AMP);
-        updateTestPoint(new Pose3d(currentTarget.getTranslation(), currentTarget.getRotation()));
-        yawRotationNudge = (currentTarget.getRotation().getZ()/180);   
         SmartDashboard.putNumber("Yaw Rotation Nudge", yawRotationNudge);
         SmartDashboard.putBoolean("Sees April Tag", isSeeingAprilTags());     
+    }
+
+    public void computeYawNudge() {
+        Transform3d currentTarget = limelight.getTargetOffset(Target.AMP);
+        updateTestPoint(new Pose3d(currentTarget.getTranslation(), currentTarget.getRotation()));
+
+
+        double limit = 0.25;
+        double kp = limit/5.0; // limit divided by angle which max power is applied
+
+        yawRotationNudge = kp*(0-Math.toDegrees(currentTarget.getRotation().getZ()));
+        yawRotationNudge = Math.min(yawRotationNudge,limit);
+        yawRotationNudge = Math.max(yawRotationNudge,-limit);
     }
 
     public double yawRotationNudge() {
