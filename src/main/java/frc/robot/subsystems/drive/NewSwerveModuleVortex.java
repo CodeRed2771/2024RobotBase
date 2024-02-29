@@ -328,10 +328,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   }
 
   public void resetEncoders() {
+    double offset = turnAbsEncoder.getPositionOffset();
     m_driveEncoder.setPosition(0);
     m_driveEncoder.getPosition();
     m_driveEncoder.getVelocity();
     turnAbsEncoder.reset();
+    turnAbsEncoder.setPositionOffset(offset);
     m_turnEncoder.setPosition(turnAbsEncoder.get());
   }
 
