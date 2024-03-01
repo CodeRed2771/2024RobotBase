@@ -123,6 +123,13 @@ public class PracticeRobot extends DefaultRobot {
     char robotPosition = selectedPos.toCharArray()[0];
     System.out.println("Robot position: " + robotPosition);
 
+    intake.arm();
+    launcher.arm();
+    drive.arm();
+    nav.reset();
+
+    restoreRobotToDefaultState();
+
     // autoSelected = (String) autoChooser.getSelected();
     // SmartDashboard.putString("Auto Selected: ", autoSelected);
 
@@ -138,6 +145,12 @@ public class PracticeRobot extends DefaultRobot {
       mAutoProgram.periodic();
   }
 
+  @Override
+  public void disabledInit() {
+    intake.disarm();
+    launcher.disarm();
+    drive.disarm();
+  }
   private void setupAutoChoices() {
     // Position Chooser
     positionChooser = new SendableChooser<String>();
@@ -178,13 +191,6 @@ public class PracticeRobot extends DefaultRobot {
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
 
-  }
-
-  @Override
-  public void teleopExit() {
-    intake.disarm();
-    launcher.disarm();
-    drive.disarm();
   }
 
   @Override

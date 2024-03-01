@@ -37,14 +37,18 @@ public class AutoShoot2Center extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              setTimerAndAdvanceStep(750);
+              myRobot.drive.driveInches(120,1,0);//90
+              // myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              advanceStep();
+              // setTimerAndAdvanceStep(750);
               break;
             case 1:
               break;
             case 2:
-              myRobot.launcher.fire();
-              setTimerAndAdvanceStep(250);
+            setStep(99);
+
+              // myRobot.launcher.fire();
+              // setTimerAndAdvanceStep(250);
               break;
             case 3:
               break;
@@ -57,7 +61,7 @@ public class AutoShoot2Center extends AutoBaseClass {
             case 5:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
+              if(myRobot.drive.driveCompleted(0.5))
                 // advanceStep();
               break;
             case 6:
