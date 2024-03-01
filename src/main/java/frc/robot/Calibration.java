@@ -200,7 +200,7 @@ public class Calibration {
     public final static double DT_ROT_PID_IZONE = 18;
 	
     public final static int getDT_MM_ACCEL() {
-        return(5);
+        return(3);
     }
 	public final static int getDT_MM_VELOCITY() {
         return(8);

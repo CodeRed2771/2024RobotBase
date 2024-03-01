@@ -14,6 +14,7 @@ import frc.robot.PracticeRobot;
   Drives back and aligns with subwoofer
   Primes & shoots the other note
  */
+import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 
 
 public class AutoShoot2Center extends AutoBaseClass {
@@ -35,41 +36,44 @@ public class AutoShoot2Center extends AutoBaseClass {
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
-            // case 0:
-            //   myRobot.launcher.prime(0.3);
-            //   setTimerAndAdvanceStep(750);
-            //   break;
-            // case 1:
-            //   break;
-            // case 2:
-            //   myRobot.launcher.fire();
-            //   setTimerAndAdvanceStep(250);
-            //   break;
-            // case 3:
-            //   break;
             case 0:
-              // myRobot.launcher.stop();
-              myRobot.drive.driveInches(10,0.2,0);//90
-              // myRobot.launcher.load(0.45);
-              setTimerAndAdvanceStep(4000);
+              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              setTimerAndAdvanceStep(750);
               break;
             case 1:
-              if(myRobot.drive.driveCompleted(0.5))
-                advanceStep();
               break;
-            // case 6:
-            //   myRobot.launcher.prime(0.3);
-            //   myRobot.drive.driveInches(0,0.7,0);//-92
-            //   setTimerAndAdvanceStep(6000);
-            //   break;
-            // case 7:
-            //   if(myRobot.drive.driveCompleted(0.5))
-            //     advanceStep();
-            //   break;
-            // case 8:
-            //   myRobot.launcher.fire();
-            //   break;
             case 2:
+              myRobot.launcher.fire();
+              setTimerAndAdvanceStep(250);
+              break;
+            case 3:
+              break;
+            case 4:
+              myRobot.launcher.stop();
+              myRobot.drive.driveInches(120,1,0);//90
+              myRobot.launcher.load(0.45);
+              setTimerAndAdvanceStep(4000);
+              break;
+            case 5:
+              if(myRobot.launcher.isLoaded())
+                myRobot.launcher.stopLoader();
+              // if(myRobot.drive.driveCompleted(0.5))
+                // advanceStep();
+              break;
+            case 6:
+              // myRobot.launcher.prime(0.3);
+              myRobot.launcher.stopLoader();
+              myRobot.drive.driveInches(-122,0.7,0);//-92
+              setTimerAndAdvanceStep(6000);
+              break;
+            case 7:
+              // if(myRobot.drive.driveCompleted(0.5))
+              //   advanceStep();
+              break;
+            case 8:
+              // myRobot.launcher.fire();
+              break;
+            case 9:
               myRobot.launcher.stop();
               stop();
               break;

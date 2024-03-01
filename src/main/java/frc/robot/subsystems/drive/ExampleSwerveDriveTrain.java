@@ -39,7 +39,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   private SwerveDriveOdometry m_odometry;
 
-  private final double TICKS_PER_INCH = .511; //estimated -- needs to be calculated
+  private final double TICKS_PER_INCH = .02808; //estimated -- needs to be calculated
 
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
     super();
@@ -234,8 +234,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   @Override
   public void driveInches(double inches, double speedFactor, double turnAngle){
-      setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
-      setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
+    //  setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
+    //  setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
       setAllTurnOrientation(angleToPosition(turnAngle),true);
 
       //waiting for motors to rotate to position
