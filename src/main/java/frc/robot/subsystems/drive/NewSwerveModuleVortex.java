@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class NewSwerveModuleVortex extends SwerveModuleBase {
@@ -63,12 +64,20 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     this.setName(moduleID);
 
+    Timer.delay(0.15);
+
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveMotor = new CANSparkFlex(driveMotorID, MotorType.kBrushless);
     m_driveMotor.restoreFactoryDefaults();
+
+    Timer.delay(0.5);
+
     m_driveMotor.setOpenLoopRampRate(.5);
-    m_driveMotor.setSmartCurrentLimit(40);
+    m_driveMotor.setSmartCurrentLimit(30);
     m_driveMotor.setIdleMode(IdleMode.kBrake);
+    m_driveMotor.setInverted(false);
+    m_driveMotor.burnFlash();
+    Timer.delay(0.5);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_driveEncoder.setPositionConversionFactor(kWheelRadius);
@@ -76,13 +85,17 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
 
     m_turningMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
+    m_turningMotor.restoreFactoryDefaults();
+    Timer.delay(0.5);
+    m_turningMotor.setOpenLoopRampRate(1);
+    m_turningMotor.setSmartCurrentLimit(30);
+    m_turningMotor.setIdleMode(IdleMode.kBrake);
+    m_turningMotor.setInverted(false);
+    m_turningMotor.burnFlash(); 
+    Timer.delay(0.5);
+
     turnAbsEncoder = new AnalogEncoder(new AnalogInput(turnAbsEncID));
     m_turnEncoder = m_turningMotor.getEncoder();
-
-    m_turningMotor.restoreFactoryDefaults();
-    m_turningMotor.setOpenLoopRampRate(1);
-    m_turningMotor.setSmartCurrentLimit(40);
-    m_turningMotor.setIdleMode(IdleMode.kBrake);
 
     m_turnEncoder.setPositionConversionFactor(1.0/12.805);
     m_turnEncoder.setVelocityConversionFactor(1.0/12.805);
