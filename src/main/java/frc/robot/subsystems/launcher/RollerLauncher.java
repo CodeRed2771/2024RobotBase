@@ -9,6 +9,7 @@ import java.util.Map;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.BlinkinLED;
 import frc.robot.libs.BlinkinLED.LEDColors;
@@ -92,9 +93,14 @@ public class RollerLauncher extends LauncherSubsystem {
         // Setup Shooter Motor Closed Loop Control
         upperShooterMotor.restoreFactoryDefaults();
         lowerShooterMotor.restoreFactoryDefaults();
+        Timer.delay(0.5);
 
         upperShooterMotor.setInverted(true);
         lowerShooterMotor.setInverted(true);
+
+        upperShooterMotor.burnFlash();
+        lowerShooterMotor.burnFlash();
+        Timer.delay(0.5);
 
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();

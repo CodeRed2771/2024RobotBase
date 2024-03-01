@@ -145,6 +145,25 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   }
 
+  public void driveFixedPositionOffsetInches(double xInches, double yInches){
+    Translation2d target = new Translation2d(xInches * 2.54 / 100, yInches * 2.54 / 100);
+    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getDistance(target), target.getAngle());
+
+    m_frontLeft.commandSwervePositionOffset(targetOffset);
+    m_frontRight.commandSwervePositionOffset(targetOffset);
+    m_backLeft.commandSwervePositionOffset(targetOffset);
+    m_backRight.commandSwervePositionOffset(targetOffset);
+  }
+
+  public boolean atFixedPosition(double allowedError){
+    allowedError *=  2.54/100;
+    boolean result = m_frontLeft.atSwervePosition(allowedError);
+    result = result && m_frontRight.atSwervePosition(allowedError);
+    result = result && m_backLeft.atSwervePosition(allowedError);
+    result = result && m_backRight.atSwervePosition(allowedError);
+    return result;
+  }
+
   public void driveParkControl(){
     m_frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
     m_frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
