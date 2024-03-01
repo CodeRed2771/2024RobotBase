@@ -256,11 +256,19 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     //  setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
     //  setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
 
-    Translation2d target = new Translation2d(inches, Rotation2d.fromDegrees(turnAngle));
-    driveFixedPositionOffsetInches(target.getX(), target.getY());
+    // Translation2d target = new Translation2d(inches, Rotation2d.fromDegrees(turnAngle));
+    // driveFixedPositionOffsetInches(target.getX(), target.getY());
 
+    setAllTurnOrientation(angleToPosition(turnAngle),true);
+
+    //waiting for motors to rotate to position
+    try{
+        Thread.sleep(150);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
     
-      // addToAllDrivePositions(inchesToTicks(inches));
+    addToAllDrivePositions(inchesToTicks(inches));
   }
 
   @Override
