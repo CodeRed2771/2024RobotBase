@@ -48,6 +48,15 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     public double maxAcc=0.0;
   }
 
+  private enum DriveMode {
+    SpeedMode,
+    PositionMode,
+    Disabled
+  }
+
+  private DriveMode currentControlMode = DriveMode.Disabled;
+  private double targetDrivePosition = 0.0;
+
   private PIDGains driveGains;
   private PIDGains turnGains;
 
@@ -166,6 +175,14 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     commandSwerveMotors(targetState.speedMetersPerSecond, targetState.angle.getRotations());
   }
 
+  protected void commandSwervePositionOffset(SwerveModulePosition targetPosition) {
+    double delta = targetPosition.angle.getRotations();
+    SwerveModulePosition current = getPosition();
+    delta = delta - Math.round(delta);
+    targetPosition.angle = Rotation2d.fromRotations(delta);
+    commandSwerveMotorsPosition(current.distanceMeters + targetPosition.distanceMeters, targetPosition.angle.getRotations());
+  }
+
   @Override
   public SwerveModulePosition getPosition() {
     curDriveDistance = m_driveEncoder.getPosition();
@@ -209,11 +226,38 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     logSpeedCmd(driveCmd,turnCmd);
 
     if (isArmed()) {
+      currentControlMode = DriveMode.SpeedMode;
       m_drivePIDController.setReference(driveCmd, ControlType.kVelocity);
       m_turningPIDController.setReference(turnCmd, ControlType.kPosition);
     }
   }
 
+  protected void commandSwerveMotorsPosition(double driveCmd, double turnCmd) {
+    logSpeedCmd(driveCmd,turnCmd);
+
+    if (isArmed()) {
+      targetDrivePosition = driveCmd;
+      currentControlMode = DriveMode.PositionMode;
+      m_drivePIDController.setReference(driveCmd, ControlType.kSmartMotion);
+      m_turningPIDController.setReference(turnCmd, ControlType.kPosition);
+    }
+  }
+
+  protected double offsetDriveError(){
+    double error = 0.0;
+    if(currentControlMode == DriveMode.PositionMode)
+      error = (targetDrivePosition - m_driveEncoder.getPosition());
+    return error;
+  }
+
+  protected boolean atSwervePosition(double allowedError) {
+    boolean result = true;
+    if (currentControlMode == DriveMode.PositionMode && (Math.abs(offsetDriveError()) >= allowedError)) {
+      result = false;
+    }
+    return result;
+  }
+  
   private void postTuneParams(String prefix, PIDGains gains){
     SmartDashboard.putNumber(prefix + " P", gains.kP);
     SmartDashboard.putNumber(prefix + " I", gains.kI);
@@ -318,6 +362,8 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   @Override
   public void doDisarm() {
     commandSwerveMotors(0, 0);
+    currentControlMode = DriveMode.Disabled;
+
   }
 
   public void setTurnOffset(double value) {
