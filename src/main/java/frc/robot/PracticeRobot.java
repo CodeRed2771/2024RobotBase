@@ -5,19 +5,17 @@
 package frc.robot;
 
 import java.util.HashMap;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.RollerIntake;
-import frc.robot.subsystems.launcher.DummyLauncher;
-import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
@@ -36,6 +34,17 @@ public class PracticeRobot extends DefaultRobot {
 
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
+  
+  protected double kHeadingRateLim = 90.0;
+  protected double kHeadingAccelLim = 90.0;
+  protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
+  protected double headingCmd;
+  protected PIDController headingController;
+
+  protected double kHeadingP = 0.5;
+  protected double kHeadingI = 0.0;
+  protected double kHeadingD = 0.0;
+  protected double kHeadingFF = 0.0;
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
@@ -71,6 +80,8 @@ public class PracticeRobot extends DefaultRobot {
 
     //PWM wiring
     wiring.put("launcher led", 0);
+
+    headingController = new PIDController(kHeadingP,kHeadingI,kHeadingD);
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring);
@@ -153,9 +164,99 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   @Override
+  public void disabledInit(){
+    postTuneParams();
+  }
+
+  @Override
+  public void disabledPeriodic(){
+    handleTuneParams();
+  }
+
+  protected void resetLimitedHeadingControl(){
+    headingCmd = nav.getAngle();
+    hdgAccelSlew .reset(0);
+  }
+
+  public double wrapDegreesTo180(double angle){
+    double rotations = angle / 360.0;
+    rotations -= (int) rotations;
+    if (rotations >= 0.5) rotations -= 1.0;
+    return rotations * 360.0;
+  }
+
+  /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
+  protected double calculatedProfileYawCmd(double rotateCmd){
+    double yawRate = kHeadingRateLim * getPeriod() * rotateCmd; 
+    // Integrate rotate to move heading command
+    yawRate = hdgAccelSlew.calculate(yawRate);
+    headingCmd = headingCmd + yawRate;
+
+    return headingCmd;
+  }
+
+  protected double calculateRotationCommand(double heading){
+    double rotationError = wrapDegreesTo180(heading - nav.getAngle()) / 360.0;
+    return headingController.calculate(rotationError);
+  }
+
+  protected void speedDriveByJoystickHeading(Gamepad gp) {
+    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+
+    double hdg = calculatedProfileYawCmd(rotate);
+    rotate = calculateRotationCommand(hdg);
+    driveSpeedControlFieldCentric(fwd, strafe, rotate);
+  }
+
+  private void postTuneParams(){
+    SmartDashboard.putNumber("Hdg R Lim", kHeadingRateLim);
+    SmartDashboard.putNumber("Hdg R Accel Lim", kHeadingAccelLim);
+    SmartDashboard.putNumber("Hdg P", kHeadingP);
+    SmartDashboard.putNumber("Hdg I", kHeadingI);
+    SmartDashboard.putNumber("Hdg D", kHeadingD);
+
+  }
+  private void handleTuneParams(){
+
+    double val;
+    val = SmartDashboard.getNumber("Hdg R Lim", kHeadingRateLim);
+    if (val != kHeadingRateLim){
+      kHeadingRateLim = val;
+    }
+    val = SmartDashboard.getNumber("Hdg R Accel Lim", kHeadingAccelLim);
+    if (val != kHeadingAccelLim){
+      kHeadingAccelLim = val;
+      hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
+    }
+
+    // read PID coefficients from SmartDashboard
+    double p = SmartDashboard.getNumber("Hdg P", kHeadingP);
+    double i = SmartDashboard.getNumber("Hdg I", kHeadingI);
+    double d = SmartDashboard.getNumber("Hdg D", kHeadingD);
+
+    // if PID coefficients on SmartDashboard have changed, write new values to controller
+    if ((p != kHeadingP)) {
+      headingController.setP(p);
+      kHeadingP = p;
+    }
+    if ((i != kHeadingI)) {
+      headingController.setI(i);
+      kHeadingI = i;
+    }
+    if ((d != kHeadingD)) {
+      headingController.setD(d);
+      kHeadingD = d;
+    }
+  }
+
+  @Override
   public void restoreRobotToDefaultState() {
     drive.reset(); // sets encoders based on absolute encoder positions
     nav.reset();
+
+    resetLimitedHeadingControl();
   }
   boolean ampNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
@@ -177,6 +278,7 @@ public class PracticeRobot extends DefaultRobot {
 
     if(gp.getAButton()) {
       ampNudge = true;
+      resetLimitedHeadingControl();
     } else {
       ampNudge = false;
     }
