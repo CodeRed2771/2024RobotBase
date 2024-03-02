@@ -147,7 +147,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   public void driveFixedPositionOffsetInches(double xInches, double yInches){
     Translation2d target = new Translation2d(xInches * 2.54 / 100, yInches * 2.54 / 100);
-    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getDistance(target), target.getAngle());
+    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getNorm(), target.getAngle());
 
     m_frontLeft.commandSwervePositionOffset(targetOffset);
     m_frontRight.commandSwervePositionOffset(targetOffset);
@@ -256,19 +256,19 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     //  setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
     //  setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
 
-    // Translation2d target = new Translation2d(inches, Rotation2d.fromDegrees(turnAngle));
-    // driveFixedPositionOffsetInches(target.getX(), target.getY());
+    Translation2d target = new Translation2d(-inches, Rotation2d.fromDegrees(turnAngle));
+    driveFixedPositionOffsetInches(target.getX(), target.getY());
 
-    setAllTurnOrientation(angleToPosition(turnAngle),true);
+    // setAllTurnOrientation(angleToPosition(turnAngle),true);
 
     //waiting for motors to rotate to position
-    try{
-        Thread.sleep(150);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
+    // try{
+    //     Thread.sleep(150);
+    // } catch (InterruptedException e) {
+    //     e.printStackTrace();
+    // }
     
-    addToAllDrivePositions(inchesToTicks(inches));
+    // addToAllDrivePositions(inchesToTicks(inches));
   }
 
   @Override
