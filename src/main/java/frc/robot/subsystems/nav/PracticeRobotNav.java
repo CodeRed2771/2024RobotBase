@@ -58,6 +58,7 @@ public class PracticeRobotNav extends NavSubsystem {
     @Override
     public void reset() {
         gyro.reset();
+        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
     }
 
     @Override
@@ -105,20 +106,20 @@ public class PracticeRobotNav extends NavSubsystem {
         double rotations = angle / 360.0;
         rotations -= (int) rotations;
         if (rotations >= 0.5) rotations -= 1.0;
-        return rotations * 360.0 / Math.PI;
+        return rotations * 360.0;
     }
 
     public void computeYawNudge(Target target) {
         Transform2d currentTarget = getTargetOffset(target);
         updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
-        double goal = 180.0-currentTarget.getTranslation().getAngle().getDegrees();
-        double limit = 0.25;
-        double kp = limit/5.0; // limit divided by angle which max power is applied
+        double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
+        double limit = 0.45;
+        double kp = limit/10.0; // limit divided by angle which max power is applied
 
         yawRotationNudge = kp*wrap360To180(goal);
         yawRotationNudge = Math.min(yawRotationNudge,limit);
         yawRotationNudge = Math.max(yawRotationNudge,-limit);
-        yawRotationNudge = yawRotationNudge;
+        yawRotationNudge = -yawRotationNudge;
     }
 
     public double yawRotationNudge() {

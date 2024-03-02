@@ -144,8 +144,8 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   public void restoreRobotToDefaultState() {
-    nav.reset();
     drive.reset(); // sets encoders based on absolute encoder positions
+    nav.reset();
   }
   boolean ampNudge = false;
   protected void driveAuxJoystick(Gamepad gp){
