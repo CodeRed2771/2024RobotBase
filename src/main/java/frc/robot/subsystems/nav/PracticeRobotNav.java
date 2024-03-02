@@ -83,6 +83,7 @@ public class PracticeRobotNav extends NavSubsystem {
         yawRotationNudge = kp*(0-Math.toDegrees(currentTarget.getRotation().getZ()));
         yawRotationNudge = Math.min(yawRotationNudge,limit);
         yawRotationNudge = Math.max(yawRotationNudge,-limit);
+        yawRotationNudge = -yawRotationNudge;
     }
 
     public double yawRotationNudge() {
