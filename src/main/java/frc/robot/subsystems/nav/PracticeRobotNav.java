@@ -20,10 +20,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
 import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
-import frc.robot.subsystems.nav.Limelight.Target;
+// import frc.robot.subsystems.nav.Limelight.Target;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
+    public static enum Target {
+        SPEAKER,
+        AMP, 
+    }
 
     Translation2d position = new Translation2d();
     private NavXGyro gyro;
@@ -42,6 +46,9 @@ public class PracticeRobotNav extends NavSubsystem {
         
         gyro = new NavXGyro(SPI.Port.kMXP);
         useRedTargets();
+
+        poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
+         new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
     }
 
     public void zeroYaw(){
@@ -57,36 +64,29 @@ public class PracticeRobotNav extends NavSubsystem {
     public double getAngle() {
         return gyro.getAngle();
     }
-    private void updateTestPoint(Pose2d currentTarget) {
-        updateTestPoint(new Pose3d(currentTarget));
+    private void updateTestPoint(String prefix, Pose2d currentTarget) {
+        updateTestPoint(prefix, new Pose3d(currentTarget));
     }
 
-    private void updateTestPoint(Pose3d currentTarget) {
-        SmartDashboard.putNumber("X Test Point", currentTarget.getX());
-        SmartDashboard.putNumber("Y Test Point", currentTarget.getY());
-        SmartDashboard.putNumber("Z Test Point", currentTarget.getZ());
-        SmartDashboard.putNumber("Roll Test Point", Math.toDegrees(currentTarget.getRotation().getX()));
-        SmartDashboard.putNumber("Pitch Test Point", Math.toDegrees(currentTarget.getRotation().getY()));
-        SmartDashboard.putNumber("Yaw Test Point", Math.toDegrees(currentTarget.getRotation().getZ()));
+    private void updateTestPoint(String prefix, Pose3d currentTarget) {
+        SmartDashboard.putNumber(prefix +" X", currentTarget.getX());
+        SmartDashboard.putNumber(prefix + " Y", currentTarget.getY());
+        SmartDashboard.putNumber(prefix +" Z", currentTarget.getZ());
+        SmartDashboard.putNumber(prefix + " Roll", Math.toDegrees(currentTarget.getRotation().getX()));
+        SmartDashboard.putNumber(prefix + " Pitch", Math.toDegrees(currentTarget.getRotation().getY()));
+        SmartDashboard.putNumber(prefix + " Yaw", Math.toDegrees(currentTarget.getRotation().getZ()));
 
     }
     @Override
     public void periodic() {
-
         updateRobotPosition();
 
-        // Pose3d currentPosition = limelight.getPositioninField();
-        // limelight.pollLimelight();
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
-        // updateTestPoint(currentPosition);
-        if(isSeeingAprilTags()) {
-            computeYawNudge();
-        } else {
-            yawRotationNudge = 0;
-        }
+        
+        computeYawNudge(Target.SPEAKER);
         
         SmartDashboard.putNumber("Yaw Rotation Nudge", yawRotationNudge);
-        SmartDashboard.putBoolean("Sees April Tag", isSeeingAprilTags());     
+        SmartDashboard.putBoolean("Sees April Tag", limelight.isPoseValid());     
     }
 
     public void updateRobotPosition() {
@@ -94,32 +94,44 @@ public class PracticeRobotNav extends NavSubsystem {
         limelitePose= new Pose2d(limelitePose.getTranslation().times(2.54/100),limelitePose.getRotation());
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(isSeeingAprilTags()) {
+        if(limelight.isPoseValid()) {
             poseEstimator.addVisionMeasurement(limelitePose, Timer.getFPGATimestamp()-limelight.getLatency());
         }
-
-        updateTestPoint(poseEstimator.getEstimatedPosition());
+        
+        updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
     }
 
-    public void computeYawNudge() {
-        Transform2d currentTarget = getTargetOffset(Target.AMP);
-        // updateTestPoint(new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
+    public double wrap360To180(double angle){
+        double rotations = angle / 360.0;
+        rotations -= (int) rotations;
+        if (rotations >= 0.5) rotations -= 1.0;
+        return rotations * 360.0 / Math.PI;
+    }
 
-
+    public void computeYawNudge(Target target) {
+        Transform2d currentTarget = getTargetOffset(target);
+        updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
+        double goal = 180.0-currentTarget.getTranslation().getAngle().getDegrees();
         double limit = 0.25;
         double kp = limit/5.0; // limit divided by angle which max power is applied
 
-        yawRotationNudge = kp*(0-currentTarget.getRotation().getDegrees());
+        yawRotationNudge = kp*wrap360To180(goal);
         yawRotationNudge = Math.min(yawRotationNudge,limit);
         yawRotationNudge = Math.max(yawRotationNudge,-limit);
-        yawRotationNudge = -yawRotationNudge;
+        yawRotationNudge = yawRotationNudge;
     }
 
     public double yawRotationNudge() {
         return yawRotationNudge;
     }
-    public boolean isSeeingAprilTags() {
-        return limelight.seesSomething() && limelight.getPipeline() == LimelightPipeline.AprilTag;
+    public boolean isPoseValid() {
+        Pose2d pose = poseEstimator.getEstimatedPosition();
+        boolean valid = true;
+        valid &= pose.getX() >=-2.0;
+        valid &= pose.getX() <=8.21055+1;
+        valid &= pose.getY() >=-2.0;
+        valid &= pose.getY() <=16.54175+1;
+        return valid;
     } 
     @Override
     public Translation2d getPosition() {
@@ -139,7 +151,11 @@ public class PracticeRobotNav extends NavSubsystem {
                 targetPose = new Pose3d();
                 break;
         }
-        return new Transform2d(getPoseInField(), targetPose.toPose2d());
+        return new Transform2d(getPoseInFieldInches(), targetPose.toPose2d());
+    }
+
+    public Pose2d getPoseInFieldInches() {
+        return new Pose2d(poseEstimator.getEstimatedPosition().getTranslation().times(100/2.54),poseEstimator.getEstimatedPosition().getRotation());
     }
 
     public Pose2d getPoseInField() {

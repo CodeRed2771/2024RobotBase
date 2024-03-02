@@ -24,10 +24,6 @@ public class Limelight {
     private Transform3d  cameraPose;
     private Pose3d robotRelativeToAprilTag;
     
-    public static enum Target {
-        SPEAKER,
-        AMP, 
-    }
 
     public static enum LimelightPipeline {
         Unknown(-1),
@@ -147,6 +143,16 @@ public class Limelight {
     public Pose3d getFieldPose() {
         return fieldPosition;
     }
+
+    public boolean isPoseValid() {
+        boolean valid = true;
+        valid &= seesSomething();
+        valid &= getPipeline() == LimelightPipeline.AprilTag;
+        valid &= getArea() >.25;
+        valid &= Math.abs(horizontalOffset()) <25;
+        valid &= Math.abs(verticalOffset()) <20;
+        return valid;
+    } 
 
     public int getAprilTagID() {
         if(currentPipeline == LimelightPipeline.AprilTag) {
