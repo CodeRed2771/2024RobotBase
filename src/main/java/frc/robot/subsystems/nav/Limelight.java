@@ -2,6 +2,8 @@ package frc.robot.subsystems.nav;
 
 import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,7 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class Limelight extends NavSubsystem{
+public class Limelight {
     private final double METERS_TO_INCHES = 39.3701;
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
@@ -168,19 +170,6 @@ public class Limelight extends NavSubsystem{
         return limelight.getEntry("ty").getDouble(0);
     }
     
-    public Transform3d getOffsetToTarget(Target target, fieldPositions targetPositions) {
-        Transform3d pose = new Transform3d(100,100,100, new Rotation3d(50,50,50));
-        switch (target) {
-            case AMP:
-                pose = new Transform3d(getFieldPose(), targetPositions.ampPose);
-                break;
-            case SPEAKER:
-                pose = new Transform3d(getFieldPose(), targetPositions.speakerPose);
-                break;
-        }
-        return pose;
-    }
-    
     public Pose3d getRawRedAllaince() {
         Pose3d rawPose;
         double data[];
@@ -197,44 +186,28 @@ public class Limelight extends NavSubsystem{
         return rawPose;
     }
 
-    public Pose3d getPositioninField() { 
-        Pose3d rawPose; 
+    public Pose2d getLimelightPositionInField() { 
+        Pose3d fieldPose;
         Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
         if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
-            rawPose = getRawRedAllaince();
+            fieldPose = getRawRedAllaince();
         } else {
-            rawPose = getRawBlueAllaince();
+            fieldPose = getRawBlueAllaince();
         }
-        Transform3d cameraOffset = cameraPose.inverse();
-        cameraOffset = new Transform3d(rawPose.getTranslation(), rawPose.getRotation()).plus(new Transform3d(cameraOffset.getTranslation(), cameraOffset.getRotation()));
-        Pose3d pose = new Pose3d(cameraOffset.getTranslation(), cameraOffset.getRotation());
-        return pose;
+        fieldPose = fieldPose.plus(cameraPose.inverse());
+
+        // Transform2d cameraOffset = cameraPose.inverse();
+        // cameraOffset = new Transform2d(fieldPose.getTranslation(), fieldPose.getRotation()).plus(
+        //     new Transform2d(cameraOffset.getTranslation(), cameraOffset.getRotation()));
+
+        // Pose2d pose = new Pose2d(cameraOffset.getTranslation(), cameraOffset.getRotation());
+        return fieldPose.toPose2d();
     }
 
-    public Transform3d getTargetOffset(Target target) {
-        Pose3d targetPose;
-        useRedTargets();
-        switch (target) {
-            case AMP:
-                targetPose = targetPositions.ampPose;
-                break;
-            case SPEAKER:
-                targetPose = targetPositions.speakerPose;
-                break;
-            default:
-                targetPose = new Pose3d();
-                break;
-        }
-        return new Transform3d(getPositioninField(), targetPose);
-    }
-
-    
-
-
-    @Override
-    public Translation2d getPosition() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+    public double getLatency(){
+        return (limelight.getEntry("tl").getDouble(0)
+         + limelight.getEntry("cl").getDouble(0)
+         + 50)/1000.0;
     }
 
     // Goes in SpeedDriveByJoystick function in Practice Robot (@Override)

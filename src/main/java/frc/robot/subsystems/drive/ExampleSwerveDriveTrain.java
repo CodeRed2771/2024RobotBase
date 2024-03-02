@@ -108,6 +108,14 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
         m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
   }
 
+  public SwerveModulePosition[] getOdomotry(){
+    return new SwerveModulePosition[] { // Maintain order from m_odometry creation
+        m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()};
+  }
+  public SwerveDriveKinematics getKinematics() {
+    return m_kinematics;
+  }
+
   /**
    * Method to drive the robot with robot framed commands.
    *

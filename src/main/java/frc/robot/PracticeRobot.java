@@ -67,8 +67,8 @@ public class PracticeRobot extends DefaultRobot {
     wiring.put("launcher led", 0);
 
     /* Set all of the subsystems */
-    nav = new PracticeRobotNav();
     drive = new ExampleSwerveDriveTrain(wiring);
+    nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
     launcher = new RollerLauncher(wiring);
 
