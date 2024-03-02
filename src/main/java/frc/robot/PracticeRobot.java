@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.SPI;
@@ -72,8 +73,8 @@ public class PracticeRobot extends DefaultRobot {
     wiring.put("launcher led", 0);
 
     /* Set all of the subsystems */
-    nav = new PracticeRobotNav();
     drive = new ExampleSwerveDriveTrain(wiring);
+    nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
     launcher = new RollerLauncher(wiring);
 
@@ -135,11 +136,28 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   @Override
-  public void restoreRobotToDefaultState() {
-    nav.reset();
-    drive.reset(); // sets encoders based on absolute encoder positions
+  protected void SpeedDriveByJoystick(Gamepad gp) {
+    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+
+    if(ampNudge) {
+      rotate+=nav.yawRotationNudge();
+    }
+
+    if (bDriveFieldCentric) {
+      driveSpeedControlFieldCentric(fwd, strafe, rotate);
+    } else {
+      driveSpeedControl(fwd, strafe, rotate);
+    }
   }
 
+  @Override
+  public void restoreRobotToDefaultState() {
+    drive.reset(); // sets encoders based on absolute encoder positions
+    nav.reset();
+  }
+  boolean ampNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
     // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
     // if(gp.getDPadRight()) fieldCentricDriveMode(false);
@@ -156,6 +174,12 @@ public class PracticeRobot extends DefaultRobot {
     }
 
     if(gp.getXButton()) nav.zeroYaw();
+
+    if(gp.getAButton()) {
+      ampNudge = true;
+    } else {
+      ampNudge = false;
+    }
   }
 
   @Override
