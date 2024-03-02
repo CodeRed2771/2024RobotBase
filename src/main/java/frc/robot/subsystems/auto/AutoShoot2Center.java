@@ -37,9 +37,8 @@ public class AutoShoot2Center extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              // myRobot.drive.driveInches(120,1,0);//90
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              setTimerAndAdvanceStep(750);
+              setTimerAndAdvanceStep(800);
               break;
             case 1:
               break;
@@ -50,9 +49,9 @@ public class AutoShoot2Center extends AutoBaseClass {
             case 3:
               break;
             case 4:
-              myRobot.launcher.stop();
-              myRobot.drive.driveInches(120,1,0);//90
-              myRobot.launcher.load(0.45);
+              myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.drive.driveInches(90,1,0);
+              myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
@@ -62,19 +61,23 @@ public class AutoShoot2Center extends AutoBaseClass {
                 // advanceStep();
               break;
             case 6:
-              // myRobot.launcher.prime(0.3);
-              myRobot.launcher.stopLoader();
-              myRobot.drive.driveInches(-122,0.7,0);//-92
+              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.drive.driveInches(-92,0.7,0);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
-              // if(myRobot.drive.driveCompleted(0.5))
+              if(myRobot.launcher.isLoaded())
+                myRobot.launcher.stopLoader();
+              if(myRobot.drive.driveCompleted(0.5))
               //   advanceStep();
               break;
             case 8:
-              // myRobot.launcher.fire();
+              myRobot.launcher.fire();
+              setTimerAndAdvanceStep(500);
               break;
             case 9:
+              break;
+            case 10:
               myRobot.launcher.stop();
               stop();
               break;
