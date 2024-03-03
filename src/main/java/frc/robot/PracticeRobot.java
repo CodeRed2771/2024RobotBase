@@ -295,8 +295,8 @@ public class PracticeRobot extends DefaultRobot {
   }
   boolean ampNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
-    // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
-    // if(gp.getDPadRight()) fieldCentricDriveMode(false);
+    if(gp.getDPadUp()) fieldCentricDriveMode(true);
+    if(gp.getDPadDown()) fieldCentricDriveMode(false);
 
     if(gp.getRightBumper()) {
       driveSpeedGain = 0.25;
