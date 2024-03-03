@@ -35,8 +35,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
       m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  private SwerveDriveOdometry m_odometry;
-
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
     super();
 
@@ -65,9 +63,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
                     Calibration.getTurnZeroPos('B'), 
                     Calibration.getTurnZeroPos('C'),
                     Calibration.getTurnZeroPos('D'));
-
-    m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[] {
-        m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
 
     this.addChild(m_frontLeft.getName(), m_frontLeft);
     this.addChild(m_backRight.getName(), m_backRight);
@@ -100,19 +95,11 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRight.disarm();
   }
 
-  /** Updates the field relative position of the robot. */
-  public void updateOdometry(Rotation2d robot_orentiation) {
-    m_odometry.update(robot_orentiation, new SwerveModulePosition[] { // Maintain order from m_odometry creation
-        m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
-  }
-
-  public Pose2d getOdometryPosition(){
-    return m_odometry.getPoseMeters();
-  }
   public SwerveModulePosition[] getOdomotry(){
     return new SwerveModulePosition[] { // Maintain order from m_odometry creation
         m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()};
   }
+  
   public SwerveDriveKinematics getKinematics() {
     return m_kinematics;
   }

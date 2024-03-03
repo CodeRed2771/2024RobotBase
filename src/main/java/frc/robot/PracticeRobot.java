@@ -112,12 +112,6 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
-
-    drive.updateOdometry(new Rotation2d(Math.toRadians(nav.getAngle())));
-    Pose2d pos = drive.getOdometryPosition();
-    SmartDashboard.putNumber("Fx",pos.getX()*kMetersToInches);
-    SmartDashboard.putNumber("Fy",pos.getY()*kMetersToInches);
-    SmartDashboard.putNumber("Fa",pos.getRotation().getRotations());
   }
 
   /*
