@@ -11,6 +11,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
@@ -34,14 +35,18 @@ public class PracticeRobot extends DefaultRobot {
 
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
+
+  protected double kDrivePosAccelLim = 1.0 / 0.75 ; // Max cmd / Time to achieve Cmd
+  protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
+  protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
   
   protected double kHeadingRateLim = 90.0;
-  protected double kHeadingAccelLim = 90.0;
+  protected double kHeadingAccelLim = 70.0 / 1.0 ; // Max cmd / Time to achieve Cmd
   protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
   protected double headingCmd;
   protected PIDController headingController;
 
-  protected double kHeadingP = 0.5;
+  protected double kHeadingP = 2.0;
   protected double kHeadingI = 0.0;
   protected double kHeadingD = 0.0;
   protected double kHeadingFF = 0.0;
@@ -142,7 +147,7 @@ public class PracticeRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     adjustDriveSpeed(gamepad1);
-    SpeedDriveByJoystick(gamepad1);
+    speedDriveByJoystickHeading(gamepad1);
     runLauncher(gamepad2);
   }
 
@@ -200,14 +205,29 @@ public class PracticeRobot extends DefaultRobot {
     return headingController.calculate(rotationError);
   }
 
-  protected void speedDriveByJoystickHeading(Gamepad gp) {
-    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
-    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+  protected Translation2d calculateProfiledDriveCommand(Translation2d command){
+    double magnitude = command.getNorm();
+    Rotation2d angle = command.getAngle();
 
+    magnitude = driveAccelSlew.calculate(magnitude);
+
+    return new Translation2d(magnitude,angle);
+  }
+
+  protected void speedDriveByJoystickHeading(Gamepad gp) {
+
+    Translation2d driveCmd = new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+    if(driveCmd.getNorm() < 0.075) // Deadband out 0.05 rotationally
+    {
+      driveCmd = new Translation2d(0,0);
+    }
+    driveCmd = calculateProfiledDriveCommand(driveCmd);
+
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
     double hdg = calculatedProfileYawCmd(rotate);
     rotate = calculateRotationCommand(hdg);
-    driveSpeedControlFieldCentric(fwd, strafe, rotate);
+
+    driveSpeedControlFieldCentric(driveCmd.getX(), driveCmd.getY(), rotate);
   }
 
   private void postTuneParams(){
@@ -217,10 +237,13 @@ public class PracticeRobot extends DefaultRobot {
     SmartDashboard.putNumber("Hdg I", kHeadingI);
     SmartDashboard.putNumber("Hdg D", kHeadingD);
 
+    SmartDashboard.putNumber("Drive Accel Lim P", kDrivePosAccelLim);
+    SmartDashboard.putNumber("Drive Accel Lim N", kDriveNegAccelLim);
   }
   private void handleTuneParams(){
 
     double val;
+    boolean changed = false;
     val = SmartDashboard.getNumber("Hdg R Lim", kHeadingRateLim);
     if (val != kHeadingRateLim){
       kHeadingRateLim = val;
@@ -230,7 +253,18 @@ public class PracticeRobot extends DefaultRobot {
       kHeadingAccelLim = val;
       hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
     }
-
+    val = SmartDashboard.getNumber("Drive Accel Lim P", kDrivePosAccelLim);
+    if (val != kDrivePosAccelLim){
+      kDrivePosAccelLim = val;
+      changed = true;
+    }
+    val = SmartDashboard.getNumber("Drive Accel Lim N", kDriveNegAccelLim);
+    if (val != kDriveNegAccelLim){
+      kDriveNegAccelLim = val;
+      changed = true;
+    }
+    if(changed)
+      driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0.0);
     // read PID coefficients from SmartDashboard
     double p = SmartDashboard.getNumber("Hdg P", kHeadingP);
     double i = SmartDashboard.getNumber("Hdg I", kHeadingI);
@@ -256,6 +290,7 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
     nav.reset();
 
+    driveAccelSlew.reset(0);
     resetLimitedHeadingControl();
   }
   boolean ampNudge = false;
