@@ -141,13 +141,13 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
 
     m_turningPIDController = m_turningMotor.getPIDController();
-    m_turningPIDController.setP(3.0);
-    m_turningPIDController.setI(0.0);
-    m_turningPIDController.setIZone(0.0);
-    m_turningPIDController.setD(0.0);
-    m_turningPIDController.setFF(0.0);
-    m_turningPIDController.setSmartMotionMaxVelocity(7000.0, 0);
-    m_turningPIDController.setSmartMotionMaxAccel(5000.0, 0);
+    m_turningPIDController.setP(turnGains.kP);
+    m_turningPIDController.setI(turnGains.kI);
+    m_turningPIDController.setIZone(turnGains.kIz);
+    m_turningPIDController.setD(turnGains.kD);
+    m_turningPIDController.setFF(turnGains.kFF);
+    m_turningPIDController.setSmartMotionMaxVelocity(turnGains.maxVel, 0);
+    m_turningPIDController.setSmartMotionMaxAccel(turnGains.maxAcc, 0);
     m_turningPIDController.setOutputRange(-1, 1);
 
     m_turningPIDController.setFeedbackDevice(m_turnEncoder);
