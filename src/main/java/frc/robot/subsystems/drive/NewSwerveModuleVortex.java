@@ -68,7 +68,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private static final double kModuleMaxAngularAcceleration = 1000 * 5 * (2 * Math.PI); // radians per second squared
 
   /** Creates a new NewSwerveModuleVortex. */
-  public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
+  public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID, double wheel_radius) {
     super();
 
     this.setName(moduleID);
@@ -89,7 +89,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     Timer.delay(0.5);
 
     m_driveEncoder = m_driveMotor.getEncoder();
-    m_driveEncoder.setPositionConversionFactor(kWheelRadius);
+    m_driveEncoder.setPositionConversionFactor(wheel_radius * 2.54 / 100.0);
     m_driveEncoder.setVelocityConversionFactor(1/kDriveMaxRPM);
 
 

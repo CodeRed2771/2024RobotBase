@@ -54,10 +54,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     int DT_D_DRIVE_ID = wiring.get("D drive");
     int DT_D_TURN_ID = wiring.get("D turn");
 
-    m_frontLeft = new NewSwerveModuleVortex(DT_A_DRIVE_ID, DT_A_TURN_ID, TURN_ABS_ENC_A, "A"); // Front right
-    m_backRight = new NewSwerveModuleVortex(DT_B_DRIVE_ID, DT_B_TURN_ID, TURN_ABS_ENC_B,"B"); // Back left
-    m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C"); // Back right
-    m_frontRight = new NewSwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, "D"); // Front left
+    m_frontLeft = new NewSwerveModuleVortex(DT_A_DRIVE_ID, DT_A_TURN_ID, TURN_ABS_ENC_A, "A", 32.0 / 2.54 / (2* Math.PI)); // Front right
+    m_backRight = new NewSwerveModuleVortex(DT_B_DRIVE_ID, DT_B_TURN_ID, TURN_ABS_ENC_B,"B", 31.4 / 2.54 / (2* Math.PI)); // Back left
+    m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C", 30.7 / 2.54 / (2* Math.PI)); // Back right
+    m_frontRight = new NewSwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, "D", 31.7 / 2.54 / (2* Math.PI)); // Front left
 
     setTurnOffsets( Calibration.getTurnZeroPos('A'), 
                     Calibration.getTurnZeroPos('B'), 
