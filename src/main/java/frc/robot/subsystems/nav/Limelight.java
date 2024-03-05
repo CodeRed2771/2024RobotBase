@@ -148,9 +148,13 @@ public class Limelight {
         boolean valid = true;
         valid &= seesSomething();
         valid &= getPipeline() == LimelightPipeline.AprilTag;
-        valid &= getArea() >.25;
+        valid &= getArea() > .40;
         valid &= Math.abs(horizontalOffset()) <25;
         valid &= Math.abs(verticalOffset()) <20;
+        valid &= fieldPosition.getX() >=-2.0;
+        valid &= fieldPosition.getX() <=8.21055+1;
+        valid &= fieldPosition.getY() >=-2.0;
+        valid &= fieldPosition.getY() <=16.54175+1;
         return valid;
     } 
 
