@@ -5,7 +5,9 @@
 package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -55,13 +57,33 @@ public abstract class NavSubsystem extends SubsystemBase {
     targetPositions = new redFieldPositions();
   }
 
+  public abstract void reset(Pose2d init_pose);
 
   public void reset() {
+    reset(new Pose2d());
   }
 
-  public abstract Translation2d getPosition();
-  public double getAngle() {
-    return 0;
+  public abstract Pose2d getPoseInField();
+
+  public Pose2d getPoseInFieldInches() {
+    Pose2d pos = getPoseInField();
+    return new Pose2d(pos.getTranslation().times(100/2.54),pos.getRotation());
+  }
+
+  public Translation2d getPosition() {
+      return getPoseInField().getTranslation();
+  }
+
+  public Translation2d getPositionInches() {
+      return getPoseInField().getTranslation().times(100/2.54);
   }
   
+  public Rotation2d getRotation(){
+    return getPoseInField().getRotation();
+  }
+
+  public double getAngle() {
+    return getRotation().getDegrees();
+  }
+
 }

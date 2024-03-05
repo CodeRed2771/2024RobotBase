@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems.nav;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+
 import java.util.Optional;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -18,12 +18,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
-// import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.nav.Limelight.LimelightOn;
 import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
-// import frc.robot.subsystems.nav.Limelight.Target;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
@@ -32,7 +30,6 @@ public class PracticeRobotNav extends NavSubsystem {
         AMP, 
     }
 
-    Translation2d position = new Translation2d();
     private NavXGyro gyro;
     private Limelight limelight;
     double yawRotationNudge;
@@ -65,26 +62,33 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     @Override
-    public void reset() {
+    public void reset(Pose2d init_pose) {
         gyro.reset();
-        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
+        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
     }
 
+    /* TODO: Remove this after poseEstimator is working well */
     @Override
     public double getAngle() {
         return gyro.getAngle();
     }
-    private void updateTestPoint(String prefix, Pose2d currentTarget) {
-        updateTestPoint(prefix, new Pose3d(currentTarget));
+
+    @Override
+    public Pose2d getPoseInField() {
+        return poseEstimator.getEstimatedPosition();
     }
 
-    private void updateTestPoint(String prefix, Pose3d currentTarget) {
-        SmartDashboard.putNumber(prefix +" X", currentTarget.getX());
-        SmartDashboard.putNumber(prefix + " Y", currentTarget.getY());
-        SmartDashboard.putNumber(prefix +" Z", currentTarget.getZ());
-        SmartDashboard.putNumber(prefix + " Roll", Math.toDegrees(currentTarget.getRotation().getX()));
-        SmartDashboard.putNumber(prefix + " Pitch", Math.toDegrees(currentTarget.getRotation().getY()));
-        SmartDashboard.putNumber(prefix + " Yaw", Math.toDegrees(currentTarget.getRotation().getZ()));
+    private void updateTestPoint(String prefix, Pose2d pose) {
+        updateTestPoint(prefix, new Pose3d(pose));
+    }
+
+    private void updateTestPoint(String prefix, Pose3d pose) {
+        SmartDashboard.putNumber(prefix +" X", pose.getX());
+        SmartDashboard.putNumber(prefix + " Y", pose.getY());
+        SmartDashboard.putNumber(prefix +" Z", pose.getZ());
+        SmartDashboard.putNumber(prefix + " Roll", Math.toDegrees(pose.getRotation().getX()));
+        SmartDashboard.putNumber(prefix + " Pitch", Math.toDegrees(pose.getRotation().getY()));
+        SmartDashboard.putNumber(prefix + " Yaw", Math.toDegrees(pose.getRotation().getZ()));
 
     }
     @Override
@@ -111,13 +115,6 @@ public class PracticeRobotNav extends NavSubsystem {
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
     }
 
-    public double wrap360To180(double angle){
-        double rotations = angle / 360.0;
-        rotations -= (int) rotations;
-        if (rotations >= 0.5) rotations -= 1.0;
-        return rotations * 360.0;
-    }
-
     public void computeYawNudge(Target target) {
         Transform2d currentTarget = getTargetOffset(target);
         updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
@@ -125,16 +122,15 @@ public class PracticeRobotNav extends NavSubsystem {
         double limit = 0.45;
         double kp = limit/10.0; // limit divided by angle which max power is applied
 
-        yawRotationNudge = kp*wrap360To180(goal);
-        yawRotationNudge = Math.min(yawRotationNudge,limit);
-        yawRotationNudge = Math.max(yawRotationNudge,-limit);
+        yawRotationNudge = kp*MathUtil.inputModulus(goal,-180.0,180.0);
+        yawRotationNudge = MathUtil.clamp(yawRotationNudge,-limit, limit);
         yawRotationNudge = -yawRotationNudge;
     }
 
     public double yawRotationNudge() {
         return yawRotationNudge;
     }
-    public boolean isPoseValid() {
+    public boolean isNavValid() {
         Pose2d pose = poseEstimator.getEstimatedPosition();
         boolean valid = true;
         valid &= pose.getX() >=-2.0;
@@ -143,10 +139,7 @@ public class PracticeRobotNav extends NavSubsystem {
         valid &= pose.getY() <=16.54175+1;
         return valid;
     } 
-    @Override
-    public Translation2d getPosition() {
-        return position;
-    }
+
     public Transform2d getTargetOffset(Target target) {
         Pose3d targetPose;
         switch (target) {
@@ -163,11 +156,4 @@ public class PracticeRobotNav extends NavSubsystem {
         return new Transform2d(getPoseInFieldInches(), targetPose.toPose2d());
     }
 
-    public Pose2d getPoseInFieldInches() {
-        return new Pose2d(poseEstimator.getEstimatedPosition().getTranslation().times(100/2.54),poseEstimator.getEstimatedPosition().getRotation());
-    }
-
-    public Pose2d getPoseInField() {
-        return poseEstimator.getEstimatedPosition();
-    }
 }
