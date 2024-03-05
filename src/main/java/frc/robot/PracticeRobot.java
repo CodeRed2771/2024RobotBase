@@ -40,13 +40,13 @@ public class PracticeRobot extends DefaultRobot {
   protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
   protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
   
-  protected double kHeadingRateLim = 90.0;
-  protected double kHeadingAccelLim = 70.0 / 1.0 ; // Max cmd / Time to achieve Cmd
+  protected double kHeadingRateLim = 180.0;
+  protected double kHeadingAccelLim = 360.0 / 1.0 ; // Max cmd / Time to achieve Cmd
   protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
   protected double headingCmd;
   protected PIDController headingController;
 
-  protected double kHeadingP = 2.0;
+  protected double kHeadingP = 5.0;
   protected double kHeadingI = 0.0;
   protected double kHeadingD = 0.0;
   protected double kHeadingFF = 0.0;
@@ -141,7 +141,7 @@ public class PracticeRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     adjustDriveSpeed(gamepad1);
-    speedDriveByJoystickHeading(gamepad1);
+    SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
 
