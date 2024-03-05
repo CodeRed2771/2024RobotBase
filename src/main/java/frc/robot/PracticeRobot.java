@@ -8,8 +8,6 @@ import java.util.HashMap;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -183,13 +181,6 @@ public class PracticeRobot extends DefaultRobot {
     hdgAccelSlew .reset(0);
   }
 
-  public double wrapDegreesTo180(double angle){
-    double rotations = angle / 360.0;
-    rotations -= (int) rotations;
-    if (rotations >= 0.5) rotations -= 1.0;
-    return rotations * 360.0;
-  }
-
   /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
   protected double calculatedProfileYawCmd(double rotateCmd){
     double yawRate = kHeadingRateLim * getPeriod() * rotateCmd; 
@@ -201,7 +192,7 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   protected double calculateRotationCommand(double heading){
-    double rotationError = wrapDegreesTo180(heading - nav.getAngle()) / 360.0;
+    double rotationError = MathUtil.inputModulus(heading - nav.getAngle(),-180.0, 180.0) / 360.0;
     return headingController.calculate(rotationError);
   }
 
