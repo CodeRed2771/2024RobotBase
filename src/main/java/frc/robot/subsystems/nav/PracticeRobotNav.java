@@ -6,6 +6,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import java.util.Optional;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,6 +14,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -45,7 +48,13 @@ public class PracticeRobotNav extends NavSubsystem {
         limelight.setLED(LimelightOn.Off);
         
         gyro = new NavXGyro(SPI.Port.kMXP);
-        useRedTargets();
+        
+        Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
+        if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
+            useRedTargets();
+        } else {
+            useBlueTargets();
+        }
 
         poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
@@ -140,7 +149,6 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     public Transform2d getTargetOffset(Target target) {
         Pose3d targetPose;
-        useRedTargets();
         switch (target) {
             case AMP:
                 targetPose = targetPositions.ampPose;
