@@ -302,8 +302,8 @@ public class PracticeRobot extends DefaultRobot {
       driveSpeedGain = 0.25;
       rotateSpeedGain = 0.25;
     } else if (gp.getLeftBumper()) {
-      driveSpeedGain = 0.7;
-      rotateSpeedGain = 0.7;
+      driveSpeedGain = 0.6;
+      rotateSpeedGain = 0.6;
     } else {
       driveSpeedGain = 1.0;
       rotateSpeedGain = 1.0;
