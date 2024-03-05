@@ -18,6 +18,7 @@ public final class Main {
     IntakeTest,
     DriveTest,
     TankBot,
+    CompetitionRobot,
     None
   }
 
@@ -30,9 +31,12 @@ public final class Main {
    */
   public static void main(String... args) {
     /* Replace this with the robot selection from pin strapping */
-    var botType = RobotType.DriveTest;
+    var botType = RobotType.CompetitionRobot;
 
     switch (botType) {
+      case CompetitionRobot:
+        RobotBase.startRobot(CompetitionRobot::new);
+        break;
       case DriveTest:
         RobotBase.startRobot(PracticeRobot::new);
         break;
