@@ -36,7 +36,7 @@ public class PracticeRobot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
 
-  protected double kDrivePosAccelLim = 1.0 / 0.75 ; // Max cmd / Time to achieve Cmd
+  protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
   protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
   protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
   
@@ -151,6 +151,11 @@ public class PracticeRobot extends DefaultRobot {
     double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
 
+    Translation2d driveCmd = new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+    driveCmd = calculateProfiledDriveCommand(driveCmd);
+    fwd = driveCmd.getX();
+    strafe = driveCmd.getY();
+
     if(ampNudge) {
       rotate+=nav.yawRotationNudge();
     }
@@ -158,6 +163,7 @@ public class PracticeRobot extends DefaultRobot {
     if (bDriveFieldCentric) {
       driveSpeedControlFieldCentric(fwd, strafe, rotate);
     } else {
+
       driveSpeedControl(fwd, strafe, rotate);
     }
   }
@@ -202,6 +208,10 @@ public class PracticeRobot extends DefaultRobot {
   protected Translation2d calculateProfiledDriveCommand(Translation2d command){
     double magnitude = command.getNorm();
     Rotation2d angle = command.getAngle();
+    if(magnitude < 0.075) // Deadband out 0.05 rotationally
+    {
+      magnitude = 0.0;
+    }
 
     magnitude = driveAccelSlew.calculate(magnitude);
 
@@ -211,10 +221,6 @@ public class PracticeRobot extends DefaultRobot {
   protected void speedDriveByJoystickHeading(Gamepad gp) {
 
     Translation2d driveCmd = new Translation2d(-gp.getLeftY(),-gp.getLeftX());
-    if(driveCmd.getNorm() < 0.075) // Deadband out 0.05 rotationally
-    {
-      driveCmd = new Translation2d(0,0);
-    }
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
