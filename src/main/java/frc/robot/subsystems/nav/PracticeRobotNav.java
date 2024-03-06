@@ -105,7 +105,6 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public void updateRobotPosition() {
         Pose2d limelitePose = limelight.getLimelightPositionInField();
-        limelitePose= new Pose2d(limelitePose.getTranslation().times(2.54/100),limelitePose.getRotation());
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
         if(limelight.isPoseValid()) {
@@ -133,10 +132,10 @@ public class PracticeRobotNav extends NavSubsystem {
     public boolean isNavValid() {
         Pose2d pose = poseEstimator.getEstimatedPosition();
         boolean valid = true;
-        valid &= pose.getX() >=-2.0;
-        valid &= pose.getX() <=8.21055+1;
-        valid &= pose.getY() >=-2.0;
-        valid &= pose.getY() <=16.54175+1;
+        valid &= pose.getX() >=-2.0 * 100/2.54;
+        valid &= pose.getX() <=(8.21055+1)* 100/2.54;
+        valid &= pose.getY() >=-2.0* 100/2.54;
+        valid &= pose.getY() <=(16.54175+1)* 100/2.54;
         return valid;
     } 
 

@@ -39,21 +39,21 @@ public class NavXGyro {
     }
 
     public Translation3d getVelocity3d(){
-        return new Translation3d(mGyro.getVelocityX(), 
-                                 mGyro.getVelocityY(),
-                                 mGyro.getVelocityZ());
+        return new Translation3d(velocityX(), 
+                                 velocityY(),
+                                 velocityZ());
     }
 
     public double velocityX() {
-        return mGyro.getVelocityX();
+        return mGyro.getVelocityX()*100/2.54;
     }
 
     public double velocityY() {
-        return mGyro.getVelocityY();
+        return mGyro.getVelocityY()*100/2.54;
     }
 
     public double velocityZ() {
-        return mGyro.getVelocityZ();
+        return mGyro.getVelocityZ()*100/2.54;
     }
 
     public double pitch_raw() {

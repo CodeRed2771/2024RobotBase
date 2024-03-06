@@ -60,7 +60,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private PIDGains driveGains;
   private PIDGains turnGains;
 
-  private static final double kWheelRadius = 1.88 * 2.54/100;// Meters needed for kinematics
   private static final double kDriveMaxRPM = 6600;
 
   public static final double kMaxAngularSpeed =  1000* 2 *  (2 * Math.PI); // radians per second
@@ -89,8 +88,8 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     Timer.delay(0.5);
 
     m_driveEncoder = m_driveMotor.getEncoder();
-    m_driveEncoder.setPositionConversionFactor(wheel_radius * 2.54 / 100.0);
-    m_driveEncoder.setVelocityConversionFactor(1/kDriveMaxRPM);
+    m_driveEncoder.setPositionConversionFactor(wheel_radius);
+    m_driveEncoder.setVelocityConversionFactor(wheel_radius / 60.0); // RPM to Inches/sec
 
 
     m_turningMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
@@ -111,11 +110,11 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     /************ SET PID VALUES HERE ******************/
     driveGains = new PIDGains();
-    driveGains.kP = 0.4;
+    driveGains.kP = 0.4/100.0 *2.54/10;
     driveGains.kI = 0.0;
     driveGains.kD = 0.0;
     driveGains.kIz = 0.0;
-    driveGains.kFF = 1.0;
+    driveGains.kFF = 1.0/100.0 *2.54/10;
     driveGains.maxVel = 1.0;
     driveGains.maxAcc = 10.0;
 

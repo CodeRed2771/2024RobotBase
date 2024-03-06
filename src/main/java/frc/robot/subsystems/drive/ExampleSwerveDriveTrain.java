@@ -2,12 +2,10 @@ package frc.robot.subsystems.drive;
 
 import java.util.Map;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,7 +13,7 @@ import frc.robot.Calibration;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
-  private static final double kMaxSpeed = 1.0; // normalized full Speed
+  private static final double kMaxSpeed = 200.0; // normalized full Speed Inches/sec
 
   private NewSwerveModuleVortex m_frontLeft; // Front Left
   private NewSwerveModuleVortex m_backRight; // Back Right
@@ -25,8 +23,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   // Robot Center is 0,0 anchor point for coordinates (where NavX is)
   // +X = out intake
   // +Y = out right side of robot
-  private final double wheel_position_offset = (15.0 - 3.25) * (2.54 / 100.0);
-
+  private final double wheel_position_offset = (15.0 - 3.25);
+  // Max Angle rate in Rad = (Max linear speed / Circumference (2PI *R)) for rotations * 2PI (for Radians)
+  // Max Angle Rate = Max speed / radius
+  private final double kMaxAngleRate = kMaxSpeed / (Math.sqrt(2)*wheel_position_offset);
   private final Translation2d m_frontLeftLocation = new Translation2d(wheel_position_offset, wheel_position_offset);
   private final Translation2d m_frontRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
   private final Translation2d m_backLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
@@ -54,6 +54,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     int DT_D_DRIVE_ID = wiring.get("D drive");
     int DT_D_TURN_ID = wiring.get("D turn");
 
+    // Circumference in cm to Radius in inches
     m_frontLeft = new NewSwerveModuleVortex(DT_A_DRIVE_ID, DT_A_TURN_ID, TURN_ABS_ENC_A, "A", 32.0 / 2.54 / (2* Math.PI)); // Front right
     m_backRight = new NewSwerveModuleVortex(DT_B_DRIVE_ID, DT_B_TURN_ID, TURN_ABS_ENC_B,"B", 31.4 / 2.54 / (2* Math.PI)); // Back left
     m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C", 30.7 / 2.54 / (2* Math.PI)); // Back right
@@ -113,7 +114,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
    */
   public void driveSpeedControl(double xSpeed, double ySpeed, double rot, double periodSeconds) {
     var swerveModuleStates = m_kinematics
-        .toSwerveModuleStates(ChassisSpeeds.discretize(new ChassisSpeeds(xSpeed, ySpeed, rot), periodSeconds));
+        .toSwerveModuleStates(ChassisSpeeds.discretize(new ChassisSpeeds(xSpeed*kMaxSpeed, ySpeed*kMaxSpeed, rot*kMaxAngleRate), periodSeconds));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     // Maintain order from m_kinematics creation
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -122,7 +123,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  public void driveFixedOrientation(double xSpeed, double ySpeed)
+  public void driveFixedSpeedOrientation(double xSpeed, double ySpeed)
   {
     Rotation2d ang = new Rotation2d(xSpeed, ySpeed);
     Translation2d Speed = new Translation2d(xSpeed,ySpeed);
@@ -136,7 +137,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public void driveFixedPositionOffsetInches(double xInches, double yInches){
-    Translation2d target = new Translation2d(xInches * 2.54 / 100, yInches * 2.54 / 100);
+    Translation2d target = new Translation2d(xInches, yInches);
     SwerveModulePosition targetOffset = new SwerveModulePosition(target.getDistance(target), target.getAngle());
 
     m_frontLeft.commandSwervePositionOffset(targetOffset);
@@ -146,7 +147,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public boolean atFixedPosition(double allowedError){
-    allowedError *=  2.54/100;
     boolean result = m_frontLeft.atSwervePosition(allowedError);
     result = result && m_frontRight.atSwervePosition(allowedError);
     result = result && m_backLeft.atSwervePosition(allowedError);
