@@ -52,7 +52,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
     private double speedTolerance = 300;
     private double motorSpeedBias = 0.06;
 
-    private int notePresentThreshold = 1800; // < 1200 were starting to see a note
+    private int notePresentThreshold = 1100; // < 1200 were starting to see a note
 
     public enum LauncherSpeeds {
         OFF(0),
@@ -95,7 +95,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         lowerShooterMotor.restoreFactoryDefaults();
         Timer.delay(0.5);
 
-        upperShooterMotor.setInverted(true);
+        upperShooterMotor.setInverted(false);
         lowerShooterMotor.setInverted(true);
 
         upperShooterMotor.burnFlash();
@@ -158,7 +158,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
     public void load(double power) {
         super.load(power);
 
-        loaderMotor.set(power*1.10);
+        loaderMotor.set(-power*2.00);
         intakeMotor.set(-power);
     }
 
@@ -192,7 +192,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
     public void unload() {
         super.unload();
 
-        loaderMotor.set(-.5);
+        loaderMotor.set(.5);
         intakeMotor.set(.5);
         loadState = LoaderState.Unloading;
     }
@@ -215,7 +215,6 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
             lowerSpeedCmd = (speed) *(1+motorSpeedBias);
         else  
             lowerSpeedCmd = 0;
-
         upperPIDCtrl.setReference(upperSpeedCmd, CANSparkMax.ControlType.kVelocity);
         lowerPIDCtrl.setReference(lowerSpeedCmd, CANSparkMax.ControlType.kVelocity);
     }
@@ -229,6 +228,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         boolean lowerMotorTracking = Math.abs(lowerSpeedCmd - lowerEncoder.getVelocity()) < speedTolerance;
 
         return upperMotorTracking || lowerMotorTracking;
+        // return true;
         // return upperMotorTracking && lowerMotorTracking && Math.abs(upperSpeedCmd) > 0.1;
     }
 

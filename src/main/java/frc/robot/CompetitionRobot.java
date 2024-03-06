@@ -150,7 +150,7 @@ public class CompetitionRobot extends DefaultRobot {
   protected void SpeedDriveByJoystick(Gamepad gp) {
     double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
     double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.07);
 
     if(ampNudge) {
       rotate+=nav.yawRotationNudge();
