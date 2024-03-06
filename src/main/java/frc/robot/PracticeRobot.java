@@ -34,8 +34,7 @@ public class PracticeRobot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
   
-  protected double kHeadingRateLim = 180.0;
-  protected double kHeadingAccelLim = 360.0 / 1.0 ; // Max cmd / Time to achieve Cmd
+  protected double kHeadingAccelLim = 1.0 / 0.5 ; // Max cmd / Time to achieve Cmd
   protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
   protected double headingCmd;
   protected PIDController headingController;
@@ -142,9 +141,9 @@ public class PracticeRobot extends DefaultRobot {
   @Override
   protected void SpeedDriveByJoystick(Gamepad gp) {
 
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
     Translation2d driveCmd = getJoystickDriveCommand(gp);
 
+    double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
     if(ampNudge) {
@@ -176,12 +175,9 @@ public class PracticeRobot extends DefaultRobot {
 
   /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
   protected double calculatedProfileYawCmd(double rotateCmd){
-    double yawRate = kHeadingRateLim * getPeriod() * rotateCmd; 
     // Integrate rotate to move heading command
-    yawRate = hdgAccelSlew.calculate(yawRate);
-    headingCmd = headingCmd + yawRate;
-
-    return headingCmd;
+    rotateCmd = MathUtil.applyDeadband(rotateCmd, 0.05);
+    return hdgAccelSlew.calculate(rotateCmd);
   }
 
   protected double calculateRotationCommand(double heading){
@@ -202,7 +198,6 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   private void postTuneParams(){
-    SmartDashboard.putNumber("Hdg R Lim", kHeadingRateLim);
     SmartDashboard.putNumber("Hdg R Accel Lim", kHeadingAccelLim);
     SmartDashboard.putNumber("Hdg P", kHeadingP);
     SmartDashboard.putNumber("Hdg I", kHeadingI);
@@ -215,10 +210,6 @@ public class PracticeRobot extends DefaultRobot {
 
     double val;
     boolean changed = false;
-    val = SmartDashboard.getNumber("Hdg R Lim", kHeadingRateLim);
-    if (val != kHeadingRateLim){
-      kHeadingRateLim = val;
-    }
     val = SmartDashboard.getNumber("Hdg R Accel Lim", kHeadingAccelLim);
     if (val != kHeadingAccelLim){
       kHeadingAccelLim = val;
