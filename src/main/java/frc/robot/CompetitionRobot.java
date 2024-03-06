@@ -82,6 +82,9 @@ public class CompetitionRobot extends DefaultRobot {
     wiring.put("load sensor", 4); // analog 4 (on the Navx MXP)rev 
     wiring.put("aim",  22);
 
+    // DIO Port
+    wiring.put("aim encoder",  0);
+
     wiring.put("intakeMotorId", 16);
 
     //PWM wiring
@@ -142,7 +145,7 @@ public class CompetitionRobot extends DefaultRobot {
   public void teleopPeriodic() {
     // This method will be called once per scheduler run
     adjustDriveSpeed(gamepad1);
-    speedDriveByJoystickHeading(gamepad1);
+    SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
   }
 
@@ -329,10 +332,10 @@ public class CompetitionRobot extends DefaultRobot {
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER);
+      launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getBButton()) {
       launcher.setSpeedBias(.15);
       launcher.prime(LauncherSpeeds.AMP);
