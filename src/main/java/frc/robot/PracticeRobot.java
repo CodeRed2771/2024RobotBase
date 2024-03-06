@@ -145,24 +145,21 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   protected void SpeedDriveByJoystick(Gamepad gp) {
-    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
-    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
 
-    Translation2d driveCmd = new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+    Translation2d driveCmd = getJoystickDriveCmds(gp);
+
     driveCmd = calculateProfiledDriveCommand(driveCmd);
-    fwd = driveCmd.getX();
-    strafe = driveCmd.getY();
 
     if(ampNudge) {
       rotate+=nav.yawRotationNudge();
     }
 
     if (bDriveFieldCentric) {
-      driveSpeedControlFieldCentric(fwd, strafe, rotate);
+      driveSpeedControlFieldCentric( driveCmd.getX(), driveCmd.getY(), rotate);
     } else {
 
-      driveSpeedControl(fwd, strafe, rotate);
+      driveSpeedControl( driveCmd.getX(), driveCmd.getY(), rotate);
     }
   }
 
@@ -283,6 +280,8 @@ public class PracticeRobot extends DefaultRobot {
 
     driveAccelSlew.reset(0);
     resetLimitedHeadingControl();
+    
+    super.restoreRobotToDefaultState();
   }
   boolean ampNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){

@@ -84,6 +84,10 @@ public class DefaultRobot extends TimedRobot {
       bDriveFieldCentric = mode;
   }
 
+  protected Translation2d getJoystickDriveCmds(Gamepad gp) {
+    return new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+  }
+
   protected void SpeedDriveByJoystick(Gamepad gp) {
     double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
     double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
