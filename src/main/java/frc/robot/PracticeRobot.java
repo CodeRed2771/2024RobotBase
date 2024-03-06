@@ -152,10 +152,10 @@ public class PracticeRobot extends DefaultRobot {
     }
 
     if (bDriveFieldCentric) {
-      driveSpeedControlFieldCentric( driveCmd.getX(), driveCmd.getY(), rotate);
+      driveSpeedControlFieldCentric( driveCmd, rotate);
     } else {
 
-      driveSpeedControl( driveCmd.getX(), driveCmd.getY(), rotate);
+      driveSpeedControl( driveCmd, rotate);
     }
   }
 
@@ -191,14 +191,14 @@ public class PracticeRobot extends DefaultRobot {
 
   protected void speedDriveByJoystickHeading(Gamepad gp) {
 
-    Translation2d driveCmd = new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+    Translation2d driveCmd = getJoystickDriveCommand(gp);
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
     double hdg = calculatedProfileYawCmd(rotate);
     rotate = calculateRotationCommand(hdg);
 
-    driveSpeedControlFieldCentric(driveCmd.getX(), driveCmd.getY(), rotate);
+    driveSpeedControlFieldCentric(driveCmd, rotate);
   }
 
   private void postTuneParams(){
@@ -296,8 +296,9 @@ public class PracticeRobot extends DefaultRobot {
 
   /* By default just pass commands to the drive system */
   @Override
-  public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
+  public void driveSpeedControl(Translation2d driveCmd, double rotate) {
+    driveCmd = driveCmd.times(driveSpeedGain);
+    drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = 0;
