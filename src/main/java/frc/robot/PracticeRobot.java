@@ -33,10 +33,6 @@ public class PracticeRobot extends DefaultRobot {
 
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
-
-  protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
-  protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
-  protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
   
   protected double kHeadingRateLim = 180.0;
   protected double kHeadingAccelLim = 360.0 / 1.0 ; // Max cmd / Time to achieve Cmd
@@ -147,7 +143,7 @@ public class PracticeRobot extends DefaultRobot {
   protected void SpeedDriveByJoystick(Gamepad gp) {
 
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
-    Translation2d driveCmd = getJoystickDriveCmds(gp);
+    Translation2d driveCmd = getJoystickDriveCommand(gp);
 
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
@@ -174,7 +170,7 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   protected void resetLimitedHeadingControl(){
-    headingCmd = nav.getAngle();
+    headingCmd = getAngle();
     hdgAccelSlew .reset(0);
   }
 
@@ -191,19 +187,6 @@ public class PracticeRobot extends DefaultRobot {
   protected double calculateRotationCommand(double heading){
     double rotationError = MathUtil.inputModulus(heading - nav.getAngle(),-180.0, 180.0) / 360.0;
     return headingController.calculate(rotationError);
-  }
-
-  protected Translation2d calculateProfiledDriveCommand(Translation2d command){
-    double magnitude = command.getNorm();
-    Rotation2d angle = command.getAngle();
-    if(magnitude < 0.075) // Deadband out 0.05 rotationally
-    {
-      magnitude = 0.0;
-    }
-
-    magnitude = driveAccelSlew.calculate(magnitude);
-
-    return new Translation2d(magnitude,angle);
   }
 
   protected void speedDriveByJoystickHeading(Gamepad gp) {
@@ -278,9 +261,8 @@ public class PracticeRobot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
     nav.reset();
 
-    driveAccelSlew.reset(0);
     resetLimitedHeadingControl();
-    
+
     super.restoreRobotToDefaultState();
   }
   boolean ampNudge = false;

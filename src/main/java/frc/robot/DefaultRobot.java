@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -26,13 +27,20 @@ public class DefaultRobot extends TimedRobot {
   protected Gamepad gamepad2 = new Gamepad(1);
   protected Gamepad gamepad3 = new Gamepad(2);
 
+  protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
+  protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
+  protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
+
+
   public DefaultRobot() {
     super();
 
     wiring = new HashMap<>();
   }
 
-  public void restoreRobotToDefaultState(){}
+  public void restoreRobotToDefaultState(){
+    driveAccelSlew.reset(0);
+  }
 
 
   /* By default just pass commands to the drive system */
@@ -84,8 +92,22 @@ public class DefaultRobot extends TimedRobot {
       bDriveFieldCentric = mode;
   }
 
-  protected Translation2d getJoystickDriveCmds(Gamepad gp) {
+  protected Translation2d getJoystickDriveCommand(Gamepad gp) {
     return new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+  }
+
+  protected Translation2d calculateProfiledDriveCommand(Translation2d command){
+    double magnitude = command.getNorm();
+    Rotation2d angle = command.getAngle();
+    
+    if(magnitude < 0.075) // Deadband out 0.05 rotationally
+    {
+      magnitude = 0.0;
+    }
+
+    magnitude = driveAccelSlew.calculate(magnitude);
+
+    return new Translation2d(magnitude,angle);
   }
 
   protected void SpeedDriveByJoystick(Gamepad gp) {
