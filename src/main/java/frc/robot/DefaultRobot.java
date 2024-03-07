@@ -23,6 +23,7 @@ public class DefaultRobot extends TimedRobot {
   protected final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   protected Map<String,Integer> wiring;
+  protected Map<String,Double> calibration;
   protected Gamepad gamepad1 = new Gamepad(0);
   protected Gamepad gamepad2 = new Gamepad(1);
   protected Gamepad gamepad3 = new Gamepad(2);
@@ -35,6 +36,7 @@ public class DefaultRobot extends TimedRobot {
   public DefaultRobot() {
     super();
 
+    calibration = new HashMap<>();
     wiring = new HashMap<>();
   }
 
