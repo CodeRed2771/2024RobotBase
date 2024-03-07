@@ -79,7 +79,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         OFF(0,75),
         AMP(1300, 63.5),
         SUBWOOFER(2400, 71),
-        SAFE_ZONE(2800, 48.5),
+        SAFE_ZONE(2900, 35),
         STOW(0,25),
         MAX_ANGLE(0, 90);
 
