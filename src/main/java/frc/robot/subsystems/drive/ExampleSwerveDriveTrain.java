@@ -35,31 +35,17 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
       m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  public ExampleSwerveDriveTrain(Map<String, Integer> wiring) {
+  public ExampleSwerveDriveTrain(Map<String, Integer> wiring, Map<String,Double> calibration) {
     super();
 
-    Calibration.loadSwerveCalibration();
-
-    int TURN_ABS_ENC_A = wiring.get("A turn enc");
-    int TURN_ABS_ENC_B = wiring.get("B turn enc");
-    int TURN_ABS_ENC_C = wiring.get("C turn enc");
-    int TURN_ABS_ENC_D = wiring.get("D turn enc");
-
-    int DT_A_DRIVE_ID = wiring.get("A drive");
-    int DT_A_TURN_ID = wiring.get("A turn");
-    int DT_B_DRIVE_ID = wiring.get("B drive");
-    int DT_B_TURN_ID = wiring.get("B turn");
-    int DT_C_DRIVE_ID = wiring.get("C drive");
-    int DT_C_TURN_ID = wiring.get("C turn");
-    int DT_D_DRIVE_ID = wiring.get("D drive");
-    int DT_D_TURN_ID = wiring.get("D turn");
 
     // Circumference in cm to Radius in inches
-    m_frontLeft = new NewSwerveModuleVortex(DT_A_DRIVE_ID, DT_A_TURN_ID, TURN_ABS_ENC_A, "A", 32.0 / 2.54 / (2* Math.PI)); // Front right
-    m_backRight = new NewSwerveModuleVortex(DT_B_DRIVE_ID, DT_B_TURN_ID, TURN_ABS_ENC_B,"B", 31.4 / 2.54 / (2* Math.PI)); // Back left
-    m_backLeft = new NewSwerveModuleVortex(DT_C_DRIVE_ID, DT_C_TURN_ID, TURN_ABS_ENC_C, "C", 30.7 / 2.54 / (2* Math.PI)); // Back right
-    m_frontRight = new NewSwerveModuleVortex(DT_D_DRIVE_ID, DT_D_TURN_ID, TURN_ABS_ENC_D, "D", 31.7 / 2.54 / (2* Math.PI)); // Front left
+    m_frontLeft = new NewSwerveModuleVortex(wiring, calibration, "A"); // Front right
+    m_backRight = new NewSwerveModuleVortex(wiring, calibration,"B"); // Back left
+    m_backLeft = new NewSwerveModuleVortex(wiring, calibration, "C"); // Back right
+    m_frontRight = new NewSwerveModuleVortex(wiring, calibration, "D"); // Front left
 
+    Calibration.loadSwerveCalibration();
     setTurnOffsets( Calibration.getTurnZeroPos('A'), 
                     Calibration.getTurnZeroPos('B'), 
                     Calibration.getTurnZeroPos('C'),

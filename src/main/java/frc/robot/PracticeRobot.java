@@ -8,7 +8,6 @@ import java.util.HashMap;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
@@ -79,10 +78,17 @@ public class PracticeRobot extends DefaultRobot {
     //PWM wiring
     wiring.put("launcher led", 0);
 
+    // Calibrated by measuring circumference in cm and calculating radius
+    calibration.put("A wheel radius", 32.0 / 2.54 / (2* Math.PI));
+    calibration.put("B wheel radius", 31.4 / 2.54 / (2* Math.PI));
+    calibration.put("C wheel radius", 30.7 / 2.54 / (2* Math.PI));
+    calibration.put("D wheel radius", 31.7 / 2.54 / (2* Math.PI));
+
     headingController = new PIDController(kHeadingP,kHeadingI,kHeadingD);
 
+
     /* Set all of the subsystems */
-    drive = new ExampleSwerveDriveTrain(wiring);
+    drive = new ExampleSwerveDriveTrain(wiring, calibration);
     nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
     launcher = new RollerLauncher(wiring);

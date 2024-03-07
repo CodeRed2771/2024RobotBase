@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Map;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -60,22 +61,16 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private PIDGains driveGains;
   private PIDGains turnGains;
 
-  private static final double kDriveMaxRPM = 6600;
-
-  public static final double kMaxAngularSpeed =  1000* 2 *  (2 * Math.PI); // radians per second
-  private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration = 1000 * 5 * (2 * Math.PI); // radians per second squared
-
   /** Creates a new NewSwerveModuleVortex. */
-  public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID, double wheel_radius) {
+  public NewSwerveModuleVortex(Map<String,Integer> wiring, Map<String,Double> calibration, String moduleID) {
     super();
 
     this.setName(moduleID);
-
-    Timer.delay(0.15);
+    
+    double wheel_radius = calibration.getOrDefault(moduleID + " wheel radius", 2.0);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    m_driveMotor = new CANSparkFlex(driveMotorID, MotorType.kBrushless);
+    m_driveMotor = new CANSparkFlex(wiring.get( moduleID + " drive"), MotorType.kBrushless);
     m_driveMotor.restoreFactoryDefaults();
 
     Timer.delay(0.5);
@@ -92,7 +87,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_driveEncoder.setVelocityConversionFactor(wheel_radius / 60.0); // RPM to Inches/sec
 
 
-    m_turningMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
+    m_turningMotor = new CANSparkMax(wiring.get( moduleID + " turn"), MotorType.kBrushless);
     m_turningMotor.restoreFactoryDefaults();
     Timer.delay(0.5);
     m_turningMotor.setOpenLoopRampRate(1);
@@ -102,7 +97,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.burnFlash(); 
     Timer.delay(0.5);
 
-    turnAbsEncoder = new AnalogEncoder(new AnalogInput(turnAbsEncID));
+    turnAbsEncoder = new AnalogEncoder(new AnalogInput(wiring.get( moduleID + " turn enc")));
     m_turnEncoder = m_turningMotor.getEncoder();
 
     m_turnEncoder.setPositionConversionFactor(1.0/12.805);
