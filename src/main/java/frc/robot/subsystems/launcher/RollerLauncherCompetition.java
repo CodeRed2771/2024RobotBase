@@ -61,19 +61,27 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
 
     private int notePresentThreshold = 1100; // < 1200 were starting to see a note
 
-    private final double ABS_FULL_BACK = .692;
-    private final double ABS_FULL_FORWARD = .905;
-    private static final double AIM_RANGE_TICKS = 194; // encoder ticks for full range of motion
-    private static final double AIM_RANGE_DEGREE_MAX_BACK = 90;
-    private final double AIM_RANGE_DEGREE_MAX_FORWARD = 0;
-    private final double MAX_BACK = .7;
-    private final double MAX_DOWN = .90;
+    private static final double ABS_FULL_BACK = .7205;
+    private static final double ABS_TICK_BACK = .826902;
+    private static final double ABS_FULL_FORWARD = 0.927;
+    private static final double ABS_TICK_FORWARD = 266.9;
+    private static final double AIM_RANGE_TICKS = ABS_TICK_FORWARD - ABS_TICK_BACK; // encoder ticks for full range of motion
+    private static final double AIM_RANGE_FULL = ABS_FULL_FORWARD - ABS_FULL_BACK; // encoder ticks for full range of motion
+    private double aimBias = 1.0;
+
+    public double rollerRotationToTicks(double input_rotation){
+        double rotations = aimBias - input_rotation / 360.0;
+        double percent = (rotations - ABS_FULL_BACK)/AIM_RANGE_FULL;
+        return ABS_TICK_BACK + percent * AIM_RANGE_TICKS;
+    }
 
     public enum LauncherSpeeds {
-        OFF(0,45),
-        AMP(1300, 28),
-        SUBWOOFER(2400, 40), // tested 2/22/24
-        SAFE_ZONE(2800, 3); // untested
+        OFF(0,75),
+        AMP(1300, 63.5),
+        SUBWOOFER(2400, 71),
+        SAFE_ZONE(2800, 48.5),
+        STOW(0,25),
+        MAX_ANGLE(0, 90);
 
         private double speed;
         private double angle;
@@ -86,10 +94,9 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         public double getSpeed() {
             return speed;
         }
-        public double getAngleInTicks() {
+        public double getAngle() {
             // we want this to convert to encoder ticks
-            double percent = (AIM_RANGE_DEGREE_MAX_BACK - angle) / AIM_RANGE_DEGREE_MAX_BACK;
-            return AIM_RANGE_TICKS * percent;
+            return angle;
         }
     }
   
@@ -187,8 +194,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
     }
 
     private void resetAimEncoder() {
-        double percentAbsPos = (aimAbsoluteEncoder.get() - ABS_FULL_BACK) / (ABS_FULL_FORWARD - ABS_FULL_BACK);
-        aimEncoder.setPosition(AIM_RANGE_TICKS * percentAbsPos);
+        aimEncoder.setPosition(rollerRotationToTicks(aimAbsoluteEncoder.get()));
     }
 
     private void log(String text) {
@@ -257,7 +263,7 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
 
     public void prime(LauncherSpeeds speedSetting) {
         double speed = speedSetting.getSpeed();
-        double angleInTicks = speedSetting.getAngleInTicks();
+        double angleInTicks = rollerRotationToTicks(speedSetting.getAngle());
 
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
