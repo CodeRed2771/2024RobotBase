@@ -146,11 +146,16 @@ public class Limelight {
 
     public boolean isPoseValid() {
         boolean valid = true;
+        Rotation3d orientation=fieldPosition.getRotation();
         valid &= seesSomething();
         valid &= getPipeline() == LimelightPipeline.AprilTag;
         valid &= getArea() > .40;
         valid &= Math.abs(horizontalOffset()) <25;
         valid &= Math.abs(verticalOffset()) <20;
+        valid &= orientation.getX() <= 15*Math.PI/180.0;
+        valid &= orientation.getX() >= -15*Math.PI/180.0;
+        valid &= orientation.getY() <= 15*Math.PI/180.0;
+        valid &= orientation.getY() >= -15*Math.PI/180.0;
         valid &= fieldPosition.getX() >=-2.0;
         valid &= fieldPosition.getX() <=8.21055+1;
         valid &= fieldPosition.getY() >=-2.0;
@@ -217,7 +222,7 @@ public class Limelight {
     public double getLatency(){
         return (limelight.getEntry("tl").getDouble(0)
          + limelight.getEntry("cl").getDouble(0)
-         + 50)/1000.0;
+         + 150)/1000.0;
     }
 
     // Goes in SpeedDriveByJoystick function in Practice Robot (@Override)

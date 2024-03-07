@@ -83,9 +83,9 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     private void updateTestPoint(String prefix, Pose3d pose) {
-        SmartDashboard.putNumber(prefix +" X", pose.getX());
+        SmartDashboard.putNumber(prefix + " X", pose.getX());
         SmartDashboard.putNumber(prefix + " Y", pose.getY());
-        SmartDashboard.putNumber(prefix +" Z", pose.getZ());
+        SmartDashboard.putNumber(prefix + " Z", pose.getZ());
         SmartDashboard.putNumber(prefix + " Roll", Math.toDegrees(pose.getRotation().getX()));
         SmartDashboard.putNumber(prefix + " Pitch", Math.toDegrees(pose.getRotation().getY()));
         SmartDashboard.putNumber(prefix + " Yaw", Math.toDegrees(pose.getRotation().getZ()));
@@ -107,7 +107,7 @@ public class PracticeRobotNav extends NavSubsystem {
         Pose2d limelitePose = limelight.getLimelightPositionInField();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(limelight.isPoseValid()) {
+        if(limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
             poseEstimator.addVisionMeasurement(limelitePose, Timer.getFPGATimestamp()-limelight.getLatency());
         }
         
