@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems.drive;
 
-import com.revrobotics.CANSparkBase.ControlType;
+import java.util.Map;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -66,25 +66,17 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private PIDGains driveGains;
   private PIDGains turnGains;
 
-  private static final double kWheelRadius = 1.88 * 2.54/100;// Meters needed for kinematics
-  private static final double kDriveMaxRPM = 6600;
-
-  public static final double kMaxAngularSpeed =  1000* 2 *  (2 * Math.PI); // radians per second
-  private static final double kModuleMaxAngularVelocity = kMaxAngularSpeed;
-  private static final double kModuleMaxAngularAcceleration = 1000 * 5 * (2 * Math.PI); // radians per second squared
-
   private double currentDriveSetpoint = 0; // used for simple auto driving
-
   /** Creates a new NewSwerveModuleVortex. */
-  public NewSwerveModuleVortex(int driveMotorID, int turnMotorID, int turnAbsEncID, String moduleID) {
+  public NewSwerveModuleVortex(Map<String,Integer> wiring, Map<String,Double> calibration, String moduleID) {
     super();
 
     this.setName(moduleID);
-
-    Timer.delay(0.15);
+    
+    double wheel_radius = calibration.getOrDefault(moduleID + " wheel radius", 2.0);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    m_driveMotor = new CANSparkFlex(driveMotorID, MotorType.kBrushless);
+    m_driveMotor = new CANSparkFlex(wiring.get( moduleID + " drive"), MotorType.kBrushless);
     m_driveMotor.restoreFactoryDefaults();
 
     Timer.delay(0.5);
@@ -97,11 +89,11 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     Timer.delay(0.5);
 
     m_driveEncoder = m_driveMotor.getEncoder();
-    m_driveEncoder.setPositionConversionFactor(kWheelRadius);
-    m_driveEncoder.setVelocityConversionFactor(1/kDriveMaxRPM);
+    m_driveEncoder.setPositionConversionFactor(wheel_radius);
+    m_driveEncoder.setVelocityConversionFactor(wheel_radius / 60.0); // RPM to Inches/sec
 
 
-    m_turningMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
+    m_turningMotor = new CANSparkMax(wiring.get( moduleID + " turn"), MotorType.kBrushless);
     m_turningMotor.restoreFactoryDefaults();
     Timer.delay(0.5);
     m_turningMotor.setOpenLoopRampRate(1);
@@ -111,7 +103,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.burnFlash(); 
     Timer.delay(0.5);
 
-    turnAbsEncoder = new AnalogEncoder(new AnalogInput(turnAbsEncID));
+    turnAbsEncoder = new AnalogEncoder(new AnalogInput(wiring.get( moduleID + " turn enc")));
     m_turnEncoder = m_turningMotor.getEncoder();
 
     m_turnEncoder.setPositionConversionFactor(1.0/12.805);
@@ -119,13 +111,14 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     /************ SET PID VALUES HERE ******************/
     driveGains = new PIDGains();
-    driveGains.kP = 0.03;  // was .4
+
+    driveGains.kP = 0.4/100.0 *2.54/10;
     driveGains.kI = 0.0;
     driveGains.kD = 0.0;
     driveGains.kIz = 0.0;
-    driveGains.kFF = 0.0; // was .04
-    driveGains.maxVel = 9;
-    driveGains.maxAcc = 3;
+    driveGains.kFF = 1.0/100.0 *2.54/10;
+    driveGains.maxVel = 1.0;
+    driveGains.maxAcc = 10.0;
 
     m_drivePIDController = m_driveMotor.getPIDController();
     m_drivePIDController.setP(driveGains.kP);
@@ -149,13 +142,13 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
 
     m_turningPIDController = m_turningMotor.getPIDController();
-    m_turningPIDController.setP(3.0);
-    m_turningPIDController.setI(0.0);
-    m_turningPIDController.setIZone(0.0);
-    m_turningPIDController.setD(0.0);
-    m_turningPIDController.setFF(0.0);
-    m_turningPIDController.setSmartMotionMaxVelocity(7000.0, 0);
-    m_turningPIDController.setSmartMotionMaxAccel(5000.0, 0);
+    m_turningPIDController.setP(turnGains.kP);
+    m_turningPIDController.setI(turnGains.kI);
+    m_turningPIDController.setIZone(turnGains.kIz);
+    m_turningPIDController.setD(turnGains.kD);
+    m_turningPIDController.setFF(turnGains.kFF);
+    m_turningPIDController.setSmartMotionMaxVelocity(turnGains.maxVel, 0);
+    m_turningPIDController.setSmartMotionMaxAccel(turnGains.maxAcc, 0);
     m_turningPIDController.setOutputRange(-1, 1);
 
     m_turningPIDController.setFeedbackDevice(m_turnEncoder);
@@ -399,16 +392,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   public double getDriveEnc() {
 		return m_driveEncoder.getPosition();
 	}
-
-  // auto related routines
-  
-  public void setDriveMaxAccel(final int accel) {
-    m_drivePIDController.setSmartMotionMaxAccel(accel, 0);
-  }
-  
-  public void setDriveMaxVelocity(final int velocity) {
-    m_drivePIDController.setSmartMotionMaxVelocity(velocity, 0);
-  }
 
   public void setDrivePIDToSetPoint(final double setpoint) {
     currentDriveSetpoint = setpoint;

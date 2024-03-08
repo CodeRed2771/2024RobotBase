@@ -11,14 +11,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.RollerIntake;
-import frc.robot.subsystems.launcher.DummyLauncher;
-import frc.robot.subsystems.launcher.LauncherSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
@@ -47,6 +48,16 @@ public class PracticeRobot extends DefaultRobot {
 
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
+  
+  protected double kHeadingAccelLim = 1.0 / 0.5 ; // Max cmd / Time to achieve Cmd
+  protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
+  protected double headingCmd;
+  protected PIDController headingController;
+
+  protected double kHeadingP = 5.0;
+  protected double kHeadingI = 0.0;
+  protected double kHeadingD = 0.0;
+  protected double kHeadingFF = 0.0;
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
@@ -83,9 +94,18 @@ public class PracticeRobot extends DefaultRobot {
     //PWM wiring
     wiring.put("launcher led", 0);
 
+    // Calibrated by measuring circumference in cm and calculating radius
+    calibration.put("A wheel radius", 32.0 / 2.54 / (2* Math.PI));
+    calibration.put("B wheel radius", 31.4 / 2.54 / (2* Math.PI));
+    calibration.put("C wheel radius", 30.7 / 2.54 / (2* Math.PI));
+    calibration.put("D wheel radius", 31.7 / 2.54 / (2* Math.PI));
+
+    headingController = new PIDController(kHeadingP,kHeadingI,kHeadingD);
+
+
     /* Set all of the subsystems */
-    nav = new PracticeRobotNav();
-    drive = new ExampleSwerveDriveTrain(wiring);
+    drive = new ExampleSwerveDriveTrain(wiring, calibration);
+    nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
     launcher = new RollerLauncher(wiring);
 
@@ -108,11 +128,6 @@ public class PracticeRobot extends DefaultRobot {
   public void robotPeriodic(){
     super.robotPeriodic();
 
-    drive.updateOdometry(new Rotation2d(Math.toRadians(nav.getAngle())));
-    Pose2d pos = drive.getOdometryPosition();
-    SmartDashboard.putNumber("Fx",pos.getX()*kMetersToInches);
-    SmartDashboard.putNumber("Fy",pos.getY()*kMetersToInches);
-    SmartDashboard.putNumber("Fa",pos.getRotation().getRotations());
     setupAutoChoices();
   }
 
@@ -145,12 +160,6 @@ public class PracticeRobot extends DefaultRobot {
       mAutoProgram.periodic();
   }
 
-  @Override
-  public void disabledInit() {
-    intake.disarm();
-    launcher.disarm();
-    drive.disarm();
-  }
   private void setupAutoChoices() {
     // Position Chooser
     positionChooser = new SendableChooser<String>();
@@ -202,27 +211,150 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   @Override
-  public void restoreRobotToDefaultState() {
-    nav.reset();
-    drive.reset(); // sets encoders based on absolute encoder positions
+  protected void SpeedDriveByJoystick(Gamepad gp) {
+
+    Translation2d driveCmd = getJoystickDriveCommand(gp);
+
+    double rotate = calculatedProfileYawCmd(-gp.getRightX());
+    driveCmd = calculateProfiledDriveCommand(driveCmd);
+
+    if(ampNudge) {
+      rotate+=nav.yawRotationNudge();
+    }
+
+    if (bDriveFieldCentric) {
+      driveSpeedControlFieldCentric( driveCmd, rotate);
+    } else {
+
+      driveSpeedControl( driveCmd, rotate);
+    }
   }
 
+  @Override
+  public void disabledInit(){
+    intake.disarm();
+    launcher.disarm();
+    drive.disarm();
+    postTuneParams();
+  }
+
+  @Override
+  public void disabledPeriodic(){
+    handleTuneParams();
+  }
+
+  protected void resetLimitedHeadingControl(){
+    headingCmd = getAngle();
+    hdgAccelSlew .reset(0);
+  }
+
+  /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
+  protected double calculatedProfileYawCmd(double rotateCmd){
+    // Integrate rotate to move heading command
+    rotateCmd = MathUtil.applyDeadband(rotateCmd, 0.05);
+    return hdgAccelSlew.calculate(rotateCmd);
+  }
+
+  protected double calculateRotationCommand(double heading){
+    double rotationError = MathUtil.inputModulus(heading - nav.getAngle(),-180.0, 180.0) / 360.0;
+    return headingController.calculate(rotationError);
+  }
+
+  protected void speedDriveByJoystickHeading(Gamepad gp) {
+
+    Translation2d driveCmd = getJoystickDriveCommand(gp);
+    driveCmd = calculateProfiledDriveCommand(driveCmd);
+
+    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
+    double hdg = calculatedProfileYawCmd(rotate);
+    rotate = calculateRotationCommand(hdg);
+
+    driveSpeedControlFieldCentric(driveCmd, rotate);
+  }
+
+  private void postTuneParams(){
+    SmartDashboard.putNumber("Hdg R Accel Lim", kHeadingAccelLim);
+    SmartDashboard.putNumber("Hdg P", kHeadingP);
+    SmartDashboard.putNumber("Hdg I", kHeadingI);
+    SmartDashboard.putNumber("Hdg D", kHeadingD);
+
+    SmartDashboard.putNumber("Drive Accel Lim P", kDrivePosAccelLim);
+    SmartDashboard.putNumber("Drive Accel Lim N", kDriveNegAccelLim);
+  }
+  private void handleTuneParams(){
+
+    double val;
+    boolean changed = false;
+    val = SmartDashboard.getNumber("Hdg R Accel Lim", kHeadingAccelLim);
+    if (val != kHeadingAccelLim){
+      kHeadingAccelLim = val;
+      hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
+    }
+    val = SmartDashboard.getNumber("Drive Accel Lim P", kDrivePosAccelLim);
+    if (val != kDrivePosAccelLim){
+      kDrivePosAccelLim = val;
+      changed = true;
+    }
+    val = SmartDashboard.getNumber("Drive Accel Lim N", kDriveNegAccelLim);
+    if (val != kDriveNegAccelLim){
+      kDriveNegAccelLim = val;
+      changed = true;
+    }
+    if(changed)
+      driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0.0);
+    // read PID coefficients from SmartDashboard
+    double p = SmartDashboard.getNumber("Hdg P", kHeadingP);
+    double i = SmartDashboard.getNumber("Hdg I", kHeadingI);
+    double d = SmartDashboard.getNumber("Hdg D", kHeadingD);
+
+    // if PID coefficients on SmartDashboard have changed, write new values to controller
+    if ((p != kHeadingP)) {
+      headingController.setP(p);
+      kHeadingP = p;
+    }
+    if ((i != kHeadingI)) {
+      headingController.setI(i);
+      kHeadingI = i;
+    }
+    if ((d != kHeadingD)) {
+      headingController.setD(d);
+      kHeadingD = d;
+    }
+  }
+
+  @Override
+  public void restoreRobotToDefaultState() {
+    drive.reset(); // sets encoders based on absolute encoder positions
+    nav.reset();
+
+    resetLimitedHeadingControl();
+
+    super.restoreRobotToDefaultState();
+  }
+  boolean ampNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
-    // if(gp.getDPadLeft()) fieldCentricDriveMode(true);
-    // if(gp.getDPadRight()) fieldCentricDriveMode(false);
+    if(gp.getDPadUp()) fieldCentricDriveMode(true);
+    if(gp.getDPadDown()) fieldCentricDriveMode(false);
 
     if(gp.getRightBumper()) {
       driveSpeedGain = 0.25;
       rotateSpeedGain = 0.25;
     } else if (gp.getLeftBumper()) {
-      driveSpeedGain = 0.7;
-      rotateSpeedGain = 0.7;
+      driveSpeedGain = 0.6;
+      rotateSpeedGain = 0.6;
     } else {
       driveSpeedGain = 1.0;
       rotateSpeedGain = 1.0;
     }
 
     if(gp.getXButton()) nav.zeroYaw();
+
+    if(gp.getAButton()) {
+      ampNudge = true;
+      resetLimitedHeadingControl();
+    } else {
+      ampNudge = false;
+    }
   }
 
   @Override
@@ -230,8 +362,9 @@ public class PracticeRobot extends DefaultRobot {
 
   /* By default just pass commands to the drive system */
   @Override
-  public void driveSpeedControl(double fwd, double strafe, double rotate) {
-    drive.driveSpeedControl(fwd*driveSpeedGain, strafe*driveSpeedGain, rotate*rotateSpeedGain,getPeriod());
+  public void driveSpeedControl(Translation2d driveCmd, double rotate) {
+    driveCmd = driveCmd.times(driveSpeedGain);
+    drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = 0;

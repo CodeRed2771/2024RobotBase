@@ -1,8 +1,10 @@
 package frc.robot.subsystems.nav;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.subsystems.drive.PracticeDriveTrain;
 
 public class NavXGyro {
     private AHRS mGyro;
@@ -27,46 +29,39 @@ public class NavXGyro {
         return mGyro.getAngle();
     }
 
-
-    static class Position {
-        double x;
-        double y;
-        double z;
-        public Position(double x, double y, double z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
-    public static Position position = new Position(0, 0, 0);
-    private static final double CYCLE_TIME = 0.02;
     /***
      * ƒ
      * 
      * @return gyro angle 0 to 360
      */
     public double getRelativeAngle() {
-        if (getAngle() < 0) {
-            return 360 + (getAngle() % 360);
-        } else {
-            return getAngle() % 360;
-        }
+        return MathUtil.inputModulus(getAngle(), 0.0, 360.0);
+    }
+
+    public Translation3d getVelocity3d(){
+        return new Translation3d(velocityX(), 
+                                 velocityY(),
+                                 velocityZ());
     }
 
     public double velocityX() {
-        return mGyro.getVelocityX();
+        return mGyro.getVelocityX()*100/2.54;
     }
 
     public double velocityY() {
-        return mGyro.getVelocityY();
+        return mGyro.getVelocityY()*100/2.54;
     }
 
     public double velocityZ() {
-        return mGyro.getVelocityZ();
+        return mGyro.getVelocityZ()*100/2.54;
     }
 
     public double pitch_raw() {
         return mGyro.getPitch();
+    }
+
+    public Rotation3d getRotation(){
+        return new Rotation3d(pitch(),roll(),yaw());
     }
 
     public double pitch() {
@@ -106,31 +101,14 @@ public class NavXGyro {
     {
         mGyro.zeroYaw();
     }
+
     public void reset() {
         mGyro.reset();
         pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface
         // will be used to offset values to return a relative pitch
-
     }
 
     public double getGyroAngleInRad() {
-        double adjustedAngle = -Math.floorMod((long) mGyro.getAngle(), 360);
-        if (adjustedAngle > 180)
-            adjustedAngle = -(360 - adjustedAngle);
-
-        return adjustedAngle * (Math.PI / 180d);
-    }
-    
-    public double pidGet() {
-        return mGyro.getAngle();
-    }
-    
-    public void position() {
-        position.x += mGyro.getVelocityX() * CYCLE_TIME;
-        position.y += mGyro.getVelocityY() * CYCLE_TIME;
-        position.x = mGyro.getVelocityZ() * CYCLE_TIME;
-    }
-    public Position getPosition() {
-        return position;
+        return MathUtil.angleModulus(mGyro.getAngle());
     }
 }

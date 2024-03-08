@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,34 +23,41 @@ public class DefaultRobot extends TimedRobot {
   protected final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   protected Map<String,Integer> wiring;
+  protected Map<String,Double> calibration;
   protected Gamepad gamepad1 = new Gamepad(0);
   protected Gamepad gamepad2 = new Gamepad(1);
   protected Gamepad gamepad3 = new Gamepad(2);
 
+  protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
+  protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
+  protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
+
+
   public DefaultRobot() {
     super();
 
+    calibration = new HashMap<>();
     wiring = new HashMap<>();
   }
 
-  public void restoreRobotToDefaultState(){}
+  public void restoreRobotToDefaultState(){
+    driveAccelSlew.reset(0);
+  }
 
 
   /* By default just pass commands to the drive system */
-  public void driveSpeedControl(double fwd, double strafe, double rotate){
+  public void driveSpeedControl(Translation2d driveCmd, double rotate){
     // By default do nothing for driving
   }
 
   public double getAngle(){return 0.0;}
-  public void driveSpeedControlFieldCentric(double fwd, double strafe, double rotate) {
+  public void driveSpeedControlFieldCentric(Translation2d command, double rotate) {
     /*
      * Rotate the drive command into field centric orientation by reversing out the
      * orientation of the robot
      */
-    Translation2d command = new Translation2d(fwd, strafe);
-    command = command.rotateBy(Rotation2d.fromDegrees(getAngle()));
 
-    driveSpeedControl(command.getX(), command.getY(), rotate);
+    driveSpeedControl(command.rotateBy(Rotation2d.fromDegrees(getAngle())), rotate);
   }
 
   /**
@@ -84,14 +92,31 @@ public class DefaultRobot extends TimedRobot {
       bDriveFieldCentric = mode;
   }
 
+  protected Translation2d getJoystickDriveCommand(Gamepad gp) {
+    return new Translation2d(-gp.getLeftY(),-gp.getLeftX());
+  }
+
+  protected Translation2d calculateProfiledDriveCommand(Translation2d command){
+    double magnitude = command.getNorm();
+    Rotation2d angle = command.getAngle();
+
+    if(magnitude < 0.075) // Deadband out 0.05 rotationally
+    {
+      magnitude = 0.0;
+    }
+
+    magnitude = driveAccelSlew.calculate(magnitude);
+
+    return new Translation2d(magnitude,angle);
+  }
+
   protected void SpeedDriveByJoystick(Gamepad gp) {
-    double fwd = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
-    double strafe = MathUtil.applyDeadband(-gp.getLeftX(), 0.05);
+    Translation2d driveCmd = getJoystickDriveCommand(gp);
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
     if (bDriveFieldCentric) {
-      driveSpeedControlFieldCentric(fwd, strafe, rotate);
+      driveSpeedControlFieldCentric(driveCmd, rotate);
     } else {
-      driveSpeedControl(fwd, strafe, rotate);
+      driveSpeedControl(driveCmd, rotate);
     }
   }
 }
