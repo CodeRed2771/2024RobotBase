@@ -121,14 +121,13 @@ public class PracticeRobot extends DefaultRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    setupAutoChoices();
   }
 
   /* Always update certian parts of the robot, like telemetry */
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
-
-    setupAutoChoices();
   }
 
   @Override
