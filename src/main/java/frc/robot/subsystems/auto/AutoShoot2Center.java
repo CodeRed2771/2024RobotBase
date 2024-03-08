@@ -57,7 +57,7 @@ public class AutoShoot2Center extends AutoBaseClass {
             case 5:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              if(myRobot.drive.driveCompleted(0.5))
+              // if(myRobot.drive.driveCompleted(0.5))
                 // advanceStep();
               break;
             case 6:
@@ -68,7 +68,7 @@ public class AutoShoot2Center extends AutoBaseClass {
             case 7:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              if(myRobot.drive.driveCompleted(0.5))
+              // if(myRobot.drive.driveCompleted(0.5))
               //   advanceStep();
               break;
             case 8:
