@@ -10,6 +10,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.libs.TuneablePIDControllerGains;
+import frc.robot.libs.TuneableSlewRateLimiter;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
@@ -34,14 +36,10 @@ public class PracticeRobot extends DefaultRobot {
   protected double rotateSpeedGain = 0.9;
   
   protected double kHeadingAccelLim = 1.0 / 0.5 ; // Max cmd / Time to achieve Cmd
-  protected SlewRateLimiter hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
+  protected TuneableSlewRateLimiter hdgAccelSlew = new TuneableSlewRateLimiter("Hdg",kHeadingAccelLim);
   protected double headingCmd;
-  protected PIDController headingController;
-
-  protected double kHeadingP = 5.0;
-  protected double kHeadingI = 0.0;
-  protected double kHeadingD = 0.0;
-  protected double kHeadingFF = 0.0;
+  protected PIDController headingController = new PIDController(0,0,0);
+  protected TuneablePIDControllerGains headingGains = new TuneablePIDControllerGains("Hdg", headingController);
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
@@ -84,8 +82,9 @@ public class PracticeRobot extends DefaultRobot {
     calibration.put("C wheel radius", 30.7 / 2.54 / (2* Math.PI));
     calibration.put("D wheel radius", 31.7 / 2.54 / (2* Math.PI));
 
-    headingController = new PIDController(kHeadingP,kHeadingI,kHeadingD);
-
+    headingGains.setP(5.0);
+    headingGains.setI(0.0);
+    headingGains.setD(0.0);
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
@@ -206,10 +205,8 @@ public class PracticeRobot extends DefaultRobot {
   }
 
   private void postTuneParams(){
-    SmartDashboard.putNumber("Hdg R Accel Lim", kHeadingAccelLim);
-    SmartDashboard.putNumber("Hdg P", kHeadingP);
-    SmartDashboard.putNumber("Hdg I", kHeadingI);
-    SmartDashboard.putNumber("Hdg D", kHeadingD);
+    hdgAccelSlew.postTuneParams();
+    headingGains.postTuneParams();
 
     SmartDashboard.putNumber("Drive Accel Lim P", kDrivePosAccelLim);
     SmartDashboard.putNumber("Drive Accel Lim N", kDriveNegAccelLim);
@@ -218,11 +215,6 @@ public class PracticeRobot extends DefaultRobot {
 
     double val;
     boolean changed = false;
-    val = SmartDashboard.getNumber("Hdg R Accel Lim", kHeadingAccelLim);
-    if (val != kHeadingAccelLim){
-      kHeadingAccelLim = val;
-      hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
-    }
     val = SmartDashboard.getNumber("Drive Accel Lim P", kDrivePosAccelLim);
     if (val != kDrivePosAccelLim){
       kDrivePosAccelLim = val;
@@ -235,24 +227,9 @@ public class PracticeRobot extends DefaultRobot {
     }
     if(changed)
       driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0.0);
-    // read PID coefficients from SmartDashboard
-    double p = SmartDashboard.getNumber("Hdg P", kHeadingP);
-    double i = SmartDashboard.getNumber("Hdg I", kHeadingI);
-    double d = SmartDashboard.getNumber("Hdg D", kHeadingD);
-
-    // if PID coefficients on SmartDashboard have changed, write new values to controller
-    if ((p != kHeadingP)) {
-      headingController.setP(p);
-      kHeadingP = p;
-    }
-    if ((i != kHeadingI)) {
-      headingController.setI(i);
-      kHeadingI = i;
-    }
-    if ((d != kHeadingD)) {
-      headingController.setD(d);
-      kHeadingD = d;
-    }
+    
+    hdgAccelSlew.handleTuneParams();
+    headingGains.handleTuneParams();
   }
 
   @Override
