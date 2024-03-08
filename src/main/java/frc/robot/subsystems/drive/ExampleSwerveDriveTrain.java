@@ -38,7 +38,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
       m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  private final double TICKS_PER_INCH = .02808; //estimated -- needs to be calculated
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring, Map<String,Double> calibration) {
     super();
 
@@ -115,9 +114,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   public void driveFixedSpeedOrientation(double xSpeed, double ySpeed)
   {
-    Rotation2d ang = new Rotation2d(xSpeed, ySpeed);
     Translation2d Speed = new Translation2d(xSpeed,ySpeed);
-    SwerveModuleState desiredState = new SwerveModuleState(Speed.getNorm(), ang);
+    SwerveModuleState desiredState = new SwerveModuleState(Speed.getNorm(), Speed.getAngle());
 
     m_frontLeft.setDesiredState(desiredState);
     m_frontRight.setDesiredState(desiredState);
@@ -127,7 +125,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   public void driveFixedPositionOffsetInches(double xInches, double yInches){
     Translation2d target = new Translation2d(xInches, yInches);
-    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getDistance(target), target.getAngle());
+    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getNorm(), target.getAngle());
 
     m_frontLeft.commandSwervePositionOffset(targetOffset);
     m_frontRight.commandSwervePositionOffset(targetOffset);
@@ -144,8 +142,8 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public void driveParkControl(){
-    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
     m_backLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)));
     m_backRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
   }
@@ -153,10 +151,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   public void driveFixedRotatePosition(double degrees){
     double distance = (degrees/180.0 * Math.PI) * wheel_position_offset_radius;
 
-    m_frontLeft.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(45.0)));
-    m_frontRight.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(-45.0)));
+    m_frontLeft.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(-45.0)));
+    m_frontRight.commandSwervePositionOffset(new SwerveModulePosition(-distance, Rotation2d.fromDegrees(45.0)));
     m_backLeft.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(45.0)));
-    m_backRight.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(-45.0)));
+    m_backRight.commandSwervePositionOffset(new SwerveModulePosition(-distance, Rotation2d.fromDegrees(-45.0)));
   }
 
   @Override
@@ -214,49 +212,17 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRight.resetEncoders();
   }
 
-  // dvv commented out b/c it doesn't make sense and isn't used. 2-24-24
-  // public double getDriveEnc() {
-  //   return (m_frontLeft.getDriveEnc() + m_backRight.getDriveEnc() + m_backLeft.getDriveEnc() + m_frontRight.getDriveEnc()) / 4;
-  // }
-
-  public void addToAllDrivePositions(double ticks) {
-    setDrivePosition(m_frontLeft.getDriveEnc() + ticks,
-            m_backRight.getDriveEnc() + ticks,
-            m_backLeft.getDriveEnc() + ticks,
-            m_frontRight.getDriveEnc() + ticks);
-  }
-
   @Override
   public void driveInches(double inches, double speedFactor){
       driveInches(inches, speedFactor, 0);
   }
 
-  private double inchesToTicks(double inches) {
-      return (double) (inches * TICKS_PER_INCH);
-  }
-
-  private double degreesToTicks(double degrees) {
-      return (double) ((degrees / 4.42) * TICKS_PER_INCH);
-  }
 
   @Override
   public void driveInches(double inches, double speedFactor, double turnAngle){
-    //  setDriveMMVelocity((int) (Calibration.getDT_MM_VELOCITY() * speedFactor));
-    //  setDriveMMAccel((int) (Calibration.getDT_MM_ACCEL() * speedFactor));
 
-    Translation2d target = new Translation2d(-inches, Rotation2d.fromDegrees(turnAngle));
+    Translation2d target = new Translation2d(inches, Rotation2d.fromDegrees(turnAngle));
     driveFixedPositionOffsetInches(target.getX(), target.getY());
-
-    // setAllTurnOrientation(angleToPosition(turnAngle),true);
-
-    //waiting for motors to rotate to position
-    // try{
-    //     Thread.sleep(150);
-    // } catch (InterruptedException e) {
-    //     e.printStackTrace();
-    // }
-    
-    // addToAllDrivePositions(inchesToTicks(inches));
   }
 
   @Override
@@ -268,34 +234,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   public void rotateDegrees(double degrees, double speedFactor){
 
       driveFixedRotatePosition(degrees);
-  }
-
-  private void setDrivePosition(double modAPosition, double modBPosition, double modCPosition, double modDPosition) {
-      m_frontLeft.setDrivePIDToSetPoint(modAPosition);
-      m_frontRight.setDrivePIDToSetPoint(modBPosition);
-      m_backLeft.setDrivePIDToSetPoint(modCPosition);
-      m_backRight.setDrivePIDToSetPoint(modDPosition);
-  }
-
-  private double angleToPosition(double angle) {
-    if (angle < 0) {
-        return .5d + ((180d - Math.abs(angle)) / 360d);
-    } else {
-        return angle / 360d;
-    }
-  }
-
-  private void setAllTurnOrientation(double turnPosition, boolean optimizeTurn) {
-    setTurnOrientation(turnPosition, turnPosition, turnPosition, turnPosition, optimizeTurn);
-  }
-
-  private void setTurnOrientation(double modAPosition, double modBPosition, double modCPosition,
-          double modDPosition, boolean optimizeTurn) {
-
-    m_frontLeft.setTurnOrientation(modAPosition);
-    m_frontRight.setTurnOrientation(modBPosition);
-    m_backLeft.setTurnOrientation(modCPosition);
-    m_backRight.setTurnOrientation(modDPosition);
   }
 
 }

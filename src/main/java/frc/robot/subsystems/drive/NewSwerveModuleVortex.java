@@ -41,7 +41,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private RelativeEncoder m_driveEncoder;
   private RelativeEncoder m_turnEncoder;
 
-  private double velCmd = 0;
+  private double prev_driveCmd = 0;
   private double rotCmd = 0;
   private double rawRotCmd = 0;
   protected class PIDGains {
@@ -66,7 +66,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private PIDGains driveGains;
   private PIDGains turnGains;
 
-  private double currentDriveSetpoint = 0; // used for simple auto driving
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(Map<String,Integer> wiring, Map<String,Double> calibration, String moduleID) {
     super();
@@ -117,8 +116,8 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     driveGains.kD = 0.0;
     driveGains.kIz = 0.0;
     driveGains.kFF = 1.0/100.0 *2.54/10;
-    driveGains.maxVel = 1.0;
-    driveGains.maxAcc = 10.0;
+    driveGains.maxVel = 10.0;
+    driveGains.maxAcc = 100.0;
 
     m_drivePIDController = m_driveMotor.getPIDController();
     m_drivePIDController.setP(driveGains.kP);
@@ -219,7 +218,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   }
 
   protected void logSpeedCmd(double driveCmd, double turnCmd){
-    velCmd = driveCmd;
+    prev_driveCmd = driveCmd;
     rotCmd = turnCmd;
   }
 
@@ -257,12 +256,6 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
       result = false;
     }
     return result;
-  }
-  
-  public void setTurnOrientation(double position) {
-    if(isArmed()) {
-      m_turningPIDController.setReference(position, ControlType.kPosition);
-    }
   }
 
   private void postTuneParams(String prefix, PIDGains gains){
@@ -343,11 +336,11 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     if (bEnableDriveTuning) {
       handleTuneParams("Drive", driveGains, m_drivePIDController);
 
-      SmartDashboard.putNumber(this.getName() + " Cmd V", velCmd);
+      SmartDashboard.putString(this.getName() + " Drive Mode", currentControlMode.toString() );
+      SmartDashboard.putNumber(this.getName() + " Drive Cmd", prev_driveCmd);
       SmartDashboard.putNumber(this.getName() + " Vel", m_driveEncoder.getVelocity());
       SmartDashboard.putNumber(this.getName() + " Pos", m_driveEncoder.getPosition());
       SmartDashboard.putNumber(this.getName() + " D Output", m_driveMotor.getAppliedOutput());
-      SmartDashboard.putNumber(this.getName() + " D Setpoint", getDriveSetPoint());
     }
   }
 
@@ -389,16 +382,4 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turnEncoder.setPosition(turnAbsEncoder.get());
   }
 
-  public double getDriveEnc() {
-		return m_driveEncoder.getPosition();
-	}
-
-  public void setDrivePIDToSetPoint(final double setpoint) {
-    currentDriveSetpoint = setpoint;
-    m_drivePIDController.setReference(setpoint, ControlType.kSmartMotion);
-  }
-
-  public double getDriveSetPoint() {
-    return currentDriveSetpoint;
-  }
 }
