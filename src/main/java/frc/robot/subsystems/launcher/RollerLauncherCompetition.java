@@ -126,14 +126,10 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         // Setup Shooter Motor Closed Loop Control
         upperShooterMotor.restoreFactoryDefaults();
         lowerShooterMotor.restoreFactoryDefaults();
-        Timer.delay(0.5);
+        Timer.delay(0.2);
 
         upperShooterMotor.setInverted(false);
         lowerShooterMotor.setInverted(true);
-
-        upperShooterMotor.burnFlash();
-        lowerShooterMotor.burnFlash();
-        Timer.delay(0.5);
 
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();
@@ -182,6 +178,10 @@ public class RollerLauncherCompetition extends LauncherSubsystem {
         aimPIDController.setIZone(aim_kIz);
         aimPIDController.setFF(aim_kFF);
         aimPIDController.setOutputRange(aim_kMinOutput, aim_kMaxOutput);
+
+        upperShooterMotor.burnFlash();
+        lowerShooterMotor.burnFlash();
+        Timer.delay(0.1);
 
         SmartDashboard.putNumber("P Gain", kP);
         SmartDashboard.putNumber("I Gain", kI);
