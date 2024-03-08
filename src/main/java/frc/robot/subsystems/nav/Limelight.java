@@ -161,7 +161,18 @@ public class Limelight {
         valid &= fieldPosition.getY() >=-2.0;
         valid &= fieldPosition.getY() <=16.54175+1;
         return valid;
-    } 
+    }
+
+    public boolean isNoteValid() {
+        boolean valid = true;
+        // Rotation3d orientation=fieldPosition.getRotation();
+        valid &= seesSomething();
+        valid &= getPipeline() == LimelightPipeline.NoteTracker;
+        valid &= getArea() > .40;
+        valid &= Math.abs(horizontalOffset()) < 25;
+        valid &= Math.abs(verticalOffset()) < 20;
+        return valid;
+    }
 
     public int getAprilTagID() {
         if(currentPipeline == LimelightPipeline.AprilTag) {

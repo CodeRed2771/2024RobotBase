@@ -154,6 +154,8 @@ public class PracticeRobot extends DefaultRobot {
 
     if(ampNudge) {
       rotate+=nav.yawRotationNudge();
+    } else if(noteNudge) {
+      rotate += nav.noteYawNudge();
     }
 
     if (bDriveFieldCentric) {
@@ -263,6 +265,7 @@ public class PracticeRobot extends DefaultRobot {
     super.restoreRobotToDefaultState();
   }
   boolean ampNudge = false;
+  boolean noteNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
     if(gp.getDPadUp()) fieldCentricDriveMode(true);
     if(gp.getDPadDown()) fieldCentricDriveMode(false);
@@ -285,6 +288,12 @@ public class PracticeRobot extends DefaultRobot {
       resetLimitedHeadingControl();
     } else {
       ampNudge = false;
+    }
+
+    if(gp.getYButton()) {
+      noteNudge = true;
+    } else {
+      noteNudge = false;
     }
   }
 
