@@ -15,7 +15,7 @@ import frc.robot.Calibration;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
-  private static final double kMaxSpeed = 400.0; // normalized full Speed Inches/sec
+  private static final double kMaxSpeed = 600.0; // normalized full Speed Inches/sec
 
   private NewSwerveModuleVortex m_frontLeft; // Front Left
   private NewSwerveModuleVortex m_backRight; // Back Right
@@ -35,8 +35,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private Translation2d m_backLeftLocation;
   private Translation2d m_backRightLocation;
 
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
-      m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  private SwerveDriveKinematics m_kinematics;
 
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring, Map<String,Double> calibration) {
     super();
@@ -48,6 +47,9 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
     m_backLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
     m_backRightLocation = new Translation2d(-wheel_position_offset, -wheel_position_offset);
+
+    m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
+      m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     // Circumference in cm to Radius in inches
     m_frontLeft = new NewSwerveModuleVortex(wiring, calibration, "A"); // Front right

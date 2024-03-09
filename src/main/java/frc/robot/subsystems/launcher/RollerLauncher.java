@@ -57,7 +57,7 @@ public class RollerLauncher extends LauncherSubsystem {
     protected int notePresentThreshold;
 
     public enum LauncherSpeeds {
-        OFF(0,75),
+        OFF(0,45),
         AMP(900, 43),
         SAFE_ZONE(3400, 60),
         SUBWOOFER(2900, 39),

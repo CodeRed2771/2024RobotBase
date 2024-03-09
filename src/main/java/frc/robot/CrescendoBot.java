@@ -41,7 +41,7 @@ public class CrescendoBot extends DefaultRobot {
   public PracticeRobotNav nav; // Changed from protected to public for autos
 
   protected double driveSpeedGain = 1.0;
-  protected double rotateSpeedGain = 0.9;
+  protected double rotateSpeedGain = 0.4;
   
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
@@ -172,7 +172,7 @@ public class CrescendoBot extends DefaultRobot {
 
     Translation2d driveCmd = getJoystickDriveCommand(gp);
 
-    double rotate = calculatedProfileYawCmd(-gp.getRightX()*.3);
+    double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
     if(ampNudge) {
@@ -298,10 +298,10 @@ public class CrescendoBot extends DefaultRobot {
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER);
+      launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getBButton()) {
       launcher.setSpeedBias(.5);
       launcher.prime(LauncherSpeeds.AMP);
