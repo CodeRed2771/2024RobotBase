@@ -50,7 +50,8 @@ public class CompetitionRobot extends CrescendoBot {
 
     calibration.put("upper launcher direction", 1.0);
     calibration.put("note threshold", 1100.0);
-
+    calibration.put("wheel base",23.5);
+    
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
     nav = new PracticeRobotNav(drive);
