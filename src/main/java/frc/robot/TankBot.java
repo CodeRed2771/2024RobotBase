@@ -34,8 +34,8 @@ public class TankBot extends DefaultRobot {
      * Define all of the wiring for the robot in a common spot here and then pass it
      * around
      */
-    wiring.put("A drive", 1);
-    wiring.put("B drive", 5);
+    wiring.put("A drive", 3);
+    wiring.put("B drive",2);
 
     /* Set all of the subsystems */
     drive = new TankDriveSubsystem(wiring, calibration);
@@ -85,13 +85,7 @@ public class TankBot extends DefaultRobot {
 
     double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
-
-    if (bDriveFieldCentric) {
-      driveSpeedControlFieldCentric( driveCmd, rotate);
-    } else {
-
-      driveSpeedControl( driveCmd, rotate);
-    }
+    driveSpeedControl( driveCmd, rotate);
   }
 
   @Override
