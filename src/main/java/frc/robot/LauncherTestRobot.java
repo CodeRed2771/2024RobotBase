@@ -13,7 +13,7 @@ public class LauncherTestRobot extends PracticeRobot {
   @SuppressWarnings("this-escape")
   public LauncherTestRobot() {
     super();
-    launcher = new RollerLauncher(wiring);
+    launcher = new RollerLauncher(wiring, calibration);
   }
 
     /** This function is called periodically during operator control. */

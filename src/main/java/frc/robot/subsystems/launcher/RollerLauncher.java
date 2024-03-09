@@ -5,7 +5,7 @@
 package frc.robot.subsystems.launcher;
 
 import java.util.Map;
-
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -30,18 +30,18 @@ import com.revrobotics.SparkPIDController;
  * 
  */
 public class RollerLauncher extends LauncherSubsystem {
-    private CANSparkMax upperShooterMotor;
-    private CANSparkMax lowerShooterMotor;
-    private CANSparkMax loaderMotor;
-    private AnalogInput loadSensor;
-    private CANSparkMax intakeMotor;
-    private BlinkinLED launcherLED;
+    protected CANSparkFlex upperShooterMotor;
+    protected CANSparkFlex lowerShooterMotor;
+    protected CANSparkMax loaderMotor;
+    protected AnalogInput loadSensor;
+    protected CANSparkMax intakeMotor;
+    protected BlinkinLED launcherLED;
 
-    private SparkPIDController upperPIDCtrl = null;
-    private SparkPIDController lowerPIDCtrl = null;
+    protected SparkPIDController upperPIDCtrl = null;
+    protected SparkPIDController lowerPIDCtrl = null;
     
-    private RelativeEncoder upperEncoder = null;
-    private RelativeEncoder lowerEncoder = null;
+    protected RelativeEncoder upperEncoder = null;
+    protected RelativeEncoder lowerEncoder = null;
 
     public double kP, kI, kD, kIz, kFF;
     
@@ -51,35 +51,48 @@ public class RollerLauncher extends LauncherSubsystem {
     private double lowerSpeedCmd = 0;
     private double speedTolerance = 300;
     private double motorSpeedBias = 0.06;
+    private double upperDirection = 1.0;
+    private double lowerDirection = 1.0;
 
-    private int notePresentThreshold = 1700; // < 1200 were starting to see a note
+    protected int notePresentThreshold;
 
     public enum LauncherSpeeds {
-        OFF(0),
-        AMP(1000),
-        SUBWOOFER(2200), // tested 2/22/24
-        SAFE_ZONE(2700); // untested
+        OFF(0,75),
+        AMP(1300, 63.5),
+        SUBWOOFER(2400, 71),
+        SAFE_ZONE(2900, 35),
+        STOW(0,25),
+        MAX_ANGLE(0, 90);
 
         private double speed;
+        private double angle;
         
-        private LauncherSpeeds(double newSpeed) {
+        private LauncherSpeeds(double newSpeed, double newAngle) {
             speed = newSpeed;
+            angle = newAngle;
         }
 
-        public double get() {
+        public double getSpeed() {
             return speed;
+        }
+        public double getAngle() {
+            // we want this to convert to encoder ticks
+            return angle;
         }
     }
   
-    private static final int STOP_DELAY = 100;
+    private int STOP_DELAY;
     private int loaderStopDelay = 0;
     private int loaderFireStopDelay = 0;
 
-    public RollerLauncher(Map<String,Integer> wiring) {
+    public RollerLauncher(Map<String,Integer> wiring, Map<String,Double> calibration) {
         super();
 
-        upperShooterMotor = new CANSparkMax(wiring.get("upper launcher"), MotorType.kBrushless);
-        lowerShooterMotor = new CANSparkMax(wiring.get("lower launcher"), MotorType.kBrushless);
+        notePresentThreshold = calibration.getOrDefault("note threshold", 1700.0).intValue();
+        STOP_DELAY = calibration.getOrDefault("intake stop delay", 100.0).intValue();
+
+        upperShooterMotor = new CANSparkFlex(wiring.get("upper launcher"), MotorType.kBrushless);
+        lowerShooterMotor = new CANSparkFlex(wiring.get("lower launcher"), MotorType.kBrushless);
         loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
@@ -95,12 +108,10 @@ public class RollerLauncher extends LauncherSubsystem {
         lowerShooterMotor.restoreFactoryDefaults();
         Timer.delay(0.5);
 
-        upperShooterMotor.setInverted(true);
-        lowerShooterMotor.setInverted(true);
-
-        upperShooterMotor.burnFlash();
-        lowerShooterMotor.burnFlash();
-        Timer.delay(0.5);
+        upperDirection = calibration.getOrDefault("upper launcher direction", -1.0);
+        upperShooterMotor.setInverted(upperDirection<0);
+        lowerDirection = calibration.getOrDefault("lower launcher direction", -1.0);
+        lowerShooterMotor.setInverted(lowerDirection<0);
 
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();
@@ -131,6 +142,10 @@ public class RollerLauncher extends LauncherSubsystem {
         lowerPIDCtrl.setIZone(kIz);
         lowerPIDCtrl.setFF(kFF);
         lowerPIDCtrl.setOutputRange(kMinOutput, kMaxOutput);
+
+        upperShooterMotor.burnFlash();
+        lowerShooterMotor.burnFlash();
+        Timer.delay(0.5);
 
         SmartDashboard.putNumber("P Gain", kP);
         SmartDashboard.putNumber("I Gain", kI);
@@ -206,7 +221,16 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void prime(LauncherSpeeds commandSpeed) {
-        double speed = commandSpeed.get();
+        prime(commandSpeed.getSpeed());
+    }
+
+    public void aim(LauncherSpeeds commandSpeed) {
+        aim(commandSpeed.getAngle());
+    }
+
+    @Override 
+    public void prime(double speed){
+
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
@@ -220,6 +244,7 @@ public class RollerLauncher extends LauncherSubsystem {
         lowerPIDCtrl.setReference(lowerSpeedCmd, CANSparkMax.ControlType.kVelocity);
     }
 
+    
     public void setSpeedBias(double newBias) {
         motorSpeedBias = newBias;
     }
@@ -272,12 +297,7 @@ public class RollerLauncher extends LauncherSubsystem {
             launcherLED.set(LEDColors.RED);
 
         SmartDashboard.putNumber("FIRE STOP DELAY", loaderFireStopDelay);
-        if (loadState == LoaderState.Firing) 
-            SmartDashboard.putString("LOADER STATE", "FIRING");
-        else if (loadState == LoaderState.Stopped) 
-            SmartDashboard.putString("LOADER STATE", "STOPPED");
-        else 
-            SmartDashboard.putString("LOADER STATE","SOMETHING ELSE");
+        SmartDashboard.putString("LOADER STATE", loadState.toString());
         
         
         SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());

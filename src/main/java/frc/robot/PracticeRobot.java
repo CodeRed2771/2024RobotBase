@@ -94,7 +94,7 @@ public class PracticeRobot extends DefaultRobot {
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
     nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
-    launcher = new RollerLauncher(wiring);
+    launcher = new RollerLauncher(wiring, calibration);
 
   }
 
