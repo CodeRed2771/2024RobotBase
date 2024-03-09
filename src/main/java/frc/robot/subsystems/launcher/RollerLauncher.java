@@ -96,7 +96,8 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
-
+        loadState = LoaderState.Stopped;
+        
         int motorId = wiring.get("intakeMotorId");
 
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);

@@ -18,6 +18,7 @@ import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
+import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoShoot2Center;
 
 public class CrescendoBot extends DefaultRobot {
@@ -96,7 +97,7 @@ public class CrescendoBot extends DefaultRobot {
     // mAutoProgram = new AutoDoNothing();
     // mAutoProgram.start();
 
-    mAutoProgram = new AutoShoot2Center(this);
+    mAutoProgram = new AutoCalibration(this);
     mAutoProgram.start();
   }
   @Override

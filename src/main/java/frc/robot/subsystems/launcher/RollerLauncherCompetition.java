@@ -88,14 +88,12 @@ public class RollerLauncherCompetition extends RollerLauncher {
     }
 
     public void load(double power) {
-        super.load(power);
 
         loaderMotor.set(-power*2.00);
         intakeMotor.set(-power);
     }
 
     public void unload() {
-        super.unload();
 
         loaderMotor.set(.5);
         intakeMotor.set(.5);
