@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems.auto;
 
-import frc.robot.PracticeRobot;
+import frc.robot.CrescendoBot;
 /*
   This auto just drives forward 3ft and then back
  */
@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoCalibration extends AutoBaseClass {
 
-  PracticeRobot myRobot;
+  CrescendoBot myRobot;
 
-  public AutoCalibration(PracticeRobot robot) {
+  public AutoCalibration(CrescendoBot robot) {
     super();
     myRobot = robot;
   }

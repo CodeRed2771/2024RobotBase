@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.subsystems.intake.RollerIntake;
 
-public class IntakeTestRobot extends PracticeRobot {
+public class IntakeTestRobot extends CrescendoBot {
 
   
   /** Creates a new RobotContainer. */

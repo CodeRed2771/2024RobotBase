@@ -6,7 +6,7 @@ package frc.robot.subsystems.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
-import frc.robot.PracticeRobot;
+import frc.robot.CrescendoBot;
 /*
   This auto (that starts in the center position):
   Primes & shoots 1 note,
@@ -19,10 +19,10 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 
 public class AutoShoot2Center extends AutoBaseClass {
 
-  PracticeRobot myRobot;
+  CrescendoBot myRobot;
   private int drivenTicks = 0;
 
-  public AutoShoot2Center(PracticeRobot robot) {
+  public AutoShoot2Center(CrescendoBot robot) {
     super();
     myRobot = robot;
   }

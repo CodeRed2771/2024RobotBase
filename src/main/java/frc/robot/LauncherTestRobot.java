@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.launcher.RollerLauncher;
 
-public class LauncherTestRobot extends PracticeRobot {
+public class LauncherTestRobot extends CrescendoBot {
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")

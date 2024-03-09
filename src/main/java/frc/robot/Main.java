@@ -38,7 +38,7 @@ public final class Main {
         RobotBase.startRobot(CompetitionRobot::new);
         break;
       case DriveTest:
-        RobotBase.startRobot(PracticeRobot::new);
+        RobotBase.startRobot(CrescendoBot::new);
         break;
       case IntakeTest:
         RobotBase.startRobot(IntakeTestRobot::new);
