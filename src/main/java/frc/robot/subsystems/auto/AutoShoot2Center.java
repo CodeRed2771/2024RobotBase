@@ -50,26 +50,28 @@ public class AutoShoot2Center extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveInches(90,1,0);
+              myRobot.drive.driveFixedPositionOffsetInches(90,0);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-                // advanceStep();
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 6:
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveInches(-92,0.7,0);
+              myRobot.drive.driveFixedPositionOffsetInches(-92,0);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-              //   advanceStep();
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 8:
               myRobot.launcher.fire();
