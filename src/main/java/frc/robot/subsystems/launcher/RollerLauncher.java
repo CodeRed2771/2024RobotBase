@@ -161,16 +161,19 @@ public class RollerLauncher extends LauncherSubsystem {
         System.out.println(getName() + " : " + text);
     }
 
-    public void doArm() {
+    @Override
+    protected void doArm() {
         log("Armed");
     }
 
-    public void doDisarm() {
+    @Override
+    protected void doDisarm() {
         log("Disarmed");
         stop();
         stopLoader();
     }
 
+    @Override
     public void load(double power) {
         super.load(power);
 

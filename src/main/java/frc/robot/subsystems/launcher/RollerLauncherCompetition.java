@@ -7,7 +7,7 @@ package frc.robot.subsystems.launcher;
 import java.util.Map;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
@@ -38,17 +38,24 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public double aim_kMaxOutput, aim_kMinOutput, aim_maxRPM;
     
 
-    private static final double ABS_FULL_BACK = .7205;
-    private static final double ABS_TICK_BACK = .826902;
-    private static final double ABS_FULL_FORWARD = 0.927;
-    private static final double ABS_TICK_FORWARD = 266.9;
+    private static final double ABS_FULL_BACK = .7139;
+    private static final double ABS_FULL_FORWARD = 0.911;
+
+    private static final double ABS_TICK_BACK = 122.978;
+    private static final double ABS_TICK_FORWARD = 371.66;
     private static final double AIM_RANGE_TICKS = ABS_TICK_FORWARD - ABS_TICK_BACK; // encoder ticks for full range of motion
     private static final double AIM_RANGE_FULL = ABS_FULL_FORWARD - ABS_FULL_BACK; // encoder ticks for full range of motion
-    private double aimBias = 1.0;
+    private double aimBias = 0.0;
 
-    public double rollerDegreesToTicks(double input_rotation){
-        double rotations = aimBias - input_rotation / 360.0;
-        double percent = (rotations - ABS_FULL_BACK)/AIM_RANGE_FULL;
+    private double rollerDegreesToTicks(double input_degrees){
+        double rotations = input_degrees / 360.0 + ABS_FULL_BACK;
+        return rollerRotationToTicks(rotations);
+    }
+
+    private double rollerRotationToTicks(double input_rotation)
+    {
+        input_rotation = MathUtil.clamp(input_rotation, ABS_FULL_BACK, ABS_FULL_FORWARD);
+        double percent = (input_rotation - ABS_FULL_BACK)/AIM_RANGE_FULL;
         return ABS_TICK_BACK + percent * AIM_RANGE_TICKS;
     }
 
@@ -63,7 +70,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
         aimPIDController = aimMotor.getPIDController();
 
-        aim_kP = .08 ; 
+        aim_kP = .08/5 ; 
         aim_kI = 0;
         aim_kD = 0; 
         aim_kIz = 0; 
@@ -83,8 +90,14 @@ public class RollerLauncherCompetition extends RollerLauncher {
         // TODO: burn flash??
     }
 
+    @Override
+    protected void doArm(){
+        super.doArm();
+        resetAimEncoder();
+    }
+
     private void resetAimEncoder() {
-        aimEncoder.setPosition(rollerDegreesToTicks(aimAbsoluteEncoder.get()));
+        aimEncoder.setPosition(rollerRotationToTicks(aimAbsoluteEncoder.get()));
     }
 
     public void load(double power) {
