@@ -14,7 +14,7 @@ import frc.robot.subsystems.ArmedSubsystem;
 public class TankWheelVortex extends ArmedSubsystem {
 
     private CANSparkFlex m_driveMotor;
-
+    private double direction = 1.0;
     public TankWheelVortex(Map<String,Integer> wiring, Map<String,Double> calibration, String moduleID){
 
         this.setName(moduleID);
@@ -24,10 +24,11 @@ public class TankWheelVortex extends ArmedSubsystem {
         m_driveMotor.restoreFactoryDefaults();
         Timer.delay(0.5);
 
-        m_driveMotor.setInverted(calibration.getOrDefault(moduleID + " inverted", 0.0) > 0.5);
+        direction = calibration.getOrDefault(moduleID + " direction", 1.0);
+        m_driveMotor.setInverted(direction < 0.0);
     }
 
     public void commandSpeed(double fwd){
-        m_driveMotor.set(fwd);
+        m_driveMotor.set(direction*fwd);
     }
 }

@@ -26,7 +26,8 @@ public class TankDriveSubsystem extends DriveSubsystem {
 
     @Override
     public void driveSpeedControl(double fwd, double strafe, double rot){
-        leftDrive.commandSpeed(fwd + rot);
-        rightDrive.commandSpeed(fwd - rot);
+        // Motors are mounted in opposite orientation from each other
+        leftDrive.commandSpeed(fwd - rot);
+        rightDrive.commandSpeed(-fwd - rot);
     }
 }
