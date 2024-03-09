@@ -27,24 +27,36 @@ public class AutoCalibration extends AutoBaseClass {
               setTimerAndAdvanceStep(8000);
               break;
             case 1:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 2:
               myRobot.drive.driveFixedPositionOffsetInches(-36,0);
               setTimerAndAdvanceStep(8000);
               break;
             case 3:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 4:
               myRobot.drive.driveFixedRotatePosition(90);
               setTimerAndAdvanceStep(8000);
               break;
             case 5:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 6:
               myRobot.drive.driveFixedRotatePosition(-90);
               setTimerAndAdvanceStep(8000);
               break;
             case 7:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             default:
               break;
