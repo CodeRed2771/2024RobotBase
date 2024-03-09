@@ -28,11 +28,11 @@ public class DefaultRobot extends TimedRobot {
   protected Gamepad gamepad2 = new Gamepad(1);
   protected Gamepad gamepad3 = new Gamepad(2);
 
-  protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
+  protected double kDrivePosAccelLim = 1.0 / 1.5 ; // Max cmd / Time to achieve Cmd
   protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
   protected TuneableSlewRateLimiter driveAccelSlew = new TuneableSlewRateLimiter("Drive",kDrivePosAccelLim,kDriveNegAccelLim,0);
 
-  protected double kHeadingAccelLim = 1.0 / 0.4 ; // Max cmd / Time to achieve Cmd
+  protected double kHeadingAccelLim = 1.0 / 0.35 ; // Max cmd / Time to achieve Cmd
   protected TuneableSlewRateLimiter hdgAccelSlew = new TuneableSlewRateLimiter("Hdg",kHeadingAccelLim);
 
   public DefaultRobot() {
