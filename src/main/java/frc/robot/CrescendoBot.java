@@ -43,6 +43,7 @@ public class CrescendoBot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.4;
   
+  protected boolean bHeadingHold = true;
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
   protected TuneablePIDControllerGains headingGains = new TuneablePIDControllerGains("Hdg", headingController);
@@ -181,6 +182,15 @@ public class CrescendoBot extends DefaultRobot {
       rotate += nav.noteYawNudge();
     }
 
+    if(! MathUtil.isNear(0.0,Math.abs(rotate),0.01))
+    {
+      setHeadingHoldAngle(getAngle());
+    }
+
+    if(bHeadingHold){
+      rotate += calculateHeadingHoldCommand();
+    }
+
     if (bDriveFieldCentric) {
       driveSpeedControlFieldCentric( driveCmd, rotate);
     } else {
@@ -206,38 +216,31 @@ public class CrescendoBot extends DefaultRobot {
     handleTuneParams();
   }
 
-  protected void resetLimitedHeadingControl(){
-    headingCmd = getAngle();
-    hdgAccelSlew .reset(0);
+  protected void setHeadingHoldAngle(double angle){
+    headingCmd = angle;
   }
 
-  protected double calculateRotationCommand(double heading){
-    double rotationError = MathUtil.inputModulus(heading - nav.getAngle(),-180.0, 180.0) / 360.0;
+  protected double calculateHeadingHoldCommand(){
+    double rotationError = MathUtil.inputModulus(headingCmd - nav.getAngle(),-180.0, 180.0) / 360.0;
     return headingController.calculate(rotationError);
   }
 
-  protected void speedDriveByJoystickHeading(Gamepad gp) {
 
-    Translation2d driveCmd = getJoystickDriveCommand(gp);
-    driveCmd = calculateProfiledDriveCommand(driveCmd);
-
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
-    double hdg = calculatedProfileYawCmd(rotate);
-    rotate = calculateRotationCommand(hdg);
-
-    driveSpeedControlFieldCentric(driveCmd, rotate);
-  }
 
   @Override
   protected void postTuneParams(){
     super.postTuneParams();
     headingGains.postTuneParams();
+
+    SmartDashboard.putBoolean("Heading hold", bHeadingHold);
   }
 
   @Override
   protected void handleTuneParams(){
     super.postTuneParams();
     headingGains.handleTuneParams();
+
+    bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
   }
 
   @Override
@@ -245,7 +248,7 @@ public class CrescendoBot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
     nav.reset();
 
-    resetLimitedHeadingControl();
+    setHeadingHoldAngle(getAngle());
 
     super.restoreRobotToDefaultState();
   }
@@ -266,11 +269,14 @@ public class CrescendoBot extends DefaultRobot {
       rotateSpeedGain = 1.0;
     }
 
-    if(gp.getXButton()) nav.zeroYaw();
+    if(gp.getXButton())
+    {
+      nav.zeroYaw();
+      setHeadingHoldAngle(getAngle());
+    }
 
     if(gp.getAButton()) {
       ampNudge = true;
-      resetLimitedHeadingControl();
     } else {
       ampNudge = false;
     }
