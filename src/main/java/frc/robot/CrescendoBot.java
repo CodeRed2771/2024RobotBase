@@ -57,7 +57,7 @@ public class CrescendoBot extends DefaultRobot {
 
     headingGains.setP(5.0);
     headingGains.setI(0.0);
-    headingGains.setD(0.0);
+    headingGains.setD(0.01);
 
   }
 
