@@ -20,6 +20,7 @@ import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoShoot2Center;
+import frc.robot.subsystems.climber.Climber;
 
 public class CrescendoBot extends DefaultRobot {
 
@@ -39,6 +40,7 @@ public class CrescendoBot extends DefaultRobot {
   public IntakeSubsystem intake; // Changed from protected to public for autos
   public RollerLauncher launcher; // Changed from protected to public for autos
   public PracticeRobotNav nav; // Changed from protected to public for autos
+  public Climber climber; 
 
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.4;
@@ -166,7 +168,20 @@ public class CrescendoBot extends DefaultRobot {
     adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
+    runClimber(gamepad2);
   }
+
+    protected void runClimber(Gamepad gp) {
+      double speed = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+      // climber.lift(speed, true);
+      if(gp.getRightBumper()) {
+        climber.lift(speed, true);
+        climber.reset();
+      } else {
+        climber.lift(speed, false);
+      }
+    }
+
 
   @Override
   protected void SpeedDriveByJoystick(Gamepad gp) {
