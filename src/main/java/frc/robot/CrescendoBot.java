@@ -19,6 +19,7 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
+import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShoot2Center;
 
 public class CrescendoBot extends DefaultRobot {
@@ -27,7 +28,8 @@ public class CrescendoBot extends DefaultRobot {
   SendableChooser<String> positionChooser;
   String autoSelected;
   private static final String kDefaultAuto = "Default";
-  private final String autoShoot2 = "Auto Shoot 2 (Center)";
+  private final String kAutoShoot2 = "Auto Shoot 2 (CENTER)";
+  private final String kAutoCalibration = "Auto Shoot 2";
   private final String autoDoNothing = "Auto Do Nothing";
   private static final String kCustomAuto = "My Auto";
   private static final double kMetersToInches = 100.0/2.54;
@@ -66,7 +68,9 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    // m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("Calibration Auto", kAutoCalibration);
+    m_chooser.addOption("Auto Shoot 2 (CENTER)", kAutoShoot2);
     SmartDashboard.putData("Auto choices", m_chooser);
     setupAutoChoices();
   }
@@ -97,8 +101,19 @@ public class CrescendoBot extends DefaultRobot {
     // mAutoProgram = new AutoDoNothing();
     // mAutoProgram.start();
 
-    mAutoProgram = new AutoCalibration(this);
+    mAutoProgram = new AutoDoNothing();
     mAutoProgram.start();
+
+    switch (autoSelected) {
+      case kAutoShoot2:
+          mAutoProgram = new AutoShoot2Center(this);
+          mAutoProgram.start();
+          break;
+      case kAutoCalibration:
+          mAutoProgram = new AutoCalibration(this);
+          mAutoProgram.start();
+          break;
+    }
   }
   @Override
   public void autonomousPeriodic() {
