@@ -130,7 +130,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     Translation2d target = new Translation2d(xInches, yInches);
     Rotation2d ang;
     double dist = target.getNorm();
-    if(dist < 1e-6) ang = new Rotation2d();  // When dist is small, atan2 return 90 degrees instead of 0.
+    if(dist < 1e-4) ang = new Rotation2d();  // When dist is small, atan2 return 90 degrees instead of 0.
     else ang = target.getAngle();
     SwerveModulePosition targetOffset = new SwerveModulePosition(target.getNorm(), ang);
 
