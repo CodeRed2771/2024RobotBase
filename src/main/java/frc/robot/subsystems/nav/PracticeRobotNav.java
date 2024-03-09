@@ -33,6 +33,7 @@ public class PracticeRobotNav extends NavSubsystem {
     private NavXGyro gyro;
     private Limelight limelight;
     double yawRotationNudge;
+    double yawNoteNudge;
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
@@ -41,7 +42,7 @@ public class PracticeRobotNav extends NavSubsystem {
         driveTrain = drive;
 
         limelight = new Limelight(new Transform3d(-12,-6.25,2, new Rotation3d(0,Math.toRadians(-45),Math.toRadians(180))));
-        limelight.setPipeline(LimelightPipeline.AprilTag);
+        limelight.setPipeline(LimelightPipeline.NoteTracker);
         limelight.setLED(LimelightOn.Off);
         
         gyro = new NavXGyro(SPI.Port.kMXP);
@@ -98,8 +99,9 @@ public class PracticeRobotNav extends NavSubsystem {
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         
         computeYawNudge(Target.SPEAKER);
+        computeNoteNudge();
         
-        SmartDashboard.putNumber("Yaw Rotation Nudge", yawRotationNudge);
+        SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
         SmartDashboard.putBoolean("Sees April Tag", limelight.isPoseValid());     
     }
 
@@ -115,20 +117,36 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void computeYawNudge(Target target) {
-        Transform2d currentTarget = getTargetOffset(target);
-        updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
-        double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
-        double limit = 0.45;
-        double kp = limit/10.0; // limit divided by angle which max power is applied
+            Transform2d currentTarget = getTargetOffset(target);
+            updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
+            double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
+            double limit = 0.45;
+            double kp = limit/10.0; // limit divided by angle which max power is applied
 
-        yawRotationNudge = kp*MathUtil.inputModulus(goal,-180.0,180.0);
-        yawRotationNudge = MathUtil.clamp(yawRotationNudge,-limit, limit);
-        yawRotationNudge = -yawRotationNudge;
+            yawRotationNudge = kp*MathUtil.inputModulus(goal,-180.0,180.0);
+            yawRotationNudge = MathUtil.clamp(yawRotationNudge,-limit, limit);
+            yawRotationNudge = -yawRotationNudge;
+        
+    }
+    public void computeNoteNudge() {
+        if(limelight.isNoteValid()) {
+            double limit = 0.25;
+            double kp = limit/5.0; // limit divided by angle which max power is applied
+    
+            yawNoteNudge = kp*(0-limelight.horizontalOffset());
+            yawNoteNudge = Math.min(yawNoteNudge,limit);
+            yawNoteNudge = Math.max(yawNoteNudge,-limit);
+            yawNoteNudge = -yawNoteNudge;
+        }
     }
 
     public double yawRotationNudge() {
         return yawRotationNudge;
     }
+
+    public double noteYawNudge() {
+        return yawNoteNudge;
+    };
     public boolean isNavValid() {
         Pose2d pose = poseEstimator.getEstimatedPosition();
         boolean valid = true;
