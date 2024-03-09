@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.libs.TuneableSlewRateLimiter;
 import frc.robot.libs.HID.Gamepad;
 
 public class DefaultRobot extends TimedRobot {
@@ -30,8 +30,10 @@ public class DefaultRobot extends TimedRobot {
 
   protected double kDrivePosAccelLim = 1.0 / 2.0 ; // Max cmd / Time to achieve Cmd
   protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
-  protected SlewRateLimiter driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0);
+  protected TuneableSlewRateLimiter driveAccelSlew = new TuneableSlewRateLimiter("Drive",kDrivePosAccelLim,kDriveNegAccelLim,0);
 
+  protected double kHeadingAccelLim = 1.0 / 0.4 ; // Max cmd / Time to achieve Cmd
+  protected TuneableSlewRateLimiter hdgAccelSlew = new TuneableSlewRateLimiter("Hdg",kHeadingAccelLim);
 
   public DefaultRobot() {
     super();
@@ -87,6 +89,14 @@ public class DefaultRobot extends TimedRobot {
 
   }
 
+  @Override
+  public void teleopInit() {
+    super.teleopInit();
+    
+    hdgAccelSlew.reset(0);
+    driveAccelSlew.reset(0);
+  }
+
   protected boolean bDriveFieldCentric = true;
   protected void fieldCentricDriveMode(boolean mode) {
       bDriveFieldCentric = mode;
@@ -110,6 +120,13 @@ public class DefaultRobot extends TimedRobot {
     return new Translation2d(magnitude,angle);
   }
 
+  /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
+  protected double calculatedProfileYawCmd(double rotateCmd){
+    // Integrate rotate to move heading command
+    rotateCmd = MathUtil.applyDeadband(rotateCmd, 0.05);
+    return hdgAccelSlew.calculate(rotateCmd);
+  }
+  
   protected void SpeedDriveByJoystick(Gamepad gp) {
     Translation2d driveCmd = getJoystickDriveCommand(gp);
     double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
@@ -118,5 +135,15 @@ public class DefaultRobot extends TimedRobot {
     } else {
       driveSpeedControl(driveCmd, rotate);
     }
+  }
+
+  protected void postTuneParams(){
+    hdgAccelSlew.postTuneParams();
+    driveAccelSlew.postTuneParams();
+  }
+
+  protected void handleTuneParams(){
+    hdgAccelSlew.handleTuneParams();
+    driveAccelSlew.handleTuneParams();
   }
 }

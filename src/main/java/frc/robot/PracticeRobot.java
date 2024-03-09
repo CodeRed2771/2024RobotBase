@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import java.util.HashMap;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.TuneablePIDControllerGains;
-import frc.robot.libs.TuneableSlewRateLimiter;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
@@ -35,8 +32,6 @@ public class PracticeRobot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.9;
   
-  protected double kHeadingAccelLim = 1.0 / 0.5 ; // Max cmd / Time to achieve Cmd
-  protected TuneableSlewRateLimiter hdgAccelSlew = new TuneableSlewRateLimiter("Hdg",kHeadingAccelLim);
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
   protected TuneablePIDControllerGains headingGains = new TuneablePIDControllerGains("Hdg", headingController);
@@ -45,7 +40,6 @@ public class PracticeRobot extends DefaultRobot {
   @SuppressWarnings("this-escape")
   public PracticeRobot() {
     super();
-    wiring = new HashMap<>();
 
     /*
      * Define all of the wiring for the robot in a common spot here and then pass it
@@ -118,6 +112,8 @@ public class PracticeRobot extends DefaultRobot {
    */
   @Override
   public void teleopInit() {
+    super.teleopInit();
+
     intake.arm();
     launcher.arm();
     drive.arm();
@@ -130,6 +126,7 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   public void teleopExit() {
+    super.teleopExit();
     intake.disarm();
     launcher.disarm();
     drive.disarm();
@@ -137,6 +134,7 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   public void teleopPeriodic() {
+    super.teleopPeriodic();
     // This method will be called once per scheduler run
     adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
@@ -167,24 +165,19 @@ public class PracticeRobot extends DefaultRobot {
 
   @Override
   public void disabledInit(){
+    super.disabledInit();
     postTuneParams();
   }
 
   @Override
   public void disabledPeriodic(){
+    super.disabledPeriodic();
     handleTuneParams();
   }
 
   protected void resetLimitedHeadingControl(){
     headingCmd = getAngle();
     hdgAccelSlew .reset(0);
-  }
-
-  /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
-  protected double calculatedProfileYawCmd(double rotateCmd){
-    // Integrate rotate to move heading command
-    rotateCmd = MathUtil.applyDeadband(rotateCmd, 0.05);
-    return hdgAccelSlew.calculate(rotateCmd);
   }
 
   protected double calculateRotationCommand(double heading){
@@ -204,31 +197,15 @@ public class PracticeRobot extends DefaultRobot {
     driveSpeedControlFieldCentric(driveCmd, rotate);
   }
 
-  private void postTuneParams(){
-    hdgAccelSlew.postTuneParams();
+  @Override
+  protected void postTuneParams(){
+    super.postTuneParams();
     headingGains.postTuneParams();
-
-    SmartDashboard.putNumber("Drive Accel Lim P", kDrivePosAccelLim);
-    SmartDashboard.putNumber("Drive Accel Lim N", kDriveNegAccelLim);
   }
-  private void handleTuneParams(){
 
-    double val;
-    boolean changed = false;
-    val = SmartDashboard.getNumber("Drive Accel Lim P", kDrivePosAccelLim);
-    if (val != kDrivePosAccelLim){
-      kDrivePosAccelLim = val;
-      changed = true;
-    }
-    val = SmartDashboard.getNumber("Drive Accel Lim N", kDriveNegAccelLim);
-    if (val != kDriveNegAccelLim){
-      kDriveNegAccelLim = val;
-      changed = true;
-    }
-    if(changed)
-      driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0.0);
-    
-    hdgAccelSlew.handleTuneParams();
+  @Override
+  protected void handleTuneParams(){
+    super.postTuneParams();
     headingGains.handleTuneParams();
   }
 

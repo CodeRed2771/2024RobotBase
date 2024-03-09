@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,6 +60,7 @@ public class TankBot extends DefaultRobot {
    */
   @Override
   public void teleopInit() {
+    super.teleopInit();
     bDriveFieldCentric = false;
     hdgAccelSlew .reset(0);
     drive.arm();
@@ -102,43 +102,6 @@ public class TankBot extends DefaultRobot {
   @Override
   public void disabledPeriodic(){
     handleTuneParams();
-  }
-
-  /* Compute the profiled yaw command given a rotation Command of +/- 1.0 */
-  protected double calculatedProfileYawCmd(double rotateCmd){
-    // Integrate rotate to move heading command
-    rotateCmd = MathUtil.applyDeadband(rotateCmd, 0.05);
-    return hdgAccelSlew.calculate(rotateCmd);
-  }
-
-
-  private void postTuneParams(){
-    SmartDashboard.putNumber("Hdg R Accel Lim", kHeadingAccelLim);
-
-    SmartDashboard.putNumber("Drive Accel Lim P", kDrivePosAccelLim);
-    SmartDashboard.putNumber("Drive Accel Lim N", kDriveNegAccelLim);
-  }
-  private void handleTuneParams(){
-
-    double val;
-    boolean changed = false;
-    val = SmartDashboard.getNumber("Hdg R Accel Lim", kHeadingAccelLim);
-    if (val != kHeadingAccelLim){
-      kHeadingAccelLim = val;
-      hdgAccelSlew = new SlewRateLimiter(kHeadingAccelLim);
-    }
-    val = SmartDashboard.getNumber("Drive Accel Lim P", kDrivePosAccelLim);
-    if (val != kDrivePosAccelLim){
-      kDrivePosAccelLim = val;
-      changed = true;
-    }
-    val = SmartDashboard.getNumber("Drive Accel Lim N", kDriveNegAccelLim);
-    if (val != kDriveNegAccelLim){
-      kDriveNegAccelLim = val;
-      changed = true;
-    }
-    if(changed)
-      driveAccelSlew = new SlewRateLimiter(kDrivePosAccelLim,kDriveNegAccelLim,0.0);
   }
 
   protected void adjustDriveSpeed(Gamepad gp){
