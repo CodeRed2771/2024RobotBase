@@ -70,7 +70,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
         aimPIDController = aimMotor.getPIDController();
 
-        aim_kP = .08/5 ; 
+        aim_kP = .1/5 ; 
         aim_kI = 0;
         aim_kD = 0; 
         aim_kIz = 0; 
@@ -79,15 +79,15 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aim_kMinOutput = -1;
 
         resetAimEncoder();
-
+        
         aimPIDController.setP(aim_kP);
         aimPIDController.setI(aim_kI);
         aimPIDController.setD(aim_kD);
-        aimPIDController.setIZone(aim_kIz);
         aimPIDController.setFF(aim_kFF);
+        aimPIDController.setIZone(aim_kIz);
         aimPIDController.setOutputRange(aim_kMinOutput, aim_kMaxOutput);
 
-        // TODO: burn flash??
+        aimMotor.burnFlash();
     }
 
     @Override
@@ -125,10 +125,10 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
         return speedTracking && aimTracking;
     }
-
+    double angleInTicks;
     @Override
     public void aim(double angle) {
-        double angleInTicks = rollerDegreesToTicks(angle);
+        angleInTicks = rollerDegreesToTicks(angle);
         aimPIDController.setReference(angleInTicks, CANSparkMax.ControlType.kPosition);
     }
 
@@ -138,5 +138,6 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
         SmartDashboard.putNumber("Aim Absolute Encoder", aimAbsoluteEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("Aim Relative Encoder", aimEncoder.getPosition());
+        SmartDashboard.putNumber("Aim Setpoint", angleInTicks);
     }
 }

@@ -58,10 +58,10 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public enum LauncherSpeeds {
         OFF(0,75),
-        AMP(1300, 63.5),
-        SUBWOOFER(2400, 71),
-        SAFE_ZONE(2900, 35),
-        STOW(0,25),
+        AMP(900, 43),
+        SAFE_ZONE(3400, 60),
+        SUBWOOFER(2900, 39),
+        STOW(0,35),
         MAX_ANGLE(0, 90);
 
         private double speed;
@@ -182,7 +182,7 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void stopShooter() {
-        prime(LauncherSpeeds.OFF);
+        prime(LauncherSpeeds.STOW);
     }
 
     public boolean isLoaded() {
@@ -293,6 +293,7 @@ public class RollerLauncher extends LauncherSubsystem {
             launcherLED.blink(0.5);
         else
             launcherLED.blink(1);
+            
         if(isLoaded())
             launcherLED.set(LEDColors.GREEN);
         else if(loadState == LoaderState.Loading)

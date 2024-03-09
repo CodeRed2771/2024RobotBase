@@ -303,7 +303,7 @@ public class CrescendoBot extends DefaultRobot {
       launcher.setSpeedBias(0);
       launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getBButton()) {
-      launcher.setSpeedBias(.15);
+      launcher.setSpeedBias(.5);
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);
