@@ -25,7 +25,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   // Robot Center is 0,0 anchor point for coordinates (where NavX is)
   // +X = out intake
   // +Y = out right side of robot
-  private final double wheel_position_offset = (15.0 - 3.25);
+  private final double wheel_position_offset = 24.0/2;  // Wheel base measured.
   private final double wheel_position_offset_radius =  (Math.sqrt(2)*wheel_position_offset);
   // Max Angle rate in Rad = (Max linear speed / Circumference (2PI *R)) for rotations * 2PI (for Radians)
   // Max Angle Rate = Max speed / radius
@@ -83,6 +83,9 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.disarm();
     m_backLeft.disarm();
     m_frontRight.disarm();
+
+    SmartDashboard.putBoolean("Reset Encoders", false);
+
   }
 
   public SwerveModulePosition[] getOdomotry(){
@@ -125,7 +128,11 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
   public void driveFixedPositionOffsetInches(double xInches, double yInches){
     Translation2d target = new Translation2d(xInches, yInches);
-    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getNorm(), target.getAngle());
+    Rotation2d ang;
+    double dist = target.getNorm();
+    if(dist < 1e-6) ang = new Rotation2d();  // When dist is small, atan2 return 90 degrees instead of 0.
+    else ang = target.getAngle();
+    SwerveModulePosition targetOffset = new SwerveModulePosition(target.getNorm(), ang);
 
     m_frontLeft.commandSwervePositionOffset(targetOffset);
     m_frontRight.commandSwervePositionOffset(targetOffset);
@@ -171,17 +178,23 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
       // basically setting "Delete Swerve Calibration" to true will trigger
       // this, which deletes the calibration file.
       Calibration.checkIfShouldDeleteCalibration();
-    }
 
-    boolean doEncoderAction = SmartDashboard.getBoolean("Use Raw Encoder", false);
-    if (doEncoderAction) {
-      setTurnOffsets( 0,0,0,0);
-      SmartDashboard.putBoolean("Use Raw Encoder", false);
-    }
-    doEncoderAction = SmartDashboard.getBoolean("Use Offset Encoder", false);
-    if (doEncoderAction){
-      ApplyCalibration();
-      SmartDashboard.putBoolean("Use Offset Encoder", false);
+      boolean doEncoderAction = SmartDashboard.getBoolean("Reset Encoders", false);
+      if (doEncoderAction) {
+        resetEncoders();
+        SmartDashboard.putBoolean("Reset Encoders", false);
+      }
+
+      doEncoderAction = SmartDashboard.getBoolean("Use Raw Encoder", false);
+      if (doEncoderAction) {
+        setTurnOffsets( 0,0,0,0);
+        SmartDashboard.putBoolean("Use Raw Encoder", false);
+      }
+      doEncoderAction = SmartDashboard.getBoolean("Use Offset Encoder", false);
+      if (doEncoderAction){
+        ApplyCalibration();
+        SmartDashboard.putBoolean("Use Offset Encoder", false);
+      }
     }
   }
 
