@@ -172,7 +172,7 @@ public class CrescendoBot extends DefaultRobot {
 
     Translation2d driveCmd = getJoystickDriveCommand(gp);
 
-    double rotate = calculatedProfileYawCmd(-gp.getRightX());
+    double rotate = calculatedProfileYawCmd(-gp.getRightX()*.3);
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
     if(ampNudge) {
