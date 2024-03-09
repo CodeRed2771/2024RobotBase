@@ -26,7 +26,6 @@ public class DefaultRobot extends TimedRobot {
   protected Map<String,Double> calibration;
   protected Gamepad gamepad1 = new Gamepad(0);
   protected Gamepad gamepad2 = new Gamepad(1);
-  protected Gamepad gamepad3 = new Gamepad(2);
 
   protected double kDrivePosAccelLim = 1.0 / 1.5 ; // Max cmd / Time to achieve Cmd
   protected double kDriveNegAccelLim = -1.0 / 0.25 ; // Max cmd / Time to achieve Cmd
