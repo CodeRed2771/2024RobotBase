@@ -17,6 +17,7 @@ public final class Main {
     Dummy,
     IntakeTest,
     DriveTest,
+    TankBot,
     None
   }
 
@@ -37,6 +38,9 @@ public final class Main {
         break;
       case IntakeTest:
         RobotBase.startRobot(IntakeTestRobot::new);
+        break;
+      case TankBot:
+        RobotBase.startRobot(TankBot::new);
         break;
       default:
         RobotBase.startRobot(DefaultRobot::new);
