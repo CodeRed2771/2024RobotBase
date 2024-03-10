@@ -37,6 +37,12 @@ public class PracticeRobotNav extends NavSubsystem {
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
+    private boolean bUseCamera = true;
+    public boolean isCameraEnabed() { return bUseCamera; }
+    public void setCameraEnable(boolean bUseCamera) { this.bUseCamera = bUseCamera; }
+    public void enableCamera() { setCameraEnable(true); }
+    public void disableCamera() { setCameraEnable(false); }
+
     public PracticeRobotNav(ExampleSwerveDriveTrain drive) {
         super();
         driveTrain = drive;
@@ -109,7 +115,7 @@ public class PracticeRobotNav extends NavSubsystem {
         Pose2d limelitePose = limelight.getLimelightPositionInField();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
+        if(bUseCamera && limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
             poseEstimator.addVisionMeasurement(limelitePose, Timer.getFPGATimestamp()-limelight.getLatency());
         }
         
