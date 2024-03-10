@@ -165,7 +165,7 @@ public class PracticeRobotNav extends NavSubsystem {
         return valid;
     } 
 
-    public Transform2d getTargetOffset(Target target) {
+    public Pose3d getTargetPoseField(Target target){
         Pose3d targetPose;
         switch (target) {
             case AMP:
@@ -178,7 +178,10 @@ public class PracticeRobotNav extends NavSubsystem {
                 targetPose = new Pose3d();
                 break;
         }
-        return new Transform2d(getPoseInFieldInches(), targetPose.toPose2d());
+        return targetPose;
+    }
+    public Transform2d getTargetOffset(Target target) {
+        return new Transform2d(getPoseInFieldInches(), getTargetPoseField(target).toPose2d());
     }
 
 }
