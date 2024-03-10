@@ -78,6 +78,8 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
+
+    postTelemetry();
   }
 
   @Override
@@ -260,6 +262,11 @@ public class CrescendoBot extends DefaultRobot {
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
     nav.setCameraEnable(SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed()));
+  }
+
+  @Override
+  public void postTelemetry(){
+    nav.postTelemetry();
   }
 
   @Override

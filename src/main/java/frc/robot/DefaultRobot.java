@@ -145,4 +145,8 @@ public class DefaultRobot extends TimedRobot {
     hdgAccelSlew.handleTuneParams();
     driveAccelSlew.handleTuneParams();
   }
+  
+  protected void postTelemetry(){
+    
+  }
 }
