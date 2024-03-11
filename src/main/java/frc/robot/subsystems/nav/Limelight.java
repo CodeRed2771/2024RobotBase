@@ -1,5 +1,6 @@
 package frc.robot.subsystems.nav;
 
+import java.util.Map;
 import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -53,10 +54,10 @@ public class Limelight {
         }
     }
 
-    private NetworkTable limelight;
+    private NetworkTable net_table;
     private Pose3d fieldPosition;
-    public Limelight(Transform3d cameraPose) {
-        limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    public Limelight(String network_table_key, Map<String,Double> calibration) {
+        net_table = NetworkTableInstance.getDefault().getTable(network_table_key);
         fieldPosition = new Pose3d();
 
         // Layout Markings Locations: https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
@@ -78,15 +79,20 @@ public class Limelight {
         aprilTagPositions[15] = new Transform3d(182.73,177.10,52.00,new Rotation3d(0,0,120));
         aprilTagPositions[16] = new Transform3d(182.73,146.19,52.00,new Rotation3d(0,0,240));
     
-        this.cameraInstallationPose = cameraPose;
+       this.cameraInstallationPose = new Transform3d(new Translation3d(calibration.get(network_table_key + " X"),
+                                                                       calibration.get(network_table_key + " Y"),
+                                                                       calibration.get(network_table_key + " Z")),
+                                                     new Rotation3d(Math.toRadians(calibration.get(network_table_key + " roll")),
+                                                                    Math.toRadians(calibration.get(network_table_key + " pitch")),
+                                                                    Math.toRadians(calibration.get(network_table_key + " yaw"))));
     } 
 
     public void setLED(LimelightOn value) {
-        limelight.getEntry("ledMode").setNumber(value.value);
+        net_table.getEntry("ledMode").setNumber(value.value);
     }
 
     public void setPipeline(LimelightPipeline pipeline) {
-		NetworkTableEntry pipelineEntry = limelight.getEntry("pipeline");
+		NetworkTableEntry pipelineEntry = net_table.getEntry("pipeline");
     	pipelineEntry.setNumber(pipeline.value);
     }
     public void pollLimelight() {
@@ -97,12 +103,12 @@ public class Limelight {
     }
 
     public LimelightPipeline getPipeline() {
-        int pipeline = (int)limelight.getEntry("getpipe").getInteger(-1);
+        int pipeline = (int)net_table.getEntry("getpipe").getInteger(-1);
         return LimelightPipeline.fromInt(pipeline);
     }
     
     public double getArea() {
-        return limelight.getEntry("ta").getDouble(0);
+        return net_table.getEntry("ta").getDouble(0);
     }
     Pose3d currentReading;
     private void updatePose(){
@@ -113,7 +119,7 @@ public class Limelight {
         final double VALID_AREA = 0.25;
         Transform3d aprilTagTransmorm3d;
 
-        data = limelight.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        data = net_table.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
 
 
         area = getArea();
@@ -171,31 +177,31 @@ public class Limelight {
 
     public int getAprilTagID() {
         if(currentPipeline == LimelightPipeline.AprilTag) {
-            return (int)limelight.getEntry("tid").getDouble(0);
+            return (int)net_table.getEntry("tid").getDouble(0);
         }
         return -100;
     }
     
     public boolean seesSomething() {
-        double value = limelight.getEntry("tv").getDouble(0);
+        double value = net_table.getEntry("tv").getDouble(0);
         return value > 0.5;
     }
 
     public double horizontalOffset() {
-        return limelight.getEntry("tx").getDouble(0);
+        return net_table.getEntry("tx").getDouble(0);
     }
     public double verticalOffset() {
-        return limelight.getEntry("ty").getDouble(0);
+        return net_table.getEntry("ty").getDouble(0);
     }
     
     public Pose3d getRawRedAllaince() {
-        double[] data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+        double[] data = net_table.getEntry("botpose_wpired").getDoubleArray(new double[6]);
         return new Pose3d(new Translation3d(data[0], data[1], data[2]).times(METERS_TO_INCHES), 
                                     new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
     }
 
     public Pose3d getRawBlueAllaince() {
-        double[] data = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        double[] data = net_table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
         return new Pose3d(new Translation3d(data[0], data[1], data[2]).times(METERS_TO_INCHES), 
                                     new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
     }
@@ -214,8 +220,8 @@ public class Limelight {
 
     // Returns the time delay from when the last reading was valid.
     public double getLatency(){
-        return (limelight.getEntry("tl").getDouble(0)
-         + limelight.getEntry("cl").getDouble(0)
+        return (net_table.getEntry("tl").getDouble(0)
+         + net_table.getEntry("cl").getDouble(0)
          + 150)/1000.0;
     }    
 }

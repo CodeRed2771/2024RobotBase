@@ -5,6 +5,7 @@
 package frc.robot.subsystems.nav;
 
 
+import java.util.Map;
 import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -43,11 +44,11 @@ public class PracticeRobotNav extends NavSubsystem {
     public void enableCamera() { setCameraEnable(true); }
     public void disableCamera() { setCameraEnable(false); }
 
-    public PracticeRobotNav(ExampleSwerveDriveTrain drive) {
+    public PracticeRobotNav(Map<String,Double> calibration,ExampleSwerveDriveTrain drive) {
         super();
         driveTrain = drive;
 
-        limelight = new Limelight(new Transform3d(-12,-6.25,2, new Rotation3d(0,Math.toRadians(-45),Math.toRadians(180))));
+        limelight = new Limelight("limelight",calibration);
         limelight.setPipeline(LimelightPipeline.NoteTracker);
         limelight.setLED(LimelightOn.Off);
         
