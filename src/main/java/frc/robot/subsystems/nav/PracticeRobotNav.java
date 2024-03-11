@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
@@ -32,7 +33,7 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     private NavXGyro gyro;
-    private Limelight limelight;
+    private LimeLightPoseEstimator limelight;
     private LimeLightGamePieceTracker gamePieceTracker;
     double yawRotationNudge;
     double yawNoteNudge;
@@ -49,20 +50,11 @@ public class PracticeRobotNav extends NavSubsystem {
         super();
         driveTrain = drive;
 
-        limelight = new Limelight("limelight",calibration);
-        limelight.setPipeline(LimelightPipeline.NoteTracker);
-        limelight.setLED(LimelightOn.Off);
+        limelight = new LimeLightPoseEstimator("limelight",calibration);
 
-        gamePieceTracker = new LimeLightGamePieceTracker("limelight",calibration);
+        gamePieceTracker = new LimeLightGamePieceTracker("limelight_tracker",calibration);
 
         gyro = new NavXGyro(SPI.Port.kMXP);
-        
-        Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
-        if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
-            useRedTargets();
-        } else {
-            useBlueTargets();
-        }
 
         poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
@@ -76,6 +68,13 @@ public class PracticeRobotNav extends NavSubsystem {
     public void reset(Pose2d init_pose) {
         gyro.reset();
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
+
+        Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
+        if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
+            limelight.useRedTargets();
+        } else {
+            limelight.useBlueTargets();
+        }
     }
 
     /* TODO: Remove this after poseEstimator is working well */
@@ -114,16 +113,16 @@ public class PracticeRobotNav extends NavSubsystem {
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
-        SmartDashboard.putBoolean("Sees April Tag", limelight.isPoseValid());
+        SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
         updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
     }
 
     public void updateRobotPosition() {
-        Pose2d limelightPose = limelight.getLimelightPositionInField();
+        Pose2d limelightPose = limelight.getEstimatedPosition().toPose2d();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(bUseCamera && limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
+        if(bUseCamera && limelight.isTracking() && gyro.getVelocity3d().getNorm() < 50.0) {
             poseEstimator.addVisionMeasurement(limelightPose, limelight.getTimeOfMeasurement());
         }
     }
@@ -159,15 +158,10 @@ public class PracticeRobotNav extends NavSubsystem {
     public double noteYawNudge() {
         return yawNoteNudge;
     };
+    
     public boolean isNavValid() {
-        Pose2d pose = poseEstimator.getEstimatedPosition();
-        boolean valid = true;
-        valid &= pose.getX() >=-2.0 * 100/2.54;
-        valid &= pose.getX() <=(8.21055+1)* 100/2.54;
-        valid &= pose.getY() >=-2.0* 100/2.54;
-        valid &= pose.getY() <=(16.54175+1)* 100/2.54;
-        return valid;
-    } 
+        return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation());
+    }
 
     public Pose3d getTargetPoseField(Target target){
         Pose3d targetPose;

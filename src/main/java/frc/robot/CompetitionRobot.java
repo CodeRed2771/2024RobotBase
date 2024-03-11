@@ -68,7 +68,7 @@ public class CompetitionRobot extends CrescendoBot {
     calibration.put("climber velocity", 25.0);
     calibration.put("climber acceleration", 10.0);
     
-    // Navigation
+    // Navigation Camera Install
     calibration.put("limelight X",-12.0);
     calibration.put("limelight Y",-6.25);
     calibration.put("limelight Z",2.0);

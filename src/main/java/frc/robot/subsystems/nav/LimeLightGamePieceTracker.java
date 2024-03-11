@@ -9,9 +9,7 @@ import frc.robot.libs.LimelightHelpers;
 
 public class LimeLightGamePieceTracker extends Limelight {
     
-    private double holdover_time;
-
-    private double note_threshold;
+    private double area_threshold;
     private double last_ty;
     private double last_tx;
     private Translation2d last_note_estimate;
@@ -22,8 +20,7 @@ public class LimeLightGamePieceTracker extends Limelight {
         LimelightHelpers.setLEDMode_ForceOff(network_table_key);
         LimelightHelpers.setPipelineIndex(network_table_key,LimelightPipeline.NoteTracker.toInt());
 
-        note_threshold = calibration.getOrDefault("note threshold", 0.5);
-        holdover_time = calibration.getOrDefault("note holdover", 0.25);
+        area_threshold = calibration.getOrDefault("area threshold", 0.5);
     } 
 
     public void update() {
@@ -40,14 +37,10 @@ public class LimeLightGamePieceTracker extends Limelight {
         boolean valid = true;
         valid = valid && getPipeline() == LimelightPipeline.NoteTracker;
         valid = valid && LimelightHelpers.getTV(net_table_name); // valid targets seen
-        valid = valid && LimelightHelpers.getTA(net_table_name) > note_threshold; // Area of seen target
+        valid = valid && LimelightHelpers.getTA(net_table_name) > area_threshold; // Area of seen target
         valid = valid && Math.abs(LimelightHelpers.getTX(net_table_name)) < 25.0; // Degrees off center
         valid = valid && Math.abs(LimelightHelpers.getTY(net_table_name)) < 20.0; // Degrees off center
         return valid;
-    }
-
-    public boolean isTracking(){
-        return Timer.getFPGATimestamp() - getTimeOfMeasurement() < holdover_time;
     }
 
     public double getBearingToTargetDegrees() {

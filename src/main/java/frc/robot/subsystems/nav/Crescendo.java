@@ -7,6 +7,7 @@ package frc.robot.subsystems.nav;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 
 /** Add your docs here. */
@@ -107,5 +108,14 @@ public class Crescendo {
         else
             result = getBluePOI(poi);
         return result;
+    }
+
+    public static boolean isValidPosition(Translation2d position){
+        boolean valid = true;
+        valid = valid && position.getX() >= -10.0;
+        valid = valid && position.getX() <= Crescendo.BlueToRed.getX() + 10.0;
+        valid = valid && position.getY() >= -10.0;
+        valid = valid && position.getY() <= Crescendo.BlueToRed.getY() + 10.0;
+        return valid;
     }
 }
