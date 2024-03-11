@@ -116,11 +116,11 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void updateRobotPosition() {
-        Pose2d limelitePose = limelight.getLimelightPositionInField();
+        Pose2d limelightPose = limelight.getLimelightPositionInField();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
         if(bUseCamera && limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
-            poseEstimator.addVisionMeasurement(limelitePose, Timer.getFPGATimestamp()-limelight.getLatency());
+            poseEstimator.addVisionMeasurement(limelightPose, Timer.getFPGATimestamp()-limelight.getLatency());
         }
     }
 

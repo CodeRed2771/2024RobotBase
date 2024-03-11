@@ -6,26 +6,22 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-// import frc.robot.subsystems.nav.NavSubsystem.fieldPositions;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Limelight {
-    private final double METERS_TO_INCHES = 39.3701;
+    private static final double METERS_TO_INCHES = (100.0/2.54);
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
 
-    // private Pose3d currentPose;
-    private Transform3d  cameraPose;
+    private Transform3d  cameraInstallationPose;
     private Pose3d robotRelativeToAprilTag;
-    
 
-    public static enum LimelightPipeline {
+    public enum LimelightPipeline {
         Unknown(-1),
         AprilTag(0), 
         NoteTracker(1);
@@ -45,7 +41,7 @@ public class Limelight {
     }
     private LimelightPipeline currentPipeline = LimelightPipeline.Unknown;
     
-    public static enum LimelightOn {
+    public enum LimelightOn {
         BasedOnPipeline(0),
         Off(1),
         Blink(2),
@@ -82,7 +78,7 @@ public class Limelight {
         aprilTagPositions[15] = new Transform3d(182.73,177.10,52.00,new Rotation3d(0,0,120));
         aprilTagPositions[16] = new Transform3d(182.73,146.19,52.00,new Rotation3d(0,0,240));
     
-        this.cameraPose = cameraPose;
+        this.cameraInstallationPose = cameraPose;
     } 
 
     public void setLED(LimelightOn value) {
@@ -132,7 +128,7 @@ public class Limelight {
          */
         if(seesSomething && area > VALID_AREA) {
             aprilTagTransmorm3d = aprilTagPositions[aprilTagID];
-            robotRelativeToAprilTag = currentReading.transformBy(cameraPose);
+            robotRelativeToAprilTag = currentReading.transformBy(cameraInstallationPose);
             fieldPosition = robotRelativeToAprilTag.transformBy(aprilTagTransmorm3d);
         }
     }
@@ -165,7 +161,6 @@ public class Limelight {
 
     public boolean isNoteValid() {
         boolean valid = true;
-        // Rotation3d orientation=fieldPosition.getRotation();
         valid &= seesSomething();
         valid &= getPipeline() == LimelightPipeline.NoteTracker;
         valid &= getArea() > .40;
@@ -183,10 +178,7 @@ public class Limelight {
     
     public boolean seesSomething() {
         double value = limelight.getEntry("tv").getDouble(0);
-        if(value == 1) {
-            return true;
-        }
-        return false;
+        return value > 0.5;
     }
 
     public double horizontalOffset() {
@@ -197,19 +189,15 @@ public class Limelight {
     }
     
     public Pose3d getRawRedAllaince() {
-        Pose3d rawPose;
-        double data[];
-        data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-        rawPose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
-        return rawPose;
+        double[] data = limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+        return new Pose3d(new Translation3d(data[0], data[1], data[2]).times(METERS_TO_INCHES), 
+                                    new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
     }
 
     public Pose3d getRawBlueAllaince() {
-        Pose3d rawPose;
-        double data[];
-        data = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-        rawPose = new Pose3d(data[0]*METERS_TO_INCHES, data[1]*METERS_TO_INCHES, data[2]*METERS_TO_INCHES, new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
-        return rawPose;
+        double[] data = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        return new Pose3d(new Translation3d(data[0], data[1], data[2]).times(METERS_TO_INCHES), 
+                                    new Rotation3d(Math.toRadians(data[3]), Math.toRadians(data[4]), Math.toRadians(data[5])));
     }
 
     public Pose2d getLimelightPositionInField() { 
@@ -220,23 +208,14 @@ public class Limelight {
         } else {
             fieldPose = getRawBlueAllaince();
         }
-        fieldPose = fieldPose.plus(cameraPose.inverse());
-
-        // Transform2d cameraOffset = cameraPose.inverse();
-        // cameraOffset = new Transform2d(fieldPose.getTranslation(), fieldPose.getRotation()).plus(
-        //     new Transform2d(cameraOffset.getTranslation(), cameraOffset.getRotation()));
-
-        // Pose2d pose = new Pose2d(cameraOffset.getTranslation(), cameraOffset.getRotation());
+        fieldPose = fieldPose.plus(cameraInstallationPose.inverse());
         return fieldPose.toPose2d();
     }
 
+    // Returns the time delay from when the last reading was valid.
     public double getLatency(){
         return (limelight.getEntry("tl").getDouble(0)
          + limelight.getEntry("cl").getDouble(0)
          + 150)/1000.0;
-    }
-
-    // Goes in SpeedDriveByJoystick function in Practice Robot (@Override)
-    // check what data gets 
-    
+    }    
 }
