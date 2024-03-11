@@ -12,18 +12,12 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
-import frc.robot.subsystems.nav.Limelight.LimelightOn;
-import frc.robot.subsystems.nav.Limelight.LimelightPipeline;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
@@ -39,6 +33,8 @@ public class PracticeRobotNav extends NavSubsystem {
     double yawNoteNudge;
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
+
+    private double max_camera_speed = 50.0;
 
     private boolean bUseCamera = true;
     public boolean isCameraEnabed() { return bUseCamera; }
@@ -119,11 +115,11 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void updateRobotPosition() {
-        Pose2d limelightPose = limelight.getEstimatedPosition().toPose2d();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(bUseCamera && limelight.isTracking() && gyro.getVelocity3d().getNorm() < 50.0) {
-            poseEstimator.addVisionMeasurement(limelightPose, limelight.getTimeOfMeasurement());
+
+        if(bUseCamera && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
+            limelight.checkUpdatePoseEstimator(poseEstimator);
         }
     }
 
