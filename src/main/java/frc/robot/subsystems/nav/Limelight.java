@@ -13,23 +13,27 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Limelight {
     private static final double METERS_TO_INCHES = (100.0/2.54);
     
     private Transform3d[] aprilTagPositions = new Transform3d[17];
-
-    private Transform3d  cameraInstallationPose;
+    protected Transform3d cameraInstallationToRobotPose;
     private Pose3d robotRelativeToAprilTag;
+    private double lastUpdate_timestamp = 0, latency_cal = 0.0;
 
     public enum LimelightPipeline {
         Unknown(-1),
         AprilTag(0), 
         NoteTracker(1);
 
-        public final int value;
+        private final int value;
         private LimelightPipeline(int value) {
             this.value = value;
+        }
+        public int toInt(){
+            return value;
         }
         public static LimelightPipeline fromInt(int val) {
             for(LimelightPipeline e:LimelightPipeline.values()) {
@@ -40,7 +44,7 @@ public class Limelight {
             throw new IllegalArgumentException("Invalid Pipeline ID Integer");
         }
     }
-    private LimelightPipeline currentPipeline = LimelightPipeline.Unknown;
+    protected LimelightPipeline currentPipeline = LimelightPipeline.Unknown;
     
     public enum LimelightOn {
         BasedOnPipeline(0),
@@ -54,9 +58,11 @@ public class Limelight {
         }
     }
 
-    private NetworkTable net_table;
-    private Pose3d fieldPosition;
+    protected String net_table_name;
+    protected NetworkTable net_table;
+    protected Pose3d fieldPosition;
     public Limelight(String network_table_key, Map<String,Double> calibration) {
+        net_table_name = network_table_key;
         net_table = NetworkTableInstance.getDefault().getTable(network_table_key);
         fieldPosition = new Pose3d();
 
@@ -79,12 +85,13 @@ public class Limelight {
         aprilTagPositions[15] = new Transform3d(182.73,177.10,52.00,new Rotation3d(0,0,120));
         aprilTagPositions[16] = new Transform3d(182.73,146.19,52.00,new Rotation3d(0,0,240));
     
-       this.cameraInstallationPose = new Transform3d(new Translation3d(calibration.get(network_table_key + " X"),
+       this.cameraInstallationToRobotPose = new Transform3d(new Translation3d(calibration.get(network_table_key + " X"),
                                                                        calibration.get(network_table_key + " Y"),
                                                                        calibration.get(network_table_key + " Z")),
                                                      new Rotation3d(Math.toRadians(calibration.get(network_table_key + " roll")),
                                                                     Math.toRadians(calibration.get(network_table_key + " pitch")),
-                                                                    Math.toRadians(calibration.get(network_table_key + " yaw"))));
+                                                                    Math.toRadians(calibration.get(network_table_key + " yaw")))).inverse();
+        latency_cal = calibration.getOrDefault(network_table_key + "latency", 0.0);
     } 
 
     public void setLED(LimelightOn value) {
@@ -93,7 +100,7 @@ public class Limelight {
 
     public void setPipeline(LimelightPipeline pipeline) {
 		NetworkTableEntry pipelineEntry = net_table.getEntry("pipeline");
-    	pipelineEntry.setNumber(pipeline.value);
+    	pipelineEntry.setNumber(pipeline.toInt());
     }
     public void pollLimelight() {
         currentPipeline = getPipeline();
@@ -134,7 +141,7 @@ public class Limelight {
          */
         if(seesSomething && area > VALID_AREA) {
             aprilTagTransmorm3d = aprilTagPositions[aprilTagID];
-            robotRelativeToAprilTag = currentReading.transformBy(cameraInstallationPose);
+            robotRelativeToAprilTag = currentReading.transformBy(cameraInstallationToRobotPose);
             fieldPosition = robotRelativeToAprilTag.transformBy(aprilTagTransmorm3d);
         }
     }
@@ -162,16 +169,6 @@ public class Limelight {
         valid &= fieldPosition.getX() <=8.21055+1;
         valid &= fieldPosition.getY() >=-2.0;
         valid &= fieldPosition.getY() <=16.54175+1;
-        return valid;
-    }
-
-    public boolean isNoteValid() {
-        boolean valid = true;
-        valid &= seesSomething();
-        valid &= getPipeline() == LimelightPipeline.NoteTracker;
-        valid &= getArea() > .40;
-        valid &= Math.abs(horizontalOffset()) < 25;
-        valid &= Math.abs(verticalOffset()) < 20;
         return valid;
     }
 
@@ -214,14 +211,16 @@ public class Limelight {
         } else {
             fieldPose = getRawBlueAllaince();
         }
-        fieldPose = fieldPose.plus(cameraInstallationPose.inverse());
+        fieldPose = fieldPose.plus(cameraInstallationToRobotPose);
         return fieldPose.toPose2d();
     }
 
     // Returns the time delay from when the last reading was valid.
-    public double getLatency(){
-        return (net_table.getEntry("tl").getDouble(0)
-         + net_table.getEntry("cl").getDouble(0)
-         + 150)/1000.0;
-    }    
+    public double getTimeOfMeasurement(){
+        return lastUpdate_timestamp;
+    }
+    /* Update the timestamp of when the last measurement was valid in seconds */
+    protected void updateTimestamp(double latency){
+        lastUpdate_timestamp = Timer.getFPGATimestamp() - latency - latency_cal;
+    } 
 }

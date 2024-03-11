@@ -33,6 +33,7 @@ public class PracticeRobotNav extends NavSubsystem {
 
     private NavXGyro gyro;
     private Limelight limelight;
+    private LimeLightGamePieceTracker gamePieceTracker;
     double yawRotationNudge;
     double yawNoteNudge;
     private SwerveDrivePoseEstimator poseEstimator;
@@ -51,7 +52,9 @@ public class PracticeRobotNav extends NavSubsystem {
         limelight = new Limelight("limelight",calibration);
         limelight.setPipeline(LimelightPipeline.NoteTracker);
         limelight.setLED(LimelightOn.Off);
-        
+
+        gamePieceTracker = new LimeLightGamePieceTracker("limelight",calibration);
+
         gyro = new NavXGyro(SPI.Port.kMXP);
         
         Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
@@ -121,7 +124,7 @@ public class PracticeRobotNav extends NavSubsystem {
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
         if(bUseCamera && limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
-            poseEstimator.addVisionMeasurement(limelightPose, Timer.getFPGATimestamp()-limelight.getLatency());
+            poseEstimator.addVisionMeasurement(limelightPose, limelight.getTimeOfMeasurement());
         }
     }
 
@@ -138,11 +141,11 @@ public class PracticeRobotNav extends NavSubsystem {
         
     }
     public void computeNoteNudge() {
-        if(limelight.isNoteValid()) {
+        if(gamePieceTracker.isTracking()) {
             double limit = 0.25;
             double kp = limit/5.0; // limit divided by angle which max power is applied
     
-            yawNoteNudge = kp*(0-limelight.horizontalOffset());
+            yawNoteNudge = kp*(0- gamePieceTracker.getBearingToTargetDegrees());
             yawNoteNudge = Math.min(yawNoteNudge,limit);
             yawNoteNudge = Math.max(yawNoteNudge,-limit);
             yawNoteNudge = -yawNoteNudge;
