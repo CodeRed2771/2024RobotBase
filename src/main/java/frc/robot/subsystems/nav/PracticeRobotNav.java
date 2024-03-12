@@ -63,6 +63,9 @@ public class PracticeRobotNav extends NavSubsystem {
 
         poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
+        useRedTargets();
+
+         reset();
     }
 
     public void zeroYaw(){
