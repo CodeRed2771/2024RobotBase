@@ -20,7 +20,7 @@ import frc.robot.libs.HID.Gamepad;
 public class DefaultRobot extends TimedRobot {
 
   protected String m_autoSelected;
-  protected final SendableChooser<String> m_chooser = new SendableChooser<>();
+  protected SendableChooser<String> m_chooser = new SendableChooser<>();
 
   protected Map<String,Integer> wiring;
   protected Map<String,Double> calibration;

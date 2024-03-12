@@ -19,6 +19,7 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
+import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShoot2Center;
 import frc.robot.subsystems.climber.Climber;
 
@@ -27,10 +28,9 @@ public class CrescendoBot extends DefaultRobot {
   // SendableChooser<String> autoChooser;
   SendableChooser<String> positionChooser;
   String autoSelected;
-  private static final String kDefaultAuto = "Default";
-  private final String autoShoot2 = "Auto Shoot 2 (Center)";
-  private final String autoDoNothing = "Auto Do Nothing";
-  private static final String kCustomAuto = "My Auto";
+  private static final String autoShoot2 = "Auto Shoot 2";
+  private static final String autoDoNothing = "Do Nothing";
+  private static final String kCalibration = "Cal Auto";
   private static final double kMetersToInches = 100.0/2.54;
 
   private AutoBaseClass mAutoProgram = null;
@@ -68,9 +68,7 @@ public class CrescendoBot extends DefaultRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+
     setupAutoChoices();
   }
 
@@ -95,16 +93,22 @@ public class CrescendoBot extends DefaultRobot {
     nav.reset();
 
     restoreRobotToDefaultState();
+    SmartDashboard.putString("Auto Selected", m_chooser.getSelected());
 
-    // autoSelected = (String) autoChooser.getSelected();
-    // SmartDashboard.putString("Auto Selected: ", autoSelected);
-
-    // mAutoProgram = new AutoDoNothing();
-    // mAutoProgram.start();
-
-    mAutoProgram = new AutoCalibration(this);
+    switch(m_chooser.getSelected()){
+      case kCalibration:
+        mAutoProgram = new AutoCalibration(this);
+        break;
+      case autoShoot2:
+        mAutoProgram = new AutoShoot2Center(this);
+        break;
+      default:
+        mAutoProgram = new AutoDoNothing();
+        break;
+    }
     mAutoProgram.start();
   }
+
   @Override
   public void autonomousPeriodic() {
     if (mAutoProgram.isRunning())
@@ -119,6 +123,10 @@ public class CrescendoBot extends DefaultRobot {
     positionChooser.addOption("Right", "R");
     SmartDashboard.putData("Position", positionChooser);
 
+    m_chooser.setDefaultOption("Default Auto", autoDoNothing);
+    m_chooser.addOption(kCalibration, kCalibration);
+    m_chooser.addOption(autoShoot2, autoShoot2);
+    SmartDashboard.putData("Auto choices", m_chooser);
     // autoChooser = new SendableChooser<String>();
     // // autoChooser.addOption(autoCalibrator, autoCalibrator);
     // //autoChooser.addOption(autoWheelAlign, autoWheelAlign);
