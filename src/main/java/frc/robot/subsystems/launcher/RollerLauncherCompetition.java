@@ -38,33 +38,32 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public double aim_kMaxOutput, aim_kMinOutput, aim_maxRPM;
     
 
-    private static final double ABS_FULL_BACK = .7139;
-    private static final double ABS_FULL_FORWARD = 0.911;
+    private static final double ABS_FULL_BACK = 0.176;
+    private static final double ABS_FULL_FORWARD = 0.440;
+    private static final double DEG_TO_TICK = -1261.065;
 
-    private static final double ABS_TICK_BACK = 122.978;
-    private static final double ABS_TICK_FORWARD = 371.66;
-    private static final double AIM_RANGE_TICKS = ABS_TICK_FORWARD - ABS_TICK_BACK; // encoder ticks for full range of motion
-    private static final double AIM_RANGE_FULL = ABS_FULL_FORWARD - ABS_FULL_BACK; // encoder ticks for full range of motion
-    private double aimBias = 0.0;
+    private static final double aimMargin = 10/360.0;
+    private static final double ABS_BACK_STOP = ABS_FULL_BACK + aimMargin;
+    private static final double ABS_FORWARD_STOP = ABS_FULL_FORWARD - aimMargin;
+
+    private double aimBias = 0;
 
     private double rollerDegreesToTicks(double input_degrees){
-        double rotations = input_degrees / 360.0 + ABS_FULL_BACK;
-        return rollerRotationToTicks(rotations);
+        double rotations = (input_degrees + aimBias) / 360.0 ;
+        return DEG_TO_TICK * rotations;
     }
 
-    private double rollerRotationToTicks(double input_rotation)
-    {
-        input_rotation = MathUtil.clamp(input_rotation, ABS_FULL_BACK, ABS_FULL_FORWARD);
-        double percent = (input_rotation - ABS_FULL_BACK)/AIM_RANGE_FULL;
-        return ABS_TICK_BACK + percent * AIM_RANGE_TICKS;
+    private double rawRollerRotationsToTicks(double raw_rotation){
+        return DEG_TO_TICK * (MathUtil.clamp(raw_rotation , ABS_BACK_STOP, ABS_FORWARD_STOP) - ABS_FORWARD_STOP);
     }
-
 
     public RollerLauncherCompetition(Map<String,Integer> wiring, Map<String,Double> calibration) {
         super(wiring, calibration);
 
-        aimMotor = new CANSparkMax(wiring.get("aim"), MotorType.kBrushless);
+        aimBias = calibration.getOrDefault("aim bias", aimBias);
 
+        aimMotor = new CANSparkMax(wiring.get("aim"), MotorType.kBrushless);
+    
         aimAbsoluteEncoder = new DutyCycleEncoder(wiring.get("aim encoder"));
         aimEncoder =  aimMotor.getEncoder();
 
@@ -97,7 +96,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
     }
 
     private void resetAimEncoder() {
-        aimEncoder.setPosition(rollerRotationToTicks(aimAbsoluteEncoder.get()));
+        aimEncoder.setPosition(rawRollerRotationsToTicks(aimAbsoluteEncoder.get()));
     }
 
     public void load(double power) {

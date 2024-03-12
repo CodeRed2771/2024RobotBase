@@ -58,11 +58,11 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public enum LauncherSpeeds {
         OFF(0,45),
-        AMP(900, 43),
-        SAFE_ZONE(3400, 60),
-        SUBWOOFER(2900, 39),
-        STOW(0,35),
-        MAX_ANGLE(0, 90);
+        AMP(900, 47),
+        SAFE_ZONE(3400, 30),
+        SUBWOOFER(2900, 51),
+        STOW(0,10),
+        MAX_ANGLE(0, 75);
 
         private double speed;
         private double angle;
@@ -182,7 +182,7 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void stopShooter() {
-        prime(LauncherSpeeds.STOW);
+        prime(LauncherSpeeds.OFF);
     }
 
     public boolean isLoaded() {
