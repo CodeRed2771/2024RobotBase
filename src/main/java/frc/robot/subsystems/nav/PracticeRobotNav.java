@@ -21,7 +21,7 @@ import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
-    public static enum Target {
+    public enum Target {
         SPEAKER,
         AMP, 
     }
@@ -29,6 +29,8 @@ public class PracticeRobotNav extends NavSubsystem {
     private NavXGyro gyro;
     private LimeLightPoseEstimator limelight;
     private LimeLightGamePieceTracker gamePieceTracker;
+    private boolean limelight_present = false;
+    private boolean limelight_tracker_present = false;
     double yawRotationNudge;
     double yawNoteNudge;
     private SwerveDrivePoseEstimator poseEstimator;
@@ -46,10 +48,17 @@ public class PracticeRobotNav extends NavSubsystem {
         super();
         driveTrain = drive;
 
-        limelight = new LimeLightPoseEstimator("limelight",calibration);
+        limelight_present = calibration.getOrDefault("limelight present", 0.0) > 0.5; 
+        if(limelight_present)
+        {
+            limelight = new LimeLightPoseEstimator("limelight",calibration);
+            disableCamera();
+        }
 
-        gamePieceTracker = new LimeLightGamePieceTracker("limelight_tracker",calibration);
-
+        limelight_tracker_present = calibration.getOrDefault("limelight_tracker present",0.0)>0.5;
+        if(limelight_tracker_present){
+            gamePieceTracker = new LimeLightGamePieceTracker("limelight_tracker",calibration);
+        }
         gyro = new NavXGyro(SPI.Port.kMXP);
 
         poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
@@ -65,11 +74,13 @@ public class PracticeRobotNav extends NavSubsystem {
         gyro.reset();
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
 
-        Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
-        if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
-            limelight.useRedTargets();
-        } else {
-            limelight.useBlueTargets();
+        if(limelight_present){
+            Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
+            if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
+                limelight.useRedTargets();
+            } else {
+                limelight.useBlueTargets();
+            }
         }
     }
 
@@ -109,16 +120,19 @@ public class PracticeRobotNav extends NavSubsystem {
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
-        SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
         updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
+
+        if(limelight_present)
+            SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
+
     }
 
     public void updateRobotPosition() {
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
 
-        if(bUseCamera && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
+        if(limelight_present && bUseCamera && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
             limelight.checkUpdatePoseEstimator(poseEstimator);
         }
     }
@@ -136,7 +150,7 @@ public class PracticeRobotNav extends NavSubsystem {
         
     }
     public void computeNoteNudge() {
-        if(gamePieceTracker.isTracking()) {
+        if(limelight_tracker_present && gamePieceTracker.isTracking()) {
             double limit = 0.25;
             double kp = limit/5.0; // limit divided by angle which max power is applied
     
@@ -144,6 +158,8 @@ public class PracticeRobotNav extends NavSubsystem {
             yawNoteNudge = Math.min(yawNoteNudge,limit);
             yawNoteNudge = Math.max(yawNoteNudge,-limit);
             yawNoteNudge = -yawNoteNudge;
+        } else {
+            yawNoteNudge = 0.0;
         }
     }
 

@@ -60,12 +60,12 @@ public class Limelight {
 
         holdover_time = calibration.getOrDefault("note holdover", 0.25);
 
-       this.cameraInstallationToRobotPose = new Transform3d(new Translation3d(calibration.get(network_table_key + " X"),
-                                                                       calibration.get(network_table_key + " Y"),
-                                                                       calibration.get(network_table_key + " Z")),
-                                                     new Rotation3d(Math.toRadians(calibration.get(network_table_key + " roll")),
-                                                                    Math.toRadians(calibration.get(network_table_key + " pitch")),
-                                                                    Math.toRadians(calibration.get(network_table_key + " yaw")))).inverse();
+       this.cameraInstallationToRobotPose = new Transform3d(new Translation3d(calibration.getOrDefault(network_table_key + " X",0.0),
+                                                                       calibration.getOrDefault(network_table_key + " Y",0.0),
+                                                                       calibration.getOrDefault(network_table_key + " Z",0.0)),
+                                                     new Rotation3d(Math.toRadians(calibration.getOrDefault(network_table_key + " roll",0.0)),
+                                                                    Math.toRadians(calibration.getOrDefault(network_table_key + " pitch",0.0)),
+                                                                    Math.toRadians(calibration.getOrDefault(network_table_key + " yaw",0.0)))).inverse();
         latency_cal = calibration.getOrDefault(network_table_key + "latency", 0.0);
     } 
 
