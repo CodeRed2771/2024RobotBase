@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.auto;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
 import frc.robot.CrescendoBot;
@@ -17,12 +19,12 @@ import frc.robot.CrescendoBot;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 
 
-public class AutoShoot2Center extends AutoBaseClass {
+public class AutoAmp2 extends AutoBaseClass {
 
   CrescendoBot myRobot;
-  private int drivenTicks = 0;
+  byte multiplier = 1;
 
-  public AutoShoot2Center(CrescendoBot robot) {
+  public AutoAmp2(CrescendoBot robot) {
     super();
     myRobot = robot;
   }
@@ -37,7 +39,13 @@ public class AutoShoot2Center extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              if(DriverStation.getAlliance() == Alliance.Blue)
+                multiplier = 1;
+              if(DriverStation.getAlliance() == Alliance.Red)
+                multiplier = -1;
+              myRobot.launcher.prime(LauncherSpeeds.AMP);
+              myRobot.launcher.setSpeedBias(0.25);
+              myRobot.drive.driveFixedPositionOffsetInches(15*multiplier, -15);
               setTimerAndAdvanceStep(800);
               break;
             case 1:
@@ -50,7 +58,7 @@ public class AutoShoot2Center extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(90,0);
+              myRobot.drive.driveFixedPositionOffsetInches(30*multiplier,45);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
@@ -62,8 +70,9 @@ public class AutoShoot2Center extends AutoBaseClass {
               }
               break;
             case 6:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-92,0);
+              myRobot.launcher.prime(LauncherSpeeds.AMP);
+              myRobot.launcher.setSpeedBias(0.25);
+              myRobot.drive.driveFixedPositionOffsetInches(-30*multiplier,-45);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:

@@ -20,7 +20,7 @@ import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
-import frc.robot.subsystems.auto.AutoShoot2Center;
+import frc.robot.subsystems.auto.AutoSpeaker2;
 
 public class CrescendoBot extends DefaultRobot {
 
@@ -106,7 +106,7 @@ public class CrescendoBot extends DefaultRobot {
 
     switch (autoSelected) {
       case kAutoShoot2:
-          mAutoProgram = new AutoShoot2Center(this);
+          mAutoProgram = new AutoSpeaker2(this);
           mAutoProgram.start();
           break;
       case kAutoCalibration:
