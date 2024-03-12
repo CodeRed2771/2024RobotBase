@@ -39,13 +39,13 @@ public class AutoAmp2 extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              if(DriverStation.getAlliance() == Alliance.Blue)
+              if(DriverStation.getAlliance().get() == Alliance.Blue)
                 multiplier = 1;
-              if(DriverStation.getAlliance() == Alliance.Red)
+              if(DriverStation.getAlliance().get() == Alliance.Red)
                 multiplier = -1;
               myRobot.launcher.prime(LauncherSpeeds.AMP);
               myRobot.launcher.setSpeedBias(0.25);
-              myRobot.drive.driveFixedPositionOffsetInches(15*multiplier, -15);
+              myRobot.drive.driveFixedPositionOffsetInches(8*multiplier, -19);
               setTimerAndAdvanceStep(800);
               break;
             case 1:
@@ -58,7 +58,7 @@ public class AutoAmp2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(30*multiplier,45);
+              myRobot.drive.driveFixedPositionOffsetInches(30*multiplier,20);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
@@ -72,7 +72,7 @@ public class AutoAmp2 extends AutoBaseClass {
             case 6:
               myRobot.launcher.prime(LauncherSpeeds.AMP);
               myRobot.launcher.setSpeedBias(0.25);
-              myRobot.drive.driveFixedPositionOffsetInches(-30*multiplier,-45);
+              myRobot.drive.driveFixedPositionOffsetInches(-30*multiplier,-20);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:

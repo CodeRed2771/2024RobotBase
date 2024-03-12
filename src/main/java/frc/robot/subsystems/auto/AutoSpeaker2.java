@@ -50,7 +50,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(85,0);
+              myRobot.drive.driveFixedPositionOffsetInches(60,0);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
@@ -63,7 +63,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-87,0);
+              myRobot.drive.driveFixedPositionOffsetInches(-62,0);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
