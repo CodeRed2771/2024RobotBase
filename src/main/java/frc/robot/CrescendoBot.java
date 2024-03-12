@@ -21,17 +21,16 @@ import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoSpeaker2;
+import frc.robot.subsystems.climber.Climber;
 
 public class CrescendoBot extends DefaultRobot {
 
   // SendableChooser<String> autoChooser;
   SendableChooser<String> positionChooser;
   String autoSelected;
-  private static final String kDefaultAuto = "Default";
-  private final String kAutoShoot2 = "Auto Shoot 2 (CENTER)";
-  private final String kAutoCalibration = "Auto Shoot 2";
-  private final String autoDoNothing = "Auto Do Nothing";
-  private static final String kCustomAuto = "My Auto";
+  private static final String autoShoot2 = "Auto Shoot 2";
+  private static final String autoDoNothing = "Do Nothing";
+  private static final String kCalibration = "Cal Auto";
   private static final double kMetersToInches = 100.0/2.54;
 
   private AutoBaseClass mAutoProgram = null;
@@ -41,10 +40,12 @@ public class CrescendoBot extends DefaultRobot {
   public IntakeSubsystem intake; // Changed from protected to public for autos
   public RollerLauncher launcher; // Changed from protected to public for autos
   public PracticeRobotNav nav; // Changed from protected to public for autos
+  public Climber climber; 
 
   protected double driveSpeedGain = 1.0;
-  protected double rotateSpeedGain = 0.9;
+  protected double rotateSpeedGain = 0.4;
   
+  protected boolean bHeadingHold = true;
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
   protected TuneablePIDControllerGains headingGains = new TuneablePIDControllerGains("Hdg", headingController);
@@ -56,7 +57,7 @@ public class CrescendoBot extends DefaultRobot {
 
     headingGains.setP(5.0);
     headingGains.setI(0.0);
-    headingGains.setD(0.0);
+    headingGains.setD(0.01);
 
   }
 
@@ -67,11 +68,7 @@ public class CrescendoBot extends DefaultRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    // m_chooser.addOption("My Auto", kCustomAuto);
-    m_chooser.addOption("Calibration Auto", kAutoCalibration);
-    m_chooser.addOption("Auto Shoot 2 (CENTER)", kAutoShoot2);
-    SmartDashboard.putData("Auto choices", m_chooser);
+
     setupAutoChoices();
   }
 
@@ -79,6 +76,8 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void robotPeriodic(){
     super.robotPeriodic();
+
+    postTelemetry();
   }
 
   @Override
@@ -94,27 +93,33 @@ public class CrescendoBot extends DefaultRobot {
     nav.reset();
 
     restoreRobotToDefaultState();
+    SmartDashboard.putString("Auto Selected", m_chooser.getSelected());
 
-    // autoSelected = (String) autoChooser.getSelected();
-    // SmartDashboard.putString("Auto Selected: ", autoSelected);
-
-    // mAutoProgram = new AutoDoNothing();
-    // mAutoProgram.start();
-
-    mAutoProgram = new AutoDoNothing();
+    switch(m_chooser.getSelected()){
+      case kCalibration:
+        mAutoProgram = new AutoCalibration(this);
+        break;
+      case autoShoot2:
+        mAutoProgram = new AutoSpeaker2(this);
+        break;
+      default:
+        mAutoProgram = new AutoDoNothing();
+        break;
+    }
     mAutoProgram.start();
 
     switch (autoSelected) {
-      case kAutoShoot2:
+      case autoShoot2:
           mAutoProgram = new AutoSpeaker2(this);
           mAutoProgram.start();
           break;
-      case kAutoCalibration:
+      case kCalibration:
           mAutoProgram = new AutoCalibration(this);
           mAutoProgram.start();
           break;
     }
   }
+
   @Override
   public void autonomousPeriodic() {
     if (mAutoProgram.isRunning())
@@ -129,6 +134,10 @@ public class CrescendoBot extends DefaultRobot {
     positionChooser.addOption("Right", "R");
     SmartDashboard.putData("Position", positionChooser);
 
+    m_chooser.setDefaultOption("Default Auto", autoDoNothing);
+    m_chooser.addOption(kCalibration, kCalibration);
+    m_chooser.addOption(autoShoot2, autoShoot2);
+    SmartDashboard.putData("Auto choices", m_chooser);
     // autoChooser = new SendableChooser<String>();
     // // autoChooser.addOption(autoCalibrator, autoCalibrator);
     // //autoChooser.addOption(autoWheelAlign, autoWheelAlign);
@@ -180,7 +189,22 @@ public class CrescendoBot extends DefaultRobot {
     adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
+    /* TODO: Renable when HW Guards are installed
+    runClimber(gamepad2);
+    */ 
   }
+
+    protected void runClimber(Gamepad gp) {
+      double speed = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+      // climber.lift(speed, true);
+      if(gp.getRightBumper()) {
+        climber.lift(speed, true);
+        climber.reset();
+      } else {
+        climber.lift(speed, false);
+      }
+    }
+
 
   @Override
   protected void SpeedDriveByJoystick(Gamepad gp) {
@@ -194,6 +218,15 @@ public class CrescendoBot extends DefaultRobot {
       rotate+=nav.yawRotationNudge();
     } else if(noteNudge) {
       rotate += nav.noteYawNudge();
+    }
+
+    if(! MathUtil.isNear(0.0,Math.abs(rotate),0.01))
+    {
+      setHeadingHoldAngle(getAngle());
+    }
+
+    if(bHeadingHold){
+      rotate += calculateHeadingHoldCommand();
     }
 
     if (bDriveFieldCentric) {
@@ -221,38 +254,38 @@ public class CrescendoBot extends DefaultRobot {
     handleTuneParams();
   }
 
-  protected void resetLimitedHeadingControl(){
-    headingCmd = getAngle();
-    hdgAccelSlew .reset(0);
+  protected void setHeadingHoldAngle(double angle){
+    headingCmd = angle;
   }
 
-  protected double calculateRotationCommand(double heading){
-    double rotationError = MathUtil.inputModulus(heading - nav.getAngle(),-180.0, 180.0) / 360.0;
+  protected double calculateHeadingHoldCommand(){
+    double rotationError = MathUtil.inputModulus(headingCmd - nav.getAngle(),-180.0, 180.0) / 360.0;
     return headingController.calculate(rotationError);
   }
 
-  protected void speedDriveByJoystickHeading(Gamepad gp) {
 
-    Translation2d driveCmd = getJoystickDriveCommand(gp);
-    driveCmd = calculateProfiledDriveCommand(driveCmd);
-
-    double rotate = MathUtil.applyDeadband(-gp.getRightX(), 0.05);
-    double hdg = calculatedProfileYawCmd(rotate);
-    rotate = calculateRotationCommand(hdg);
-
-    driveSpeedControlFieldCentric(driveCmd, rotate);
-  }
 
   @Override
   protected void postTuneParams(){
     super.postTuneParams();
     headingGains.postTuneParams();
+
+    SmartDashboard.putBoolean("Heading hold", bHeadingHold);
+    SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed());
   }
 
   @Override
   protected void handleTuneParams(){
     super.postTuneParams();
     headingGains.handleTuneParams();
+
+    bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
+    nav.setCameraEnable(SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed()));
+  }
+
+  @Override
+  public void postTelemetry(){
+    nav.postTelemetry();
   }
 
   @Override
@@ -260,7 +293,7 @@ public class CrescendoBot extends DefaultRobot {
     drive.reset(); // sets encoders based on absolute encoder positions
     nav.reset();
 
-    resetLimitedHeadingControl();
+    setHeadingHoldAngle(getAngle());
 
     super.restoreRobotToDefaultState();
   }
@@ -281,11 +314,14 @@ public class CrescendoBot extends DefaultRobot {
       rotateSpeedGain = 1.0;
     }
 
-    if(gp.getXButton()) nav.zeroYaw();
+    if(gp.getXButton())
+    {
+      nav.zeroYaw();
+      setHeadingHoldAngle(getAngle());
+    }
 
     if(gp.getAButton()) {
       ampNudge = true;
-      resetLimitedHeadingControl();
     } else {
       ampNudge = false;
     }
@@ -313,12 +349,12 @@ public class CrescendoBot extends DefaultRobot {
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER);
+      launcher.prime(LauncherSpeeds.SAFE_ZONE);
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getBButton()) {
-      launcher.setSpeedBias(.15);
+      launcher.setSpeedBias(.5);
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.launcher.RollerLauncherCompetition;
@@ -50,12 +51,25 @@ public class CompetitionRobot extends CrescendoBot {
 
     calibration.put("upper launcher direction", 1.0);
     calibration.put("note threshold", 1100.0);
+    calibration.put("wheel base",23.5);
+    
+
+    calibration.put("climber P", .5);//was .07
+    calibration.put("climber I", 0.0);
+    calibration.put("climber D", 0.0);
+    calibration.put("climber Izone", 0.0);
+    calibration.put("climber velocity", 25.0);
+    calibration.put("climber acceleration", 10.0);
+
+    wiring.put("climber", 25);
+
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
     nav = new PracticeRobotNav(drive);
     intake = new DummyIntake();
     launcher = new RollerLauncherCompetition(wiring, calibration);
+    climber = new Climber(wiring, calibration);
   }
 
 }

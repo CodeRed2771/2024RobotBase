@@ -15,7 +15,7 @@ import frc.robot.Calibration;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
-  private static final double kMaxSpeed = 200.0; // normalized full Speed Inches/sec
+  private static final double kMaxSpeed = 600.0; // normalized full Speed Inches/sec
 
   private NewSwerveModuleVortex m_frontLeft; // Front Left
   private NewSwerveModuleVortex m_backRight; // Back Right
@@ -25,22 +25,31 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   // Robot Center is 0,0 anchor point for coordinates (where NavX is)
   // +X = out intake
   // +Y = out right side of robot
-  private final double wheel_position_offset = 24.0/2;  // Wheel base measured.
-  private final double wheel_position_offset_radius =  (Math.sqrt(2)*wheel_position_offset);
+  private double wheel_position_offset = 24.0/2;  // Wheel base measured.
+  private double wheel_position_offset_radius;
   // Max Angle rate in Rad = (Max linear speed / Circumference (2PI *R)) for rotations * 2PI (for Radians)
   // Max Angle Rate = Max speed / radius
-  private final double kMaxAngleRate = kMaxSpeed / wheel_position_offset_radius;
-  private final Translation2d m_frontLeftLocation = new Translation2d(wheel_position_offset, wheel_position_offset);
-  private final Translation2d m_frontRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
-  private final Translation2d m_backLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
-  private final Translation2d m_backRightLocation = new Translation2d(-wheel_position_offset, -wheel_position_offset);
+  private double kMaxAngleRate;
+  private Translation2d m_frontLeftLocation;
+  private Translation2d m_frontRightLocation;
+  private Translation2d m_backLeftLocation;
+  private Translation2d m_backRightLocation;
 
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
-      m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  private SwerveDriveKinematics m_kinematics;
 
   public ExampleSwerveDriveTrain(Map<String, Integer> wiring, Map<String,Double> calibration) {
     super();
 
+    wheel_position_offset = calibration.getOrDefault("wheel base", wheel_position_offset);
+    wheel_position_offset_radius =  (Math.sqrt(2)*wheel_position_offset);
+    kMaxAngleRate = kMaxSpeed / wheel_position_offset_radius;
+    m_frontLeftLocation = new Translation2d(wheel_position_offset, wheel_position_offset);
+    m_frontRightLocation = new Translation2d(wheel_position_offset, -wheel_position_offset);
+    m_backLeftLocation = new Translation2d(-wheel_position_offset, wheel_position_offset);
+    m_backRightLocation = new Translation2d(-wheel_position_offset, -wheel_position_offset);
+
+    m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
+      m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     // Circumference in cm to Radius in inches
     m_frontLeft = new NewSwerveModuleVortex(wiring, calibration, "A"); // Front right

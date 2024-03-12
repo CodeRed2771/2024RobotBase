@@ -57,12 +57,12 @@ public class RollerLauncher extends LauncherSubsystem {
     protected int notePresentThreshold;
 
     public enum LauncherSpeeds {
-        OFF(0,75),
-        AMP(1300, 63.5),
-        SUBWOOFER(2400, 71),
-        SAFE_ZONE(2900, 35),
-        STOW(0,25),
-        MAX_ANGLE(0, 90);
+        OFF(0,45),
+        AMP(900, 47),
+        SAFE_ZONE(3400, 30),
+        SUBWOOFER(2900, 51),
+        STOW(0,10),
+        MAX_ANGLE(0, 75);
 
         private double speed;
         private double angle;
@@ -293,6 +293,7 @@ public class RollerLauncher extends LauncherSubsystem {
             launcherLED.blink(0.5);
         else
             launcherLED.blink(1);
+            
         if(isLoaded())
             launcherLED.set(LEDColors.GREEN);
         else if(loadState == LoaderState.Loading)

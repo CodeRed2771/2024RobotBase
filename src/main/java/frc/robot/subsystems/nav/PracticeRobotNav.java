@@ -37,6 +37,12 @@ public class PracticeRobotNav extends NavSubsystem {
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
+    private boolean bUseCamera = true;
+    public boolean isCameraEnabed() { return bUseCamera; }
+    public void setCameraEnable(boolean bUseCamera) { this.bUseCamera = bUseCamera; }
+    public void enableCamera() { setCameraEnable(true); }
+    public void disableCamera() { setCameraEnable(false); }
+
     public PracticeRobotNav(ExampleSwerveDriveTrain drive) {
         super();
         driveTrain = drive;
@@ -80,7 +86,9 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     private void updateTestPoint(String prefix, Pose2d pose) {
-        updateTestPoint(prefix, new Pose3d(pose));
+        SmartDashboard.putNumber(prefix + " X", pose.getX());
+        SmartDashboard.putNumber(prefix + " Y", pose.getY());
+        SmartDashboard.putNumber(prefix + " Yaw", pose.getRotation().getDegrees());
     }
 
     private void updateTestPoint(String prefix, Pose3d pose) {
@@ -90,30 +98,30 @@ public class PracticeRobotNav extends NavSubsystem {
         SmartDashboard.putNumber(prefix + " Roll", Math.toDegrees(pose.getRotation().getX()));
         SmartDashboard.putNumber(prefix + " Pitch", Math.toDegrees(pose.getRotation().getY()));
         SmartDashboard.putNumber(prefix + " Yaw", Math.toDegrees(pose.getRotation().getZ()));
-
     }
     @Override
     public void periodic() {
         updateRobotPosition();
 
-        SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
-        
         computeYawNudge(Target.SPEAKER);
         computeNoteNudge();
-        
+    }
+
+    public void postTelemetry(){
+        SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
-        SmartDashboard.putBoolean("Sees April Tag", limelight.isPoseValid());     
+        SmartDashboard.putBoolean("Sees April Tag", limelight.isPoseValid());
+        updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
+        updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
     }
 
     public void updateRobotPosition() {
         Pose2d limelitePose = limelight.getLimelightPositionInField();
 
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
-        if(limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
+        if(bUseCamera && limelight.isPoseValid() && gyro.getVelocity3d().getNorm() < 50.0) {
             poseEstimator.addVisionMeasurement(limelitePose, Timer.getFPGATimestamp()-limelight.getLatency());
         }
-        
-        updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
     }
 
     public void computeYawNudge(Target target) {
@@ -157,7 +165,7 @@ public class PracticeRobotNav extends NavSubsystem {
         return valid;
     } 
 
-    public Transform2d getTargetOffset(Target target) {
+    public Pose3d getTargetPoseField(Target target){
         Pose3d targetPose;
         switch (target) {
             case AMP:
@@ -170,7 +178,10 @@ public class PracticeRobotNav extends NavSubsystem {
                 targetPose = new Pose3d();
                 break;
         }
-        return new Transform2d(getPoseInFieldInches(), targetPose.toPose2d());
+        return targetPose;
+    }
+    public Transform2d getTargetOffset(Target target) {
+        return new Transform2d(getPoseInFieldInches(), getTargetPoseField(target).toPose2d());
     }
 
 }
