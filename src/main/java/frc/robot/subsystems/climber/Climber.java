@@ -55,6 +55,8 @@ public class Climber extends ClimberSubsystem{
 
         PIDController.setSmartMotionAllowedClosedLoopError(1, 0);
 
+        liftMotor.burnFlash();
+
         lastPositionRequested = 0;
     }
 
@@ -71,7 +73,7 @@ public class Climber extends ClimberSubsystem{
             PIDController.setReference(requestedPos, ControlType.kPosition);
             lastPositionRequested = requestedPos;
         } else {
-            liftMotor.set(Math.signum(speed)*0.2);
+            liftMotor.set(Math.signum(speed)*0.25);
         }
     }
 
@@ -79,7 +81,6 @@ public class Climber extends ClimberSubsystem{
     public void reset() {
         super.reset();
         liftEncoder.setPosition(0);
-        // rightEncoder.setPosition(0);
         lastPositionRequested = 0;
     }
 
@@ -87,6 +88,6 @@ public class Climber extends ClimberSubsystem{
     public void periodic(){
         SmartDashboard.putNumber("Climb encoder", liftEncoder.getPosition());
         // SmartDashboard.putNumber("Current Time", System.currentTimeMillis());
-        SmartDashboard.putNumber("Requested position", lastPositionRequested);
+        SmartDashboard.putNumber("Climb Requested", lastPositionRequested);
     }
 }

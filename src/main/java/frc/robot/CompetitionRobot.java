@@ -61,7 +61,7 @@ public class CompetitionRobot extends CrescendoBot {
     calibration.put("upper launcher direction", 1.0);
     
     //Climber
-    calibration.put("climber P", .5);//was .07
+    calibration.put("climber P", 2.5);//was .07
     calibration.put("climber I", 0.0);
     calibration.put("climber D", 0.0);
     calibration.put("climber Izone", 0.0);
