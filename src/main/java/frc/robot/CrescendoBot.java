@@ -263,7 +263,7 @@ public class CrescendoBot extends DefaultRobot {
 
   @Override
   protected void handleTuneParams(){
-    super.postTuneParams();
+    super.handleTuneParams();
     headingGains.handleTuneParams();
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
