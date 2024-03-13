@@ -81,7 +81,6 @@ public class Climber extends ClimberSubsystem{
     public void reset() {
         super.reset();
         liftEncoder.setPosition(0);
-        // rightEncoder.setPosition(0);
         lastPositionRequested = 0;
     }
 

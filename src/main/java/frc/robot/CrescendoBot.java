@@ -156,6 +156,7 @@ public class CrescendoBot extends DefaultRobot {
     launcher.arm();
     drive.arm();
     nav.reset();
+    climber.reset(); // added 3/12/24 - not tested yet
 
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
