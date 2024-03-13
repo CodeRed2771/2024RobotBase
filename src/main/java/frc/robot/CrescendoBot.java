@@ -251,7 +251,8 @@ public class CrescendoBot extends DefaultRobot {
   protected void postTuneParams(){
     super.postTuneParams();
     headingGains.postTuneParams();
-
+    launcher.postTuneParameters();
+    
     SmartDashboard.putBoolean("Heading hold", bHeadingHold);
     SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed());
   }
@@ -260,6 +261,7 @@ public class CrescendoBot extends DefaultRobot {
   protected void handleTuneParams(){
     super.handleTuneParams();
     headingGains.handleTuneParams();
+    launcher.handleTuneParameters();
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
     nav.setCameraEnable(SmartDashboard.getBoolean("Camera Enable", nav.isCameraEnabed()));

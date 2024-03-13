@@ -140,4 +140,13 @@ public class RollerLauncherCompetition extends RollerLauncher {
         SmartDashboard.putNumber("Aim Relative Encoder", aimEncoder.getPosition());
         SmartDashboard.putNumber("Aim Setpoint", angleInTicks);
     }
+
+    public void postTuneParameters(){
+        SmartDashboard.putNumber("Aim Bias",aimBias);
+    }
+
+    public void handleTuneParameters(){
+        aimBias = SmartDashboard.getNumber("Aim Bias",aimBias);
+    }
+
 }
