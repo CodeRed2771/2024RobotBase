@@ -61,6 +61,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private DriveMode currentControlMode = DriveMode.Disabled;
   private double targetDrivePosition = 0.0;
 
+  private PIDGains drivePositionGains;
   private PIDGains driveGains;
   private PIDGains turnGains;
 
@@ -106,23 +107,42 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     /************ SET PID VALUES HERE ******************/
     driveGains = new PIDGains();
+    drivePositionGains = new PIDGains();
 
-    driveGains.kP = 0.002000;
+    driveGains.kP = 0.003;
     driveGains.kI = 0.0;
-    driveGains.kD = 0.0;
-    driveGains.kIz = 0.0;
-    driveGains.kFF = 0.0;
-    driveGains.maxVel = 75.0;
+    driveGains.kD = 0.001;
+    driveGains.kIz = 10.0;
+    driveGains.kFF = 0.003;
+    driveGains.maxVel = 50.0;
     driveGains.maxAcc = 150.0;
 
+    drivePositionGains.kP = 0.0015;
+    drivePositionGains.kI = 0.00075;
+    drivePositionGains.kD = 0.0005;
+    drivePositionGains.kIz = 3.0;
+    drivePositionGains.kFF = 0.0015;
+    drivePositionGains.maxVel = 50.0;
+    drivePositionGains.maxAcc = 150.0;
+
+
     m_drivePIDController = m_driveMotor.getPIDController();
-    m_drivePIDController.setP(driveGains.kP);
-    m_drivePIDController.setI(driveGains.kI);
-    m_drivePIDController.setIZone(driveGains.kIz);
-    m_drivePIDController.setD(driveGains.kD);
-    m_drivePIDController.setFF(driveGains.kFF);
+    m_drivePIDController.setP(driveGains.kP,0);
+    m_drivePIDController.setI(driveGains.kI,0);
+    m_drivePIDController.setIZone(driveGains.kIz,0);
+    m_drivePIDController.setD(driveGains.kD,0);
+    m_drivePIDController.setFF(driveGains.kFF,0);
     m_drivePIDController.setSmartMotionMaxVelocity(driveGains.maxVel, 0);
     m_drivePIDController.setSmartMotionMaxAccel(driveGains.maxAcc, 0);
+
+    m_drivePIDController.setP(drivePositionGains.kP,1);
+    m_drivePIDController.setI(drivePositionGains.kI,1);
+    m_drivePIDController.setIZone(drivePositionGains.kIz,1);
+    m_drivePIDController.setD(drivePositionGains.kD,1);
+    m_drivePIDController.setFF(drivePositionGains.kFF,1);
+    m_drivePIDController.setSmartMotionMaxVelocity(drivePositionGains.maxVel, 1);
+    m_drivePIDController.setSmartMotionMaxAccel(drivePositionGains.maxAcc, 1);
+
     m_drivePIDController.setOutputRange(-1,1);
 
 
@@ -227,7 +247,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     if (isArmed()) {
       currentControlMode = DriveMode.SpeedMode;
       driveCmd = driveCmd * 2/wheel_radius;  // Normalize rotation speed to linear speed.
-      m_drivePIDController.setReference(driveCmd, ControlType.kVelocity);
+      m_drivePIDController.setReference(driveCmd, ControlType.kVelocity,0);
       m_turningPIDController.setReference(turnCmd, ControlType.kPosition);
     }
   }
@@ -238,7 +258,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     if (isArmed()) {
       targetDrivePosition = driveCmd;
       currentControlMode = DriveMode.PositionMode;
-      m_drivePIDController.setReference(driveCmd, ControlType.kSmartMotion);
+      m_drivePIDController.setReference(driveCmd, ControlType.kSmartMotion,1);
       m_turningPIDController.setReference(turnCmd, ControlType.kPosition);
     }
   }

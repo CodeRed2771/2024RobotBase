@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,7 +35,7 @@ public class LimeLightPoseEstimator extends Limelight {
         LimelightHelpers.setLEDMode_ForceOff(network_table_key);
         LimelightHelpers.setPipelineIndex(network_table_key,LimelightPipeline.AprilTag.toInt());
 
-        area_threshold = calibration.getOrDefault("area threshold", 0.5);
+        area_threshold = calibration.getOrDefault("area threshold", 0.2);
         last_fieldPoseEstimate = new Pose3d();
         last_fieldPoseStandardDevs = VecBuilder.fill(100000.0,100000.0,100000.0);
     } 
@@ -43,29 +44,42 @@ public class LimeLightPoseEstimator extends Limelight {
         double[] data;
         Translation3d new_pos;
         Rotation3d new_rotation;
+        Pose3d new_pose;
 
         currentPipeline = getPipeline();
         if(currentPipeline == LimelightPipeline.AprilTag) {
             data = getNTPoseData();
             new_pos = getTranslationFromNTData(data);
             new_rotation = getRotationFromNTData(data);
+            new_pose = new Pose3d(new_pos,new_rotation).transformBy(cameraInstallationToRobotPose);
 
-            if(isValidMetadata(data) && isValidPosition(new_pos) && isValidRotation(new_rotation))
+            SmartDashboard.putNumber("Camera X", new_pose.getX());
+            SmartDashboard.putNumber("Camera Y", new_pose.getY());
+            SmartDashboard.putNumber("Camera Z", new_pose.getZ());
+            SmartDashboard.putNumber("Camera R", new_pose.getRotation().getX());
+            SmartDashboard.putNumber("Camera P", new_pose.getRotation().getY());
+            SmartDashboard.putNumber("Camera Y", new_pose.getRotation().getZ());
+
+            if(isValidMetadata(data) && isValidPosition(new_pose.getTranslation()) && isValidRotation(new_pose.getRotation()))
             {
                 last_tid = getNTAprilTagID();
-                last_fieldPoseEstimate = new Pose3d(new_pos,new_rotation).transformBy(cameraInstallationToRobotPose);
+                last_fieldPoseEstimate = new_pose;
                 last_fieldPoseEstimate_Valid = true;
                 last_fieldPoseStandardDevs = estimateStandardDeviations(data);
-                updateTimestamp(data[6]/1000.0);
+                updateTimestamp(getLatencyFromNTData(data));
             }
         }
     }
 
     private double getLatencyFromNTData(double[] data){
-        return data[7];
+        return data[6]/1000.0;
     }
 
     private double getTargetCountFromNTData(double[] data){
+        return data[7];
+    }
+
+    private double getTagSeparationFromNTData(double[] data){
         return data[8];
     }
 
@@ -113,6 +127,7 @@ public class LimeLightPoseEstimator extends Limelight {
     public void checkUpdatePoseEstimator(SwerveDrivePoseEstimator poseEstimator){
 
         update();
+        SmartDashboard.putBoolean("Camera Pose", last_fieldPoseEstimate_Valid);
         if(last_fieldPoseEstimate_Valid)
             poseEstimator.addVisionMeasurement(last_fieldPoseEstimate.toPose2d(),getTimeOfMeasurement(),last_fieldPoseStandardDevs);
 
@@ -130,9 +145,11 @@ public class LimeLightPoseEstimator extends Limelight {
     }
 
     private boolean isValidPosition(Translation3d position){
-        return Crescendo.isValidPosition(position.toTranslation2d()) &&
+        boolean valid =  Crescendo.isValidPosition(position.toTranslation2d()) &&
                MathUtil.isNear(0,position.getZ(), 12*4.0); // near the ground
 
+        SmartDashboard.putBoolean("C Pos Valid", valid);
+        return valid;
     }
 
     private boolean isValidRotation(Rotation3d rotation){
@@ -141,6 +158,7 @@ public class LimeLightPoseEstimator extends Limelight {
         valid = valid && rotation.getX() >= -15*Math.PI/180.0;
         valid = valid && rotation.getY() <= 15*Math.PI/180.0;
         valid = valid && rotation.getY() >= -15*Math.PI/180.0;
+        SmartDashboard.putBoolean("C Rot Valid", valid);
         return valid;
     }
 
@@ -148,8 +166,9 @@ public class LimeLightPoseEstimator extends Limelight {
         boolean valid = true;
         valid = valid && getLatencyFromNTData(data) <= 0.5; // latency
         valid = valid && getTargetCountFromNTData(data) >= 1; // Tag count
-        valid = valid && getTargetDistanceFromNTData(data) <= 5; // Average Tag distance
+        valid = valid && getTargetDistanceFromNTData(data) <= 10; // Average Tag distance
         valid = valid && getTargetAreaFromNTData(data) >= area_threshold;
+        SmartDashboard.putBoolean("C Meta Valid", valid);
         return valid;
 
     }

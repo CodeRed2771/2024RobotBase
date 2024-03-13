@@ -15,7 +15,7 @@ import frc.robot.Calibration;
 
 public class ExampleSwerveDriveTrain extends DriveSubsystem {
 
-  private static final double kMaxSpeed = 600.0; // normalized full Speed Inches/sec
+  private static final double kMaxSpeed = 200.0; // normalized full Speed Inches/sec
 
   private NewSwerveModuleVortex m_frontLeft; // Front Left
   private NewSwerveModuleVortex m_backRight; // Back Right
@@ -67,10 +67,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     this.addChild(m_backRight.getName(), m_backRight);
     this.addChild(m_backLeft.getName(), m_backLeft);
     this.addChild(m_frontRight.getName(), m_frontRight);
-
-    SmartDashboard.putNumber("TURN P", Calibration.getTurnP());
-    SmartDashboard.putNumber("TURN I", Calibration.getTurnI());
-    SmartDashboard.putNumber("TURN D", Calibration.getTurnD());
 
     Calibration.initializeSmartDashboard();
     SmartDashboard.putBoolean("Use Raw Encoder", false);

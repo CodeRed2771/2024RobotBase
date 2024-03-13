@@ -22,6 +22,7 @@ import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.auto.AutoSpeaker2;
+import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.climber.Climber;
 
 public class CrescendoBot extends DefaultRobot {
@@ -58,7 +59,7 @@ public class CrescendoBot extends DefaultRobot {
   public CrescendoBot() {
     super();
 
-    headingGains.setP(5.0);
+    headingGains.setP(3.0);
     headingGains.setI(0.0);
     headingGains.setD(0.01);
 
@@ -233,7 +234,7 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void disabledPeriodic(){
     super.disabledPeriodic();
-    handleTuneParams();
+      handleTuneParams();
   }
 
   protected void setHeadingHoldAngle(double angle){
@@ -258,11 +259,11 @@ public class CrescendoBot extends DefaultRobot {
 
   @Override
   protected void handleTuneParams(){
-    super.postTuneParams();
+    super.handleTuneParams();
     headingGains.handleTuneParams();
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
-    nav.setCameraEnable(SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed()));
+    nav.setCameraEnable(SmartDashboard.getBoolean("Camera Enable", nav.isCameraEnabed()));
   }
 
   @Override

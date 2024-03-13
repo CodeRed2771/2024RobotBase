@@ -73,8 +73,9 @@ public class CompetitionRobot extends CrescendoBot {
     calibration.put("limelight Y",-12.0);
     calibration.put("limelight Z",15.0);
     calibration.put("limelight roll",0.0);
-    calibration.put("limelight pitch",-45.0);
+    calibration.put("limelight pitch",-40.0);
     calibration.put("limelight yaw",180.0);
+    calibration.put("limelight present", 1.0);
 
     calibration.put("note threshold", 1100.0);
 

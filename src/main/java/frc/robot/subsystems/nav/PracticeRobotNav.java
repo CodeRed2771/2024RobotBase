@@ -52,7 +52,7 @@ public class PracticeRobotNav extends NavSubsystem {
         if(limelight_present)
         {
             limelight = new LimeLightPoseEstimator("limelight",calibration);
-            disableCamera();
+            enableCamera();
         }
 
         limelight_tracker_present = calibration.getOrDefault("limelight_tracker present",0.0)>0.5;
