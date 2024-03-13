@@ -66,7 +66,7 @@ public class Limelight {
                                                      new Rotation3d(Math.toRadians(calibration.getOrDefault(network_table_key + " roll",0.0)),
                                                                     Math.toRadians(calibration.getOrDefault(network_table_key + " pitch",0.0)),
                                                                     Math.toRadians(calibration.getOrDefault(network_table_key + " yaw",0.0)))).inverse();
-        latency_cal = calibration.getOrDefault(network_table_key + "latency", 0.0);
+        latency_cal = calibration.getOrDefault(network_table_key + "latency", 0.02);
     } 
 
     public void setLED(LimelightOn value) {
@@ -94,7 +94,7 @@ public class Limelight {
 
     /* Update the timestamp of when the last measurement was valid in seconds */
     protected void updateTimestamp(double latency){
-        total_latency = latency - latency_cal;
+        total_latency = latency + latency_cal;
         lastUpdate_timestamp = Timer.getFPGATimestamp() - total_latency;
     } 
     

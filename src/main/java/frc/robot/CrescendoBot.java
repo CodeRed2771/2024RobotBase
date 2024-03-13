@@ -267,7 +267,7 @@ public class CrescendoBot extends DefaultRobot {
     headingGains.handleTuneParams();
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
-    nav.setCameraEnable(SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed()));
+    nav.setCameraEnable(SmartDashboard.getBoolean("Camera Enable", nav.isCameraEnabed()));
   }
 
   @Override
