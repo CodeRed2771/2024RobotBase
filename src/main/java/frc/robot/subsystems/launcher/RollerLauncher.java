@@ -218,7 +218,6 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public void stopLoader() {
         super.stopLoader();
-        loaderStopDelay = STOP_DELAY;
 
         intakeMotor.set(0);
         loaderMotor.set(0);
@@ -282,8 +281,8 @@ public class RollerLauncher extends LauncherSubsystem {
 
         if (loaderFireStopDelay == 1) {
             stopShooter();
-            intakeMotor.set(0);
-            loaderMotor.set(0);
+            stopLoader();
+
             loaderFireStopDelay--;
         } else 
             if (loaderFireStopDelay > 0)
