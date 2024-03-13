@@ -107,12 +107,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     /************ SET PID VALUES HERE ******************/
     driveGains = new PIDGains();
 
-    driveGains.kP = 0.002000;
+    driveGains.kP = 0.005;
     driveGains.kI = 0.0;
-    driveGains.kD = 0.0;
+    driveGains.kD = 0.001;
     driveGains.kIz = 0.0;
-    driveGains.kFF = 0.0;
-    driveGains.maxVel = 75.0;
+    driveGains.kFF = 0.005;
+    driveGains.maxVel = 10.0;
     driveGains.maxAcc = 150.0;
 
     m_drivePIDController = m_driveMotor.getPIDController();
