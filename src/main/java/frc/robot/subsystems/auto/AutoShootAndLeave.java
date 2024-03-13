@@ -5,6 +5,7 @@
 package frc.robot.subsystems.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.DefaultRobot;
 import frc.robot.CrescendoBot;
 /*
   This auto (that starts in the center position):
@@ -16,15 +17,23 @@ import frc.robot.CrescendoBot;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 
 
-public class AutoShoot2Center extends AutoBaseClass {
+public class AutoShootAndLeave extends AutoBaseClass {
 
   CrescendoBot myRobot;
   private int drivenTicks = 0;
+  private char position = 'C';
 
-  public AutoShoot2Center(CrescendoBot robot) {
+  public AutoShootAndLeave(CrescendoBot robot) {
     super();
     myRobot = robot;
   }
+
+  public AutoShootAndLeave(CrescendoBot robot, char position) {
+    super();
+    myRobot = robot;
+    this.position = position;
+  }
+
   public void start() {
 		super.start();
 	}  
@@ -49,34 +58,22 @@ public class AutoShoot2Center extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveInches(90,1,0);
-              myRobot.launcher.load(0.25);
+              if (position=='C')
+                myRobot.drive.driveFixedPositionOffsetInches(60,0);
+              else 
+                myRobot.drive.driveFixedPositionOffsetInches(30, 0);
+                
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
-              if(myRobot.launcher.isLoaded())
-                myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-                // advanceStep();
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 6:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveInches(-92,0.7,0);
-              setTimerAndAdvanceStep(6000);
+              advanceStep();
               break;
             case 7:
-              if(myRobot.launcher.isLoaded())
-                myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-              //   advanceStep();
-              break;
-            case 8:
-              myRobot.launcher.fire();
-              setTimerAndAdvanceStep(500);
-              break;
-            case 9:
-              break;
-            case 10:
               myRobot.launcher.stop();
               stop();
               break;

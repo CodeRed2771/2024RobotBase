@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems.auto;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.DefaultRobot;
 import frc.robot.CrescendoBot;
 /*
   This auto (that starts in the center position):
@@ -16,12 +19,12 @@ import frc.robot.CrescendoBot;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 
 
-public class AutoShoot2Center extends AutoBaseClass {
+public class AutoAmp2 extends AutoBaseClass {
 
   CrescendoBot myRobot;
-  private int drivenTicks = 0;
+  byte multiplier = 1;
 
-  public AutoShoot2Center(CrescendoBot robot) {
+  public AutoAmp2(CrescendoBot robot) {
     super();
     myRobot = robot;
   }
@@ -36,39 +39,48 @@ public class AutoShoot2Center extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              setTimerAndAdvanceStep(800);
+              if(DriverStation.getAlliance().get() == Alliance.Blue)
+                multiplier = 1;
+              if(DriverStation.getAlliance().get() == Alliance.Red)
+                multiplier = -1;
+              myRobot.launcher.prime(LauncherSpeeds.AMP);
+              myRobot.launcher.setSpeedBias(0.25);
+              myRobot.drive.driveFixedPositionOffsetInches(8*multiplier, -19);
+              setTimerAndAdvanceStep(2000);
               break;
             case 1:
               break;
             case 2:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(250);
+              setTimerAndAdvanceStep(1000);
               break;
             case 3:
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
-              myRobot.drive.driveInches(90,1,0);
+              myRobot.drive.driveFixedPositionOffsetInches(30*multiplier,20);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-                // advanceStep();
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 6:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveInches(-92,0.7,0);
+              myRobot.launcher.prime(LauncherSpeeds.AMP);
+              myRobot.launcher.setSpeedBias(0.25);
+              myRobot.drive.driveFixedPositionOffsetInches(-30*multiplier,-20);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              // if(myRobot.drive.driveCompleted(0.5))
-              //   advanceStep();
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
               break;
             case 8:
               myRobot.launcher.fire();
