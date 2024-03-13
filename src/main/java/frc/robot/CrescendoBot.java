@@ -347,6 +347,12 @@ public class CrescendoBot extends DefaultRobot {
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);
+    } else if(gp.getBackButton()) {
+      launcher.setSpeedBias(-.5);
+      launcher.prime(LauncherSpeeds.TRAP);
+    } else if(gp.getLeftBumper()){
+      launcher.setSpeedBias(-.5);
+      launcher.prime(LauncherSpeeds.BACK_AMP);
     }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){

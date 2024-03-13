@@ -62,6 +62,8 @@ public class RollerLauncher extends LauncherSubsystem {
         SAFE_ZONE(3400, 30),
         SUBWOOFER(2900, 51),
         STOW(0,10),
+        BACK_AMP(900,75),
+        TRAP(2900,75),
         MAX_ANGLE(0, 75);
 
         private double speed;
