@@ -177,9 +177,7 @@ public class CrescendoBot extends DefaultRobot {
     adjustDriveSpeed(gamepad1);
     SpeedDriveByJoystick(gamepad1);
     runLauncher(gamepad2);
-    /* TODO: Renable when HW Guards are installed
     runClimber(gamepad2);
-    */ 
   }
 
     protected void runClimber(Gamepad gp) {
