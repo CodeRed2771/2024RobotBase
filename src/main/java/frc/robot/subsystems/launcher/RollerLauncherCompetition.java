@@ -38,23 +38,24 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public double aim_kMaxOutput, aim_kMinOutput, aim_maxRPM;
     
 
-    private static final double ABS_FULL_BACK = 0.176;
+    private static final double ABS_FULL_BACK = 0.18;
     private static final double ABS_FULL_FORWARD = 0.440;
     private static final double DEG_TO_TICK = -1261.065;
 
     private static final double aimMargin = 10/360.0;
     private static final double ABS_BACK_STOP = ABS_FULL_BACK + aimMargin;
     private static final double ABS_FORWARD_STOP = ABS_FULL_FORWARD - aimMargin;
+    private static final double AIM_MAX_RANGE = MathUtil.inputModulus(ABS_FORWARD_STOP - ABS_BACK_STOP,0,1);
 
     private double aimBias = 0;
 
     private double rollerDegreesToTicks(double input_degrees){
         double rotations = (input_degrees + aimBias) / 360.0 ;
-        return DEG_TO_TICK * rotations;
+        return DEG_TO_TICK * MathUtil.clamp(rotations, 0, AIM_MAX_RANGE);
     }
 
     private double rawRollerRotationsToTicks(double raw_rotation){
-        return DEG_TO_TICK * (MathUtil.clamp(raw_rotation , ABS_BACK_STOP, ABS_FORWARD_STOP) - ABS_FORWARD_STOP);
+        return DEG_TO_TICK * (ABS_FULL_FORWARD - raw_rotation);
     }
 
     public RollerLauncherCompetition(Map<String,Integer> wiring, Map<String,Double> calibration) {
@@ -96,7 +97,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
     }
 
     private void resetAimEncoder() {
-        aimEncoder.setPosition(rawRollerRotationsToTicks(aimAbsoluteEncoder.get()));
+        aimEncoder.setPosition(rawRollerRotationsToTicks(aimAbsoluteEncoder.getAbsolutePosition()));
     }
 
     public void load(double power) {

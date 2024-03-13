@@ -68,7 +68,6 @@ public class CrescendoBot extends DefaultRobot {
    */
   @Override
   public void robotInit() {
-
     setupAutoChoices();
   }
 
