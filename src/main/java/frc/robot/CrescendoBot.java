@@ -20,6 +20,7 @@ import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
+import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.auto.AutoSpeaker2;
 import frc.robot.subsystems.climber.Climber;
 
@@ -29,8 +30,10 @@ public class CrescendoBot extends DefaultRobot {
   SendableChooser<String> positionChooser;
   String autoSelected;
   private static final String autoShoot2 = "Auto Shoot 2";
+  private static final String autoShootAndLeave = "Auto Shoot and Leave";
   private static final String autoDoNothing = "Do Nothing";
   private static final String kCalibration = "Cal Auto";
+
   private static final double kMetersToInches = 100.0/2.54;
 
   private AutoBaseClass mAutoProgram = null;
@@ -92,31 +95,25 @@ public class CrescendoBot extends DefaultRobot {
     nav.reset();
 
     restoreRobotToDefaultState();
-    SmartDashboard.putString("Auto Selected", m_chooser.getSelected());
-
-    switch(m_chooser.getSelected()){
+    autoSelected = m_chooser.getSelected();
+  
+    SmartDashboard.putString("Auto Selected", autoSelected);
+  
+    switch(autoSelected){
       case kCalibration:
         mAutoProgram = new AutoCalibration(this);
         break;
       case autoShoot2:
         mAutoProgram = new AutoSpeaker2(this);
         break;
+      case autoShootAndLeave:
+        mAutoProgram = new AutoShootAndLeave(this, robotPosition);
+        break;
       default:
         mAutoProgram = new AutoDoNothing();
         break;
     }
     mAutoProgram.start();
-
-    switch (autoSelected) {
-      case autoShoot2:
-          mAutoProgram = new AutoSpeaker2(this);
-          mAutoProgram.start();
-          break;
-      case kCalibration:
-          mAutoProgram = new AutoCalibration(this);
-          mAutoProgram.start();
-          break;
-    }
   }
 
   @Override
@@ -131,28 +128,15 @@ public class CrescendoBot extends DefaultRobot {
     positionChooser.addOption("Left", "L");
     positionChooser.setDefaultOption("Center", "C");
     positionChooser.addOption("Right", "R");
+
     SmartDashboard.putData("Position", positionChooser);
 
     m_chooser.setDefaultOption("Default Auto", autoDoNothing);
     m_chooser.addOption(kCalibration, kCalibration);
     m_chooser.addOption(autoShoot2, autoShoot2);
-    SmartDashboard.putData("Auto choices", m_chooser);
-    // autoChooser = new SendableChooser<String>();
-    // // autoChooser.addOption(autoCalibrator, autoCalibrator);
-    // //autoChooser.addOption(autoWheelAlign, autoWheelAlign);
-    // // autoChooser.addOption(autoAlign, autoAlign);
-    // //autoChooser.addOption(ballPickUp, ballPickUp);
-    // autoChooser.addOption(AutoCommunity, AutoCommunity);
-    // autoChooser.addOption(AutoCPlace1, AutoCPlace1);
-    // // autoChooser.addOption(AutoCPlace2Wings, AutoCPlace2Wings);
-    // autoChooser.addOption(AutoCP2RailRider, AutoCP2RailRider);
-    // autoChooser.setDefaultOption(AutoCP1CB, AutoCP1CB);
-    // autoChooser.addOption(AutoC_CB, AutoC_CB);
-    // // autoChooser.addOption(AutoCPlace3VROOOM, AutoCPlace3VROOOM);
-    
- 
-    // SmartDashboard.putData("Auto Chose:", autoChooser);
+    m_chooser.addOption(autoShootAndLeave, autoShootAndLeave);
 
+    SmartDashboard.putData("Auto choices", m_chooser);
 }
 
   /*

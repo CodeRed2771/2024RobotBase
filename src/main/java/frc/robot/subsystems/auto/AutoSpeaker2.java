@@ -5,7 +5,6 @@
 package frc.robot.subsystems.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.DefaultRobot;
 import frc.robot.CrescendoBot;
 /*
   This auto (that starts in the center position):
