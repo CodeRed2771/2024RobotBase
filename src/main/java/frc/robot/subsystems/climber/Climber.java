@@ -20,7 +20,7 @@ public class Climber extends ClimberSubsystem{
     private SparkPIDController PIDController;
     
     private final double MINIMUM_RETRACTION = 1;
-    private final double MAXIMUM_EXTENTION = 115;
+    private final double MAXIMUM_EXTENTION = 200;
     private double lastPositionRequested = 0;
 
     public Climber(Map<String,Integer> wiring, Map<String,Double> calibration) {
