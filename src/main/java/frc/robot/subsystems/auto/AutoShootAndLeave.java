@@ -46,13 +46,13 @@ public class AutoShootAndLeave extends AutoBaseClass {
         switch (getCurrentStep()) {
             case 0:
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              setTimerAndAdvanceStep(800);
+              setTimerAndAdvanceStep(1500);
               break;
             case 1:
               break;
             case 2:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(250);
+              setTimerAndAdvanceStep(1000);
               break;
             case 3:
               break;

@@ -19,7 +19,6 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 public class AutoSpeaker2 extends AutoBaseClass {
 
   CrescendoBot myRobot;
-  private int drivenTicks = 0;
 
   public AutoSpeaker2(CrescendoBot robot) {
     super();
@@ -37,20 +36,20 @@ public class AutoSpeaker2 extends AutoBaseClass {
         switch (getCurrentStep()) {
             case 0:
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              setTimerAndAdvanceStep(800);
+              setTimerAndAdvanceStep(1500);
               break;
             case 1:
               break;
             case 2:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(250);
+              setTimerAndAdvanceStep(1000);
               break;
             case 3:
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
               myRobot.drive.driveFixedPositionOffsetInches(60,0);
-              myRobot.launcher.load(0.25);
+              myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
@@ -62,8 +61,8 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-62,0);
-              setTimerAndAdvanceStep(6000);
+              myRobot.drive.driveFixedPositionOffsetInches(-60,0);
+              setTimerAndAdvanceStep(4000);
               break;
             case 7:
               if(myRobot.launcher.isLoaded())
@@ -74,7 +73,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 8:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(500);
+              setTimerAndAdvanceStep(1000);
               break;
             case 9:
               break;
