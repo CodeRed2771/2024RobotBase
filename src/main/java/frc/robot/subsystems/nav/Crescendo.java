@@ -52,7 +52,7 @@ public class Crescendo {
         SUBWOOFER_LEFT(4),
         SUBWOOFER_CENTER(5),
         SUBWOOFER_RIGHT(6),
-        SPEEKER(7),
+        SPEAKER(7),
         SAFE_ZONE(8),
         TRAP_CENTER(9),
         TRAP_FEEDER_SIDE(10),

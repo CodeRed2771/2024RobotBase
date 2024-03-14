@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.TuneablePIDControllerGains;
 import frc.robot.libs.HID.Gamepad;
@@ -16,7 +17,9 @@ import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncher;
 import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
+import frc.robot.subsystems.nav.Crescendo;
 import frc.robot.subsystems.nav.PracticeRobotNav;
+import frc.robot.subsystems.nav.Crescendo.PointsOfInterest;
 import frc.robot.subsystems.auto.AutoBaseClass;
 import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
@@ -48,6 +51,9 @@ public class CrescendoBot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.4;
   
+  protected double autoAimAngle = 0;
+  protected double autoAimPower = 0;
+
   protected boolean bHeadingHold = true;
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
@@ -196,7 +202,7 @@ public class CrescendoBot extends DefaultRobot {
     double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
-    if(ampNudge) {
+    if(bAutoAimEnabled) {
       rotate+=nav.yawRotationNudge();
     } else if(noteNudge) {
       rotate += nav.noteYawNudge();
@@ -281,7 +287,7 @@ public class CrescendoBot extends DefaultRobot {
 
     super.restoreRobotToDefaultState();
   }
-  boolean ampNudge = false;
+  boolean bAutoAimEnabled = false;
   boolean noteNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
     if(gp.getDPadUp()) fieldCentricDriveMode(true);
@@ -305,9 +311,10 @@ public class CrescendoBot extends DefaultRobot {
     }
 
     if(gp.getAButton()) {
-      ampNudge = true;
+      bAutoAimEnabled = true;
+      autoEstimateAim();
     } else {
-      ampNudge = false;
+      bAutoAimEnabled = false;
     }
 
     if(gp.getYButton()) {
@@ -315,6 +322,19 @@ public class CrescendoBot extends DefaultRobot {
     } else {
       noteNudge = false;
     }
+  }
+
+  private void autoEstimateAim(){
+    Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
+
+    double range = target.toTranslation2d().minus(nav.getPosition()).getNorm();
+    double height = target.getZ() - 6.0; // offset for pivot point of launcher
+
+    double angle = Math.toDegrees(Math.atan(height/range));
+  
+    autoAimAngle = angle;
+
+    autoAimPower = 2412 + 7.8125 * range;
   }
 
   @Override
@@ -342,6 +362,9 @@ public class CrescendoBot extends DefaultRobot {
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);
+    } else if(bAutoAimEnabled){
+      launcher.aim(autoAimAngle);
+      launcher.prime(autoAimPower);
     }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
