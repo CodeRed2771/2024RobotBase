@@ -58,23 +58,47 @@ public class AutoShootAndLeave extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.launcher.stop();
+              setTimerAndAdvanceStep(9000); // wait till end of auto so we don't get in the way
+              break;
+            case 5:
+              break;
+            case 6:
               if (position=='C')
                 myRobot.drive.driveFixedPositionOffsetInches(60,0);
               else 
-                myRobot.drive.driveFixedPositionOffsetInches(30, 0);
+                myRobot.drive.driveFixedPositionOffsetInches(36, 0);
                 
               setTimerAndAdvanceStep(4000);
               break;
-            case 5:
+            case 7:
               if(myRobot.drive.atFixedPosition(0.5)) {
                 advanceStep();
               }
               break;
-            case 6:
-              advanceStep();
+            case 8:
+              if (position=='C') 
+                setStep(99); // jump to end of program
+              else 
+                // do final moves for side positions
+                advanceStep();
               break;
-            case 7:
-              myRobot.launcher.stop();
+            case 9: // these steps are for the side positions only
+              if (position=='R') // strafe left
+                myRobot.drive.driveFixedPositionOffsetInches(0, -50);
+              else //strafe right
+                myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+              setTimerAndAdvanceStep(4000);
+              break;
+            case 10:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
+              break;
+            case 11:
+              setStep(99);
+              break;
+            case 99:
               stop();
               break;
         }
