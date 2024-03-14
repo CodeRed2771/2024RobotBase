@@ -132,9 +132,9 @@ public class CrescendoBot extends DefaultRobot {
   private void setupAutoChoices() {
     // Position Chooser
     positionChooser = new SendableChooser<String>();
-    positionChooser.addOption("Left", "L");
-    positionChooser.setDefaultOption("Center", "C");
-    positionChooser.addOption("Right", "R");
+    positionChooser.addOption("AMP SIDE", "A");
+    positionChooser.setDefaultOption("CENTER", "C");
+    positionChooser.addOption("SOURCE SIDE", "S");
 
     SmartDashboard.putData("Position", positionChooser);
 

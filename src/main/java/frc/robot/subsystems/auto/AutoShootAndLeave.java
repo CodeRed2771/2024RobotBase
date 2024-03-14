@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.auto;
 
+import java.util.Optional;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.DefaultRobot;
 import frc.robot.CrescendoBot;
@@ -20,8 +23,8 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 public class AutoShootAndLeave extends AutoBaseClass {
 
   CrescendoBot myRobot;
-  private int drivenTicks = 0;
   private char position = 'C';
+  private Optional<Alliance> alliance;
 
   public AutoShootAndLeave(CrescendoBot robot) {
     super();
@@ -36,6 +39,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
 
   public void start() {
 		super.start();
+    alliance = DriverStation.getAlliance();
 	}  
   public void stop() {
     super.stop();
@@ -62,13 +66,17 @@ public class AutoShootAndLeave extends AutoBaseClass {
               setTimerAndAdvanceStep(9000); // wait till end of auto so we don't get in the way
               break;
             case 5:
+              if (DriverStation.getMatchTime() <= 4) // make sure we get going within 4 seconds left
+                advanceStep();
               break;
             case 6:
               if (position=='C')
                 myRobot.drive.driveFixedPositionOffsetInches(60,0);
               else 
-                myRobot.drive.driveFixedPositionOffsetInches(36, 0);
-                
+                if (position=='A') //amp side
+                  myRobot.drive.driveFixedPositionOffsetInches(36, 0);
+                else 
+                  myRobot.drive.driveFixedPositionOffsetInches(60, 0); // drive further on source side
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -83,11 +91,25 @@ public class AutoShootAndLeave extends AutoBaseClass {
                 // do final moves for side positions
                 advanceStep();
               break;
-            case 9: // these steps are for the side positions only
-              if (position=='R') // strafe left
-                myRobot.drive.driveFixedPositionOffsetInches(0, -50);
-              else //strafe right
-                myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+            //
+            // these steps are for the side positions only
+            //
+            case 9: 
+              if (position=='A') // amp
+                if (alliance.get()==Alliance.Blue) 
+                  // go to the right to leave
+                  myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+                else 
+                  // go to the left to leave
+                  myRobot.drive.driveFixedPositionOffsetInches(0, -50);
+              else // source side
+                if (alliance.get()==Alliance.Blue) 
+                  // go to the left to leave
+                  myRobot.drive.driveFixedPositionOffsetInches(0, -50);
+                else 
+                  // go to the right to leave
+                  myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+
               setTimerAndAdvanceStep(4000);
               break;
             case 10:
