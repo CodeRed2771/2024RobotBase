@@ -23,7 +23,7 @@ public class AutoCalibration extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.drive.driveFixedPositionOffsetInches(36,0);
+              myRobot.drive.driveFixedPositionOffsetInches(36,36);
               setTimerAndAdvanceStep(8000);
               break;
             case 1:
@@ -32,7 +32,7 @@ public class AutoCalibration extends AutoBaseClass {
               }
               break;
             case 2:
-              myRobot.drive.driveFixedPositionOffsetInches(-36,0);
+              myRobot.drive.driveFixedPositionOffsetInches(-36,-36);
               setTimerAndAdvanceStep(8000);
               break;
             case 3:
@@ -41,7 +41,7 @@ public class AutoCalibration extends AutoBaseClass {
               }
               break;
             case 4:
-              myRobot.drive.driveFixedRotatePosition(90);
+              myRobot.drive.driveFixedPositionOffsetInches(36,0);
               setTimerAndAdvanceStep(8000);
               break;
             case 5:
@@ -50,10 +50,28 @@ public class AutoCalibration extends AutoBaseClass {
               }
               break;
             case 6:
-              myRobot.drive.driveFixedRotatePosition(-90);
+              myRobot.drive.driveFixedPositionOffsetInches(-36,0);
               setTimerAndAdvanceStep(8000);
               break;
             case 7:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
+              break;
+            case 8:
+              myRobot.drive.driveFixedRotatePosition(90);
+              setTimerAndAdvanceStep(8000);
+              break;
+            case 9:
+              if(myRobot.drive.atFixedPosition(0.5)) {
+                advanceStep();
+              }
+              break;
+            case 10:
+              myRobot.drive.driveFixedRotatePosition(-90);
+              setTimerAndAdvanceStep(8000);
+              break;
+            case 11:
               if(myRobot.drive.atFixedPosition(0.5)) {
                 advanceStep();
               }
