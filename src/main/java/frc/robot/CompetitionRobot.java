@@ -59,6 +59,7 @@ public class CompetitionRobot extends CrescendoBot {
 
     // Launcher
     calibration.put("upper launcher direction", 1.0);
+    calibration.put("aim bias",-10.0);
     
     //Climber
     calibration.put("climber P", 2.5);//was .07

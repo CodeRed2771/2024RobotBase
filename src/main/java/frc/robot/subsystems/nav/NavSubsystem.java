@@ -74,10 +74,6 @@ public abstract class NavSubsystem extends SubsystemBase {
       return getPoseInField().getTranslation();
   }
 
-  public Translation2d getPositionInches() {
-      return getPoseInField().getTranslation().times(100/2.54);
-  }
-  
   public Rotation2d getRotation(){
     return getPoseInField().getRotation();
   }

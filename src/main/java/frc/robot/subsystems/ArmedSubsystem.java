@@ -36,4 +36,7 @@ public abstract class ArmedSubsystem extends SubsystemBase {
 
     protected void doArm(){}
     protected void doDisarm(){}
+
+    public void postTuneParameters(){}
+    public void handleTuneParameters(){}
 }
