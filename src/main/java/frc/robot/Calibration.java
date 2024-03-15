@@ -224,9 +224,13 @@ public class Calibration {
                 System.out.println("Loading coefficnets from file!");
                 BufferedReader reader = new BufferedReader(new FileReader(calibrationFile));
                 DT_A_ABS_ZERO = Double.parseDouble(reader.readLine());
+                SmartDashboard.putNumber("File Calibration Read A", DT_A_ABS_ZERO);
                 DT_B_ABS_ZERO = Double.parseDouble(reader.readLine());
+                SmartDashboard.putNumber("File Calibration Read B", DT_B_ABS_ZERO);
                 DT_C_ABS_ZERO = Double.parseDouble(reader.readLine());
+                SmartDashboard.putNumber("File Calibration Read C", DT_C_ABS_ZERO);
                 DT_D_ABS_ZERO = Double.parseDouble(reader.readLine());
+                SmartDashboard.putNumber("File Calibration Read D", DT_D_ABS_ZERO);
                 reader.close();
                 SmartDashboard.putBoolean("Using File-based Swerve Calibration", true);
                 return;
@@ -299,4 +303,6 @@ public class Calibration {
     public static boolean isPracticeBot() {
         return !botIndicator.get();
     }
+    
+    
 }
