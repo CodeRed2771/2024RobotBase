@@ -54,8 +54,8 @@ public class AutoSpeaker2 extends AutoBaseClass {
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
-              // if(myRobot.launcher.isLoaded())
-              //   myRobot.launcher.stopLoader();
+              if(myRobot.launcher.isLoaded())
+                myRobot.launcher.stopLoader();
               if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
                 advanceStep();
               }

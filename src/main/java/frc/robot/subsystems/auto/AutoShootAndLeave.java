@@ -86,7 +86,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
               break;
             case 8:
               if (position=='C') 
-                setStep(99); // jump to end of program
+                setStep(97); // jump to end of program
               else 
                 // do final moves for side positions
                 advanceStep();
@@ -118,7 +118,15 @@ public class AutoShootAndLeave extends AutoBaseClass {
               }
               break;
             case 11:
-              setStep(99);
+              setStep(97);
+              break;
+            case 97:
+              myRobot.drive.driveFixedPositionOffsetInches(8, 0);
+              setTimerAndAdvanceStep(2500);
+              break;
+            case 98:
+              if(myRobot.drive.atFixedPosition(2))
+                advanceStep();
               break;
             case 99:
               stop();
