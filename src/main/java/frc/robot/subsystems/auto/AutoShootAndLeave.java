@@ -63,7 +63,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
               myRobot.launcher.stop();
-              setTimerAndAdvanceStep(1000); // wait till end of auto so we don't get in the way
+              setTimerAndAdvanceStep(7000); // wait till end of auto so we don't get in the way
               break;
             case 5:
               // if (DriverStation.getMatchTime() <= 4) // make sure we get going within 4 seconds left
@@ -76,7 +76,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
                 if (position=='A') //amp side
                   myRobot.drive.driveFixedPositionOffsetInches(50, -12);
                 else 
-                  myRobot.drive.driveFixedPositionOffsetInches(60, 15); // drive further on source side
+                  myRobot.drive.driveFixedPositionOffsetInches(90, 15); // drive further on source side
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
