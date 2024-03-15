@@ -61,6 +61,7 @@ public class RollerLauncher extends LauncherSubsystem {
         AMP(900, 47),
         SAFE_ZONE(3400, 30),
         SUBWOOFER(2900, 51),
+        CLIMB(0, 60),
         STOW(0,10),
         MAX_ANGLE(0, 75);
 
