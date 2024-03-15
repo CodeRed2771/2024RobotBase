@@ -62,7 +62,7 @@ public class CompetitionRobot extends CrescendoBot {
     calibration.put("aim bias",-10.0);
     
     //Climber
-    calibration.put("climber P", 2.5);//was .07
+    calibration.put("climber P", 2.0);//was .07
     calibration.put("climber I", 0.0);
     calibration.put("climber D", 0.0);
     calibration.put("climber Izone", 0.0);

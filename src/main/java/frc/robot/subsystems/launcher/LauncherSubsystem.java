@@ -37,4 +37,5 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
   public boolean isFiring() {return false;}
   public boolean isUnloading() {return false;}
   public void fire() {}
+  public void reset() {}
 }

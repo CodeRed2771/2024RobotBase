@@ -125,7 +125,13 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
         return speedTracking && aimTracking;
     }
+
     double angleInTicks;
+
+    public void reset() {
+        angleInTicks = aimEncoder.getPosition();
+    }
+
     @Override
     public void aim(double angle) {
         angleInTicks = rollerDegreesToTicks(angle);
