@@ -80,7 +80,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 9:
               break;
             case 10:
-              myRobot.drive.driveFixedPositionOffsetInches(70, 0);
+              myRobot.drive.driveFixedPositionOffsetInches(80, 0);
               setTimerAndAdvanceStep(5000);
               break;
             case 11:

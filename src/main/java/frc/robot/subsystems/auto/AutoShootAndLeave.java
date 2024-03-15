@@ -98,17 +98,17 @@ public class AutoShootAndLeave extends AutoBaseClass {
               if (position=='A') // amp
                 if (alliance.get()==Alliance.Blue) 
                   // go to the right to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(12, -60);
+                  myRobot.drive.driveFixedPositionOffsetInches(15, -75);
                 else 
                   // go to the left to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(35, 57);
+                  myRobot.drive.driveFixedPositionOffsetInches(15, 75);
               else // source side
                 if (alliance.get()==Alliance.Blue) 
                   // go to the left to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(12, 50);
+                  myRobot.drive.driveFixedPositionOffsetInches(18, 75);
                 else 
                   // go to the right to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(12, -50);
+                  myRobot.drive.driveFixedPositionOffsetInches(18, -75);
 
               setTimerAndAdvanceStep(4000);
               break;
