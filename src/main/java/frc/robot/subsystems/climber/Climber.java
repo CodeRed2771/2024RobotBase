@@ -20,7 +20,7 @@ public class Climber extends ClimberSubsystem{
     private SparkPIDController PIDController;
     
     private final double MINIMUM_RETRACTION = 1;
-    private final double MAXIMUM_EXTENTION = 200;
+    private final double MAXIMUM_EXTENTION = 325;
     private double lastPositionRequested = 0;
 
     public Climber(Map<String,Integer> wiring, Map<String,Double> calibration) {
@@ -73,9 +73,9 @@ public class Climber extends ClimberSubsystem{
             // PIDController.setReference(requestedPos, ControlType.kPosition);
             // lastPositionRequested = requestedPos;
 
-            if(liftEncoder.getPosition() > MINIMUM_RETRACTION || speed > 0) {
+            if(speed > 0 && liftEncoder.getPosition() < MAXIMUM_EXTENTION) {
                 liftMotor.set(speed);
-            } else if(liftEncoder.getPosition() < MAXIMUM_EXTENTION || speed < 0) {
+            } else if(speed < 0 && liftEncoder.getPosition() > MINIMUM_RETRACTION) {
                 liftMotor.set(speed);
             } else {
                 liftMotor.set(0);

@@ -38,8 +38,8 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public double aim_kMaxOutput, aim_kMinOutput, aim_maxRPM;
     
 
-    private static final double ABS_FULL_BACK = 0.18;
-    private static final double ABS_FULL_FORWARD = 0.440;
+    private static final double ABS_FULL_BACK = 0.16;
+    private static final double ABS_FULL_FORWARD = 0.430;
     private static final double DEG_TO_TICK = -1261.065;
 
     private static final double aimMargin = 10/360.0;
