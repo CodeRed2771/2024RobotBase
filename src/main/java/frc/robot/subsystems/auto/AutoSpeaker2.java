@@ -48,6 +48,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 3:
               break;
             case 4:
+              myRobot.launcher.stopFireDelay();
               myRobot.launcher.prime(LauncherSpeeds.OFF);
               myRobot.drive.driveFixedPositionOffsetInches(60,0);
               myRobot.launcher.load(0.45);

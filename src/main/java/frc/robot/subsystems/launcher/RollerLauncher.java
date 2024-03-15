@@ -223,6 +223,11 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor.set(0);
         loaderMotor.set(0);
     }
+    
+    public void stopFireDelay() {
+        stopLoader();
+        loaderFireStopDelay = 0;
+    }
 
     public void prime(LauncherSpeeds commandSpeed) {
         prime(commandSpeed.getSpeed());
