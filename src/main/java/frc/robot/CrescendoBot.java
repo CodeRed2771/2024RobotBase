@@ -103,6 +103,7 @@ public class CrescendoBot extends DefaultRobot {
 
     restoreRobotToDefaultState();
     autoSelected = m_chooser.getSelected();
+    setHeadingHoldAngle(getAngle());
   
     SmartDashboard.putString("Auto Selected", autoSelected);
   
@@ -154,6 +155,7 @@ public class CrescendoBot extends DefaultRobot {
   public void teleopInit() {
     super.teleopInit();
 
+
     intake.arm();
     launcher.arm();
     drive.arm();
@@ -163,6 +165,7 @@ public class CrescendoBot extends DefaultRobot {
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
 
+    setHeadingHoldAngle(getAngle());
   }
 
   @Override

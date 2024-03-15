@@ -19,6 +19,7 @@ import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
 public class AutoSpeaker2 extends AutoBaseClass {
 
   CrescendoBot myRobot;
+  final double DRIVE_TOLERANCE = 0.75;
 
   public AutoSpeaker2(CrescendoBot robot) {
     super();
@@ -53,9 +54,9 @@ public class AutoSpeaker2 extends AutoBaseClass {
               setTimerAndAdvanceStep(4000);
               break;
             case 5:
-              if(myRobot.launcher.isLoaded())
-                myRobot.launcher.stopLoader();
-              if(myRobot.drive.atFixedPosition(0.5)) {
+              // if(myRobot.launcher.isLoaded())
+              //   myRobot.launcher.stopLoader();
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
                 advanceStep();
               }
               break;
@@ -67,7 +68,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 7:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              if(myRobot.drive.atFixedPosition(0.5)) {
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
                 advanceStep();
               }
               break;
@@ -78,6 +79,14 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 9:
               break;
             case 10:
+              myRobot.drive.driveFixedPositionOffsetInches(70, 0);
+              setTimerAndAdvanceStep(5000);
+              break;
+            case 11:
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
+                advanceStep();
+              break;
+            case 12:
               myRobot.launcher.stop();
               stop();
               break;

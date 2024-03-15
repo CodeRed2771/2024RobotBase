@@ -63,20 +63,20 @@ public class AutoShootAndLeave extends AutoBaseClass {
             case 4:
               myRobot.launcher.prime(LauncherSpeeds.OFF);
               myRobot.launcher.stop();
-              setTimerAndAdvanceStep(9000); // wait till end of auto so we don't get in the way
+              setTimerAndAdvanceStep(1000); // wait till end of auto so we don't get in the way
               break;
             case 5:
-              if (DriverStation.getMatchTime() <= 4) // make sure we get going within 4 seconds left
-                advanceStep();
+              // if (DriverStation.getMatchTime() <= 4) // make sure we get going within 4 seconds left
+              //   advanceStep();
               break;
             case 6:
               if (position=='C')
                 myRobot.drive.driveFixedPositionOffsetInches(60,0);
               else 
                 if (position=='A') //amp side
-                  myRobot.drive.driveFixedPositionOffsetInches(36, 0);
+                  myRobot.drive.driveFixedPositionOffsetInches(50, -12);
                 else 
-                  myRobot.drive.driveFixedPositionOffsetInches(60, 0); // drive further on source side
+                  myRobot.drive.driveFixedPositionOffsetInches(60, 15); // drive further on source side
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -98,17 +98,17 @@ public class AutoShootAndLeave extends AutoBaseClass {
               if (position=='A') // amp
                 if (alliance.get()==Alliance.Blue) 
                   // go to the right to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+                  myRobot.drive.driveFixedPositionOffsetInches(12, -60);
                 else 
                   // go to the left to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(0, -50);
+                  myRobot.drive.driveFixedPositionOffsetInches(35, 57);
               else // source side
                 if (alliance.get()==Alliance.Blue) 
                   // go to the left to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(0, -50);
+                  myRobot.drive.driveFixedPositionOffsetInches(12, 50);
                 else 
                   // go to the right to leave
-                  myRobot.drive.driveFixedPositionOffsetInches(0, 50);
+                  myRobot.drive.driveFixedPositionOffsetInches(12, -50);
 
               setTimerAndAdvanceStep(4000);
               break;
