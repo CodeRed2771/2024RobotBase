@@ -361,8 +361,9 @@ public class CrescendoBot extends DefaultRobot {
 
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
-      launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      // launcher.setSpeedBias(0);
+      // launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      launcher.setUpTrapShot();
     } else if(gp.getAButton()) {
       launcher.setSpeedBias(0);
       launcher.prime(LauncherSpeeds.SUBWOOFER);
@@ -371,6 +372,7 @@ public class CrescendoBot extends DefaultRobot {
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);
+
     } else if(bAutoAimEnabled){
       launcher.aim(autoAimAngle);
       launcher.prime(autoAimPower);

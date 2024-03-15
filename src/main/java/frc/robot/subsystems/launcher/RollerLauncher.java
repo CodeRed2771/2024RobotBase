@@ -272,6 +272,9 @@ public class RollerLauncher extends LauncherSubsystem {
         }
         return false;
     }
+    public void setUpTrapShot(){
+        
+    }
 
     @Override
     public void periodic() {
