@@ -62,16 +62,24 @@ public class Climber extends ClimberSubsystem{
 
     @Override
     public void lift(double speed, boolean override) {
-        double multiplier = 1;
+        // double multiplier = 1;
         if(!override) {
-            double requestedPos = lastPositionRequested + speed *multiplier;
-            if(requestedPos > MAXIMUM_EXTENTION) {
-                requestedPos = MAXIMUM_EXTENTION;
-            } else if(requestedPos < MINIMUM_RETRACTION) {
-                requestedPos = MINIMUM_RETRACTION;
+            // double requestedPos = lastPositionRequested + speed *multiplier;
+            // if(requestedPos > MAXIMUM_EXTENTION) {
+            //     requestedPos = MAXIMUM_EXTENTION;
+            // } else if(requestedPos < MINIMUM_RETRACTION) {
+            //     requestedPos = MINIMUM_RETRACTION;
+            // }
+            // PIDController.setReference(requestedPos, ControlType.kPosition);
+            // lastPositionRequested = requestedPos;
+
+            if(liftEncoder.getPosition() > MINIMUM_RETRACTION || speed > 0) {
+                liftMotor.set(speed);
+            } else if(liftEncoder.getPosition() < MAXIMUM_EXTENTION || speed < 0) {
+                liftMotor.set(speed);
+            } else {
+                liftMotor.set(0);
             }
-            PIDController.setReference(requestedPos, ControlType.kPosition);
-            lastPositionRequested = requestedPos;
         } else {
             liftMotor.set(Math.signum(speed)*0.25);
         }
