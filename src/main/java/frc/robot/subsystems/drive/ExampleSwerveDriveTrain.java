@@ -120,6 +120,14 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, kMaxSpeed);
+    m_frontLeft.setDesiredState(desiredStates[0]);
+    m_frontRight.setDesiredState(desiredStates[1]);
+    m_backLeft.setDesiredState(desiredStates[2]);
+    m_backRight.setDesiredState(desiredStates[3]);
+  }
+
   public void driveFixedSpeedOrientation(double xSpeed, double ySpeed)
   {
     Translation2d Speed = new Translation2d(xSpeed,ySpeed);
