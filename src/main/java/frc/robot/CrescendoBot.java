@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.libs.TuneablePIDControllerGains;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.auto.AutoSpeaker2;
+import frc.robot.subsystems.auto.TrajectoryAuto;
 import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.climber.Climber;
 
@@ -88,7 +90,7 @@ public class CrescendoBot extends DefaultRobot {
 
     postTelemetry();
   }
-
+  private Command m_autonomousCommand;
   @Override
   public void autonomousInit() {
     String selectedPos = positionChooser.getSelected();
@@ -105,29 +107,34 @@ public class CrescendoBot extends DefaultRobot {
     autoSelected = m_chooser.getSelected();
     setHeadingHoldAngle(getAngle());
   
-    SmartDashboard.putString("Auto Selected", autoSelected);
+    // SmartDashboard.putString("Auto Selected", autoSelected);
   
-    switch(autoSelected){
-      case kCalibration:
-        mAutoProgram = new AutoCalibration(this);
-        break;
-      case autoShoot2:
-        mAutoProgram = new AutoSpeaker2(this);
-        break;
-      case autoShootAndLeave:
-        mAutoProgram = new AutoShootAndLeave(this, robotPosition);
-        break;
-      default:
-        mAutoProgram = new AutoDoNothing();
-        break;
+    // switch(autoSelected){
+    //   case kCalibration:
+    //     mAutoProgram = new AutoCalibration(this);
+    //     break;
+    //   case autoShoot2:
+    //     mAutoProgram = new AutoSpeaker2(this);
+    //     break;
+    //   case autoShootAndLeave:
+    //     mAutoProgram = new AutoShootAndLeave(this, robotPosition);
+    //     break;
+    //   default:
+    //     mAutoProgram = new AutoDoNothing();
+    //     break;
+    // }
+    // mAutoProgram.start();
+    m_autonomousCommand = new TrajectoryAuto(this).getAutonomousCommand();
+    
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
     }
-    mAutoProgram.start();
   }
 
   @Override
   public void autonomousPeriodic() {
-    if (mAutoProgram.isRunning())
-      mAutoProgram.periodic();
+    // if (mAutoProgram.isRunning())
+    //   mAutoProgram.periodic();
   }
 
   private void setupAutoChoices() {

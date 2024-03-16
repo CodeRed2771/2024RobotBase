@@ -3,7 +3,7 @@ package frc.robot.subsystems.drive;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -128,7 +128,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(desiredStates[3]);
   }
 
-  public void driveFixedSpeedOrientation(double xSpeed, double ySpeed)
+  public void driveFixdSpeedOrientation(double xSpeed, double ySpeed)
   {
     Translation2d Speed = new Translation2d(xSpeed,ySpeed);
     SwerveModuleState desiredState = new SwerveModuleState(Speed.getNorm(), Speed.getAngle());

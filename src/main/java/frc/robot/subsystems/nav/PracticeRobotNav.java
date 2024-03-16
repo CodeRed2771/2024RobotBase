@@ -12,6 +12,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -140,6 +141,10 @@ public class PracticeRobotNav extends NavSubsystem {
         }
     }
 
+    public void resetRobotPose(Pose2d pose) {
+        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), pose);
+    }
+
     public void computeYawNudge(Target target) {
             Transform2d currentTarget = getTargetOffset(target);
             updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
@@ -197,4 +202,7 @@ public class PracticeRobotNav extends NavSubsystem {
         return new Transform2d(getPoseInFieldInches(), getTargetPoseField(target).toPose2d());
     }
 
+    public Rotation3d getGyroAngle() {
+        return gyro.getRotation();
+    }
 }

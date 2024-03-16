@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+// import edwpi.first.math.kinematics.SwerveModulePosition;
 // import edu.wpi.first.math.proto.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -29,12 +30,16 @@ public class TrajectoryAuto {
         TrajectoryConfig config = new TrajectoryConfig(3,3)
             .setKinematics(bot.drive.getKinematics());
 
-        List<Pose2d> poseList = List.of(new Pose2d(0,0,new Rotation2d(0)),
-                 new Pose2d(1,1,new Rotation2d(90)));
+        List<Pose2d> poseList = List.of(
+            new Pose2d(0,0,new Rotation2d(0)),
+            new Pose2d(1,1,new Rotation2d(90)),
+            new Pose2d(2,1,new Rotation2d(180))
+            );
         
         firstTrajectory = TrajectoryGenerator.generateTrajectory(
             poseList,
-            config);
+            config
+        );
         
         ProfiledPIDController thetaController = new ProfiledPIDController(1, 0, 0,
                 new TrapezoidProfile.Constraints(
@@ -51,14 +56,29 @@ public class TrajectoryAuto {
             xController,
             yController,
             thetaController, 
-            bot.drive::setModuleStates);
+            bot.drive::setModuleStates,
+            bot.drive
+        );
         
     }
 
+//     public void resetOdometry(Pose2d pose) {
+//         bot.drive.getOdomotry().resetPosition(
+//             bot.nav.getGyroAngle().toRotation2d(),
+//             new SwerveModulePosition[] {
+//                 m_frontLeft.getPosition(),
+//                 m_frontRight.getPosition(),
+//                 m_rearLeft.getPosition(),
+//                 m_rearRight.getPosition()
+//         },
+//         pose);
+//   }
+    
     public Command getAutonomousCommand() {
         return Commands.sequence(
-            new InstantCommand(() -> bot.resetOdometry(new Pose2d(0,0, new Rotation2d(0)))),
+            new InstantCommand(() -> bot.nav.resetRobotPose(new Pose2d(0,0, new Rotation2d(0)))),
+            // new InstantCommand(() -> bot.launcher.fire()),
             swerveControllerCommand,
-            new InstantCommand(() -> bot.drive(0, 0, 0, false)));
+            new InstantCommand(() -> bot.drive.driveSpeedControl(0, 0, 0, .02)));
     }
 }
