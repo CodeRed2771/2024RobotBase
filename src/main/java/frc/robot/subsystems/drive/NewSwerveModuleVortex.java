@@ -94,7 +94,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     m_turningMotor.restoreFactoryDefaults();
     Timer.delay(0.5);
     m_turningMotor.setOpenLoopRampRate(1);
-    m_turningMotor.setSmartCurrentLimit(30);
+    m_turningMotor.setSmartCurrentLimit(45);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
     m_turningMotor.setInverted(false);
 
