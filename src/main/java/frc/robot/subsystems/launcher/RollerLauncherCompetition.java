@@ -38,11 +38,11 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public double aim_kMaxOutput, aim_kMinOutput, aim_maxRPM;
     
 
-    private static final double ABS_FULL_BACK = 0.16;
+    private static final double ABS_FULL_BACK = 0.188;
     private static final double ABS_FULL_FORWARD = 0.430;
     private static final double DEG_TO_TICK = -1261.065;
 
-    private static final double aimMargin = 10/360.0;
+    private static final double aimMargin = 0/360.0; // no margin anymore
     private static final double ABS_BACK_STOP = ABS_FULL_BACK + aimMargin;
     private static final double ABS_FORWARD_STOP = ABS_FULL_FORWARD - aimMargin;
     private static final double AIM_MAX_RANGE = MathUtil.inputModulus(ABS_FORWARD_STOP - ABS_BACK_STOP,0,1);
