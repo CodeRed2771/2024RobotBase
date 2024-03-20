@@ -58,7 +58,7 @@ public class RollerLauncher extends LauncherSubsystem {
 
     public enum LauncherSpeeds {
         OFF(0,45),
-        AMP(600, 110), // max back
+        AMP(600, 120), // max back
         SAFE_ZONE(3400, 30),
         SUBWOOFER(2900, 51),
         CLIMB(0, 80),
