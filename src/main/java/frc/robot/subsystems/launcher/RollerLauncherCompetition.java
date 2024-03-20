@@ -88,6 +88,14 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimPIDController.setOutputRange(aim_kMinOutput, aim_kMaxOutput);
 
         aimMotor.burnFlash();
+
+        SmartDashboard.putNumber("Aim Absolute Encoder", aimAbsoluteEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Aim Relative Encoder", aimEncoder.getPosition());
+        SmartDashboard.putNumber("Aim Setpoint", angleInTicks);
+
+        SmartDashboard.putNumber("Trap Shot Speed", SmartDashboardSpeed);
+        SmartDashboard.putNumber("Trap Shot Bias", SmartDashboardBias);
+        SmartDashboard.putNumber("Trap Shot Angle", SmartDashboardAngle);
     }
 
     @Override
@@ -138,7 +146,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimPIDController.setReference(angleInTicks, CANSparkMax.ControlType.kPosition);
     }
 
-    double SmartDashboardSpeed=2000;
+    double SmartDashboardSpeed=1000;
     double SmartDashboardBias=.45;
     double SmartDashboardAngle = 72;
     
@@ -151,13 +159,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putNumber("Aim Absolute Encoder", aimAbsoluteEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("Aim Relative Encoder", aimEncoder.getPosition());
-        SmartDashboard.putNumber("Aim Setpoint", angleInTicks);
-
-        SmartDashboard.putNumber("Trap Shot Speed", SmartDashboardSpeed);
-        SmartDashboard.putNumber("Trap Shot Bias", SmartDashboardBias);
-        SmartDashboard.putNumber("Trap Shot Angle", SmartDashboardAngle);
+      
         
         SmartDashboardSpeed =SmartDashboard.getNumber("Trap Shot Speed", 2000);
         SmartDashboardBias =SmartDashboard.getNumber("Trap Shot Bias", .45);
