@@ -146,7 +146,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimPIDController.setReference(angleInTicks, CANSparkMax.ControlType.kPosition);
     }
 
-    double SmartDashboardSpeed=1000;
+    double SmartDashboardSpeed=500;
     double SmartDashboardBias=.45;
     double SmartDashboardAngle = 72;
     
