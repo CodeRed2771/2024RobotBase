@@ -112,7 +112,7 @@ public class CrescendoBot extends DefaultRobot {
         mAutoProgram = new AutoCalibration(this);
         break;
       case autoShoot2:
-        mAutoProgram = new AutoSpeaker2(this);
+        mAutoProgram = new AutoSpeaker2(this, robotPosition);
         break;
       case autoShootAndLeave:
         mAutoProgram = new AutoShootAndLeave(this, robotPosition);
