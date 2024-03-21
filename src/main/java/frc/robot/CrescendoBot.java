@@ -320,8 +320,8 @@ public class CrescendoBot extends DefaultRobot {
     }
 
     if(gp.getAButton()) {
-      bAutoAimEnabled = true;
-      autoEstimateAim();
+      // bAutoAimEnabled = true;
+      // autoEstimateAim();
     } else {
       bAutoAimEnabled = false;
     }
@@ -367,7 +367,7 @@ public class CrescendoBot extends DefaultRobot {
       launcher.setSpeedBias(0);
       launcher.prime(LauncherSpeeds.SUBWOOFER);
     } else if(gp.getBButton()) {
-      launcher.setSpeedBias(0);
+      launcher.setSpeedBias(-.40);
       launcher.prime(LauncherSpeeds.AMP);
     } else if(gp.getYButton()) {
       launcher.prime(LauncherSpeeds.OFF);
