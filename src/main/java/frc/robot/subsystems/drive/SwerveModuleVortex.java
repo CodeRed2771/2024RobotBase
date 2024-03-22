@@ -45,7 +45,7 @@ public class SwerveModuleVortex extends ArmedSubsystem implements SwerveModule {
         drive = new CANSparkFlex(driveMotorID, MotorType.kBrushless);
         drive.restoreFactoryDefaults();
         drive.setOpenLoopRampRate(.1);
-        drive.setSmartCurrentLimit(40);
+        drive.setSmartCurrentLimit(60);
         drive.setIdleMode(IdleMode.kBrake);
 		this.setName(moduleID);
 
