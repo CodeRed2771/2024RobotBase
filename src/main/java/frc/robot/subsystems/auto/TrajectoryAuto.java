@@ -24,30 +24,39 @@ public class TrajectoryAuto {
     Trajectory firstTrajectory;
     SwerveControllerCommand swerveControllerCommand;
 
-    public TrajectoryAuto (CrescendoBot bot) {
+    public TrajectoryAuto(CrescendoBot bot) {
         this.bot = bot;
         
         TrajectoryConfig config = new TrajectoryConfig(3,3)
             .setKinematics(bot.drive.getKinematics());
 
-        List<Pose2d> poseList = List.of(
-            new Pose2d(0,0,new Rotation2d(0)),
-            new Pose2d(1,1,new Rotation2d(90)),
-            new Pose2d(2,1,new Rotation2d(180))
-            );
+        // List<Pose2d> poseList = List.of(
+        //     new Pose2d(0,0, new Rotation2d(Math.toRadians(0))),
+        //     new Pose2d(1,1,new Rotation2d(Math.toRadians(0))),
+        //     new Pose2d(2,1,new Rotation2d(Math.toRadians(0)))
+        //     );
         
-        firstTrajectory = TrajectoryGenerator.generateTrajectory(
-            poseList,
-            config
-        );
+        // firstTrajectory = TrajectoryGenerator.generateTrajectory(
+        //     poseList,
+        //     config
+        // );
+        firstTrajectory =
+        TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(10, 10), new Translation2d(20, -10)),
+            // End 30 inches straight ahead of where we started, facing forward
+            new Pose2d(30, 0, new Rotation2d(0)),
+            config);
         
-        ProfiledPIDController thetaController = new ProfiledPIDController(1, 0, 0,
+        ProfiledPIDController thetaController = new ProfiledPIDController(.05, 0, 0,
                 new TrapezoidProfile.Constraints(
                     Math.PI, Math.PI));
         thetaController.enableContinuousInput(Math.PI, Math.PI);
 
-        PIDController xController = new PIDController(1, 0, 0);
-        PIDController yController = new PIDController(1, 0, 0);
+        PIDController xController = new PIDController(.5, 0, 0);
+        PIDController yController = new PIDController(.5, 0, 0);
 
         swerveControllerCommand = new SwerveControllerCommand(
             firstTrajectory,
