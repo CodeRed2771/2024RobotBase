@@ -80,7 +80,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
-              if(myRobot.drive.atFixedPosition(0.5)) {
+              if(myRobot.drive.atFixedPosition(2)) {
                 advanceStep();
               }
               break;
@@ -113,7 +113,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
               setTimerAndAdvanceStep(4000);
               break;
             case 10:
-              if(myRobot.drive.atFixedPosition(0.5)) {
+              if(myRobot.drive.atFixedPosition(2)) {
                 advanceStep();
               }
               break;
