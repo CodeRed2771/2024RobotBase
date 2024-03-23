@@ -8,5 +8,7 @@ public abstract class ClimberSubsystem extends ArmedSubsystem {
         super();
     }
     public void lift(double speed, boolean override){}
+    public void releaseClutch() {}
+    public void engageClutch() {}
     public void reset() {}
 }

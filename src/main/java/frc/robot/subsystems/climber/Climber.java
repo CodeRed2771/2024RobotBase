@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import java.rmi.server.ServerCloneException;
 import java.util.Map;
 
 import com.revrobotics.CANSparkMax;
@@ -8,6 +9,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends ClimberSubsystem{
@@ -16,6 +18,8 @@ public class Climber extends ClimberSubsystem{
 
     private RelativeEncoder liftEncoder;
     // private RelativeEncoder rightEncoder;
+
+    private Servo clutchServo;
 
     private SparkPIDController PIDController;
     
@@ -27,6 +31,8 @@ public class Climber extends ClimberSubsystem{
         super();
         liftMotor = new CANSparkMax(wiring.get("climber"), MotorType.kBrushless);
         // leftMotor = new CANSparkMax(wiring.get("right climber"), MotorType.kBrushless);
+
+        clutchServo = new Servo(wiring.get("clutch"));
 
         liftMotor.restoreFactoryDefaults();
         // rightMotor.restoreFactoryDefaults();
@@ -83,6 +89,15 @@ public class Climber extends ClimberSubsystem{
         } else {
             liftMotor.set(Math.signum(speed)*0.25);
         }
+    }
+
+    @Override
+    public void releaseClutch() {
+        clutchServo.set(1);
+    }
+    @Override
+    public void engageClutch() {
+        clutchServo.set(0);
     }
 
     @Override
