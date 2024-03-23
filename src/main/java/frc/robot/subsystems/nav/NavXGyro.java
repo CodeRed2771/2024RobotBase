@@ -109,6 +109,6 @@ public class NavXGyro {
     }
 
     public double getGyroAngleInRad() {
-        return MathUtil.angleModulus(mGyro.getAngle());
+        return MathUtil.angleModulus(Math.toRadians(getAngle()));
     }
 }
