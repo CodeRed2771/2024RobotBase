@@ -74,6 +74,7 @@ public class Climber extends ClimberSubsystem{
             // lastPositionRequested = requestedPos;
 
             if(speed > 0 && liftEncoder.getPosition() < MAXIMUM_EXTENTION) {
+                speed = Math.min(speed, .25);
                 liftMotor.set(speed);
             } else if(speed < 0 && liftEncoder.getPosition() > MINIMUM_RETRACTION) {
                 liftMotor.set(speed);

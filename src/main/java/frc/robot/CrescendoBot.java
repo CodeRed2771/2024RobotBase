@@ -188,7 +188,7 @@ public class CrescendoBot extends DefaultRobot {
   }
 
     protected void runClimber(Gamepad gp) {
-      double speed = MathUtil.applyDeadband(-gp.getLeftY(), 0.05);
+      double speed = MathUtil.applyDeadband(gp.getLeftY(), 0.05);
       // climber.lift(speed, true);
       if(gp.getRightBumper()) {
         climber.lift(speed, true);
