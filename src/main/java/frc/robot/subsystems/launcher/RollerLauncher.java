@@ -60,7 +60,7 @@ public class RollerLauncher extends LauncherSubsystem {
         OFF(0,45),
         AMP(1350, 102), // max back
         SAFE_ZONE(3400, 25),
-        SUBWOOFER(2900, 46),
+        SUBWOOFER(2600, 46), //was 2900
         CLIMB(0, 80),
         STOW(0,10),
         MAX_ANGLE(0, 75);
@@ -102,6 +102,7 @@ public class RollerLauncher extends LauncherSubsystem {
         int motorId = wiring.get("intakeMotorId");
 
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);
+        intakeMotor.setInverted(true);
 
         launcherLED = new BlinkinLED(wiring.get("launcher led"));
 
@@ -121,7 +122,7 @@ public class RollerLauncher extends LauncherSubsystem {
         upperEncoder = upperShooterMotor.getEncoder();
         lowerEncoder = lowerShooterMotor.getEncoder();
 
-        kP = .0002 ; 
+        kP = .0014 ; 
         kI = 0;
         kD = 0.01; 
         kIz = 0; 
