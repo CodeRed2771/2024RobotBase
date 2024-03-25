@@ -238,6 +238,11 @@ public class RollerLauncher extends LauncherSubsystem {
         aim(commandSpeed.getAngle());
     }
 
+    public void prime(double speed, double bias){
+        prime(speed);
+        setSpeedBias(bias);
+    }
+
     @Override 
     public void prime(double speed){
 
@@ -310,7 +315,7 @@ public class RollerLauncher extends LauncherSubsystem {
         SmartDashboard.putNumber("FIRE STOP DELAY", loaderFireStopDelay);
         SmartDashboard.putString("LOADER STATE", loadState.toString());
         
-        
+        SmartDashboard.putNumber("shooter bias", motorSpeedBias);
         SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter SetPoint", lowerSpeedCmd);
                     // read PID coefficients from SmartDashboard
