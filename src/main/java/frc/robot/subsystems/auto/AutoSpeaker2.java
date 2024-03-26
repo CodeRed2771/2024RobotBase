@@ -129,10 +129,10 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                myRobot.drive.driveFixedRotatePosition(35);
+                myRobot.drive.driveFixedRotatePosition(65);
               }
               else {
-                myRobot.drive.driveFixedRotatePosition(-35);
+                myRobot.drive.driveFixedRotatePosition(-65);
               }
               setTimerAndAdvanceStep(2000);
               break;
@@ -165,10 +165,10 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 12:
               if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                myRobot.drive.driveFixedRotatePosition(-35);
+                myRobot.drive.driveFixedRotatePosition(-65);
               }
               else {
-                myRobot.drive.driveFixedRotatePosition(35);
+                myRobot.drive.driveFixedRotatePosition(65);
               }
               setTimerAndAdvanceStep(2000);
               break;
