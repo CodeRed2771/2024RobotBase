@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -64,12 +65,15 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private PIDGains drivePositionGains;
   private PIDGains driveGains;
   private PIDGains turnGains;
+  private String moduleID;
 
   /** Creates a new NewSwerveModuleVortex. */
   public NewSwerveModuleVortex(Map<String,Integer> wiring, Map<String,Double> calibration, String moduleID) {
     super();
 
     this.setName(moduleID);
+
+    this.moduleID = moduleID;
     
     wheel_radius = calibration.getOrDefault(moduleID + " wheel radius", 2.0);
 
@@ -178,7 +182,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     Timer.delay(0.5);
   }
 
-  public void updateSwerveState(){
+  public void updateSwerveState() {
     curDriveSpeed = m_driveEncoder.getVelocity();
     curDriveDistance = m_driveEncoder.getPosition();
     curTurnAngle = turnAbsEncoder.getAbsolutePosition();
@@ -189,6 +193,12 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
 
     double delta = targetState.angle.getRotations() - curTurnAngle;
     delta = delta - Math.round(delta);
+        
+    if(delta > .25){
+        DriverStation.reportWarning("The delta of " + moduleID + " is greater than .25 - current angle is " + curTurnAngle + " - target angle is " + targetState.angle.getRotations(),
+        false);
+    }
+
     targetState.angle = Rotation2d.fromRotations(curTurnAngle + delta);
 
     commandSwerveMotors(targetState.speedMetersPerSecond, targetState.angle.getRotations());

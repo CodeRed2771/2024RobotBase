@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
@@ -88,4 +90,18 @@ public class CompetitionRobot extends CrescendoBot {
     climber = new Climber(wiring, calibration);
   }
 
+  @Override
+  public void teleopPeriodic(){
+    SwerveModulePosition[] startPos = drive.getOdomotry();
+
+    super.teleopPeriodic();
+
+    SwerveModulePosition[] stopPos = drive.getOdomotry();
+    double[] deltas = {0,0,0,0};
+    for(int i = 0;i<4;i++){
+      deltas[i] = stopPos[i].angle.getRadians() - startPos[i].angle.getRadians();
+    }
+    SmartDashboard.putNumberArray("deltas ",deltas);
+    
+  }
 }
