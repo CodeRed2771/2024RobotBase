@@ -17,7 +17,7 @@ import frc.robot.CrescendoBot;
   Drives back and aligns with subwoofer
   Primes & shoots the other note
  */
-import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 
 public class AutoShootAndLeave extends AutoBaseClass {
@@ -49,7 +49,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(1500);
               break;
             case 1:
@@ -61,7 +61,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
             case 3:
               break;
             case 4:
-              myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.launcher.aim(LauncherPresets.OFF);
               myRobot.launcher.stop();
               setTimerAndAdvanceStep(7000); // wait till end of auto so we don't get in the way
               break;

@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
-import frc.robot.subsystems.launcher.RollerLauncher;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 
 public class ElegantPolyBot extends CrescendoBot {
@@ -55,7 +55,7 @@ public class ElegantPolyBot extends CrescendoBot {
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
     nav = new PracticeRobotNav(calibration,drive);
     intake = new DummyIntake();
-    launcher = new RollerLauncher(wiring, calibration);
+    launcher = new RollerLauncherCompetition(wiring, calibration);
   }
 
 }

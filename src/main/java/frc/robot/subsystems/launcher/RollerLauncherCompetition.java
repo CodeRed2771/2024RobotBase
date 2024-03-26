@@ -26,6 +26,37 @@ import com.revrobotics.SparkPIDController;
  * 
  */
 public class RollerLauncherCompetition extends RollerLauncher {
+
+    public enum LauncherPresets {
+        OFF(0,45,0),
+        AMP(1350, 102,-0.85), // max back
+        SAFE_ZONE(3400, 25,0),
+        SUBWOOFER(2600, 46,0), //was 2900
+        CLIMB(0, 80,0),
+        STOW(0,10,0),
+        MAX_ANGLE(0, 75,0);
+
+        private double speed;
+        private double angle;
+        private double bias;
+        
+        private LauncherPresets(double newSpeed, double newAngle,double newBias) {
+            speed = newSpeed;
+            angle = newAngle;
+            bias = newBias;
+        }
+
+        public double getSpeed() {
+            return speed;
+        }
+        public double getAngle() {
+            return angle;
+        }
+        public double getBias() {
+            return bias;
+        }
+    }
+ 
     private CANSparkMax aimMotor;
 
     private SparkPIDController aimPIDController = null;
@@ -100,12 +131,14 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimEncoder.setPosition(rawRollerRotationsToTicks(aimAbsoluteEncoder.getAbsolutePosition()));
     }
 
+    @Override
     public void load(double power) {
 
         loaderMotor.set(-power*2.00);
         intakeMotor.set(-power);
     }
 
+    @Override
     public void unload() {
 
         loaderMotor.set(.5);
@@ -113,12 +146,13 @@ public class RollerLauncherCompetition extends RollerLauncher {
         loadState = LoaderState.Unloading;
     }
 
-    @Override
-    public void prime(LauncherSpeeds speedSetting) {
-        super.prime(speedSetting);
-        aim(speedSetting);
+    public void aim(LauncherPresets preset) {
+        prime(preset.getSpeed(),preset.getBias());
+        aim(preset.getAngle());
     }
-
+    public void stopShooter() {
+        aim(LauncherPresets.OFF);
+    }
     public boolean isPrimed() {
         boolean speedTracking = super.isPrimed();
         boolean aimTracking = true;
