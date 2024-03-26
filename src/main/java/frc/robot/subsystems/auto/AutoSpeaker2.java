@@ -104,7 +104,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
         else {
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(1500);
               break;
             case 1:
@@ -117,7 +117,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stopFireDelay();
-              myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.launcher.aim(LauncherPresets.OFF);
               myRobot.drive.driveFixedPositionOffsetInches(20,0);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(2000);
@@ -177,7 +177,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
                 advanceStep();
               break;
             case 14:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               myRobot.drive.driveFixedPositionOffsetInches(-20,0);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(2000);

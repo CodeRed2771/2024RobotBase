@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CrescendoBot;
 /*
   This auto (that starts in the center position):
-  Primes & shoots 1 note,
+  aims & shoots 1 note,
   Drives forward and picks up another note (Leaving the starting area in the process)
   Drives back and aligns with subwoofer
-  Primes & shoots the other note
+  aims & shoots the other note
  */
-import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 
 public class AutoSpeaker3 extends AutoBaseClass {
@@ -43,7 +43,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(1500);
               break;
             case 1:
@@ -56,7 +56,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stopFireDelay();
-              myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.launcher.aim(LauncherPresets.OFF);
               if(position == 'A')
                 myRobot.drive.driveFixedPositionOffsetInches(48,-57);
               else
@@ -72,7 +72,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
               }
               break;
             case 6:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               if(position == 'A')
                 myRobot.drive.driveFixedPositionOffsetInches(48,57);
               else
@@ -105,7 +105,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
               break;
             case 12:
               myRobot.drive.driveFixedPositionOffsetInches(60, 0);
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(-4000);
               break;
             case 13:
