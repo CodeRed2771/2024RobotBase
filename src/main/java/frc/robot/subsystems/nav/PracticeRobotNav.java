@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.libs.BlinkinLED;
+import frc.robot.libs.BlinkinLED.LEDColors;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 
 /** Add your docs here. */
@@ -37,6 +39,7 @@ public class PracticeRobotNav extends NavSubsystem {
     private ExampleSwerveDriveTrain driveTrain;
 
     private double max_camera_speed = 50.0;
+    private BlinkinLED nav_led;
 
     private boolean bUseCamera = true;
     public boolean isCameraEnabed() { return bUseCamera; }
@@ -44,7 +47,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public void enableCamera() { setCameraEnable(true); }
     public void disableCamera() { setCameraEnable(false); }
 
-    public PracticeRobotNav(Map<String,Double> calibration,ExampleSwerveDriveTrain drive) {
+    public PracticeRobotNav(Map<String,Integer> wiring,Map<String,Double> calibration,ExampleSwerveDriveTrain drive) {
         super();
         driveTrain = drive;
 
@@ -65,7 +68,9 @@ public class PracticeRobotNav extends NavSubsystem {
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
         useRedTargets();
 
-         reset();
+        nav_led = new BlinkinLED(wiring.get("nav led"));
+
+        reset();
     }
 
     public void zeroYaw(){
@@ -120,6 +125,15 @@ public class PracticeRobotNav extends NavSubsystem {
         computeNoteNudge();
     }
 
+    @Override
+    protected void doArm(){
+        nav_led.blink(1.0);
+    }
+    @Override
+    protected void doDisarm(){
+        nav_led.blink(0.5);
+    }
+
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
@@ -129,6 +143,9 @@ public class PracticeRobotNav extends NavSubsystem {
         if(limelight_present)
             SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
 
+        if(!limelight.isTracking()) nav_led.set(LEDColors.GREEN);
+        else if(isNavValid()) nav_led.set(LEDColors.BLUE);
+        else nav_led.set(LEDColors.YELLOW);
     }
 
     public void updateRobotPosition() {
@@ -141,6 +158,8 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void computeYawNudge(Target target) {
+        Pose2d curPos = getPoseInFieldInches();
+        if(isNavValid() && curPos.getTranslation().getNorm() <= 500.0 ){
             Transform2d currentTarget = getTargetOffset(target);
             updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
             double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
@@ -150,7 +169,9 @@ public class PracticeRobotNav extends NavSubsystem {
             yawRotationNudge = kp*MathUtil.inputModulus(goal,-180.0,180.0);
             yawRotationNudge = MathUtil.clamp(yawRotationNudge,-limit, limit);
             yawRotationNudge = -yawRotationNudge;
-        
+        } else {
+            yawRotationNudge = 0;
+        }
     }
     public void computeNoteNudge() {
         if(limelight_tracker_present && gamePieceTracker.isTracking()) {

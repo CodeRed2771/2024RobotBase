@@ -54,6 +54,7 @@ public class CompetitionRobot extends CrescendoBot {
 
     //PWM wiring
     wiring.put("launcher led", 0);
+    wiring.put("nav led", 1);
 
     /* Tuning/calibration parameters that are robot specific go here */
     // Drive
@@ -93,7 +94,7 @@ public class CompetitionRobot extends CrescendoBot {
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
-    nav = new PracticeRobotNav(calibration,drive);
+    nav = new PracticeRobotNav(wiring,calibration,drive);
     intake = new DummyIntake();
     launcher = new RollerLauncherCompetition(wiring, calibration);
     climber = new Climber(wiring, calibration);

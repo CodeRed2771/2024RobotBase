@@ -53,7 +53,7 @@ public class ElegantPolyBot extends CrescendoBot {
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
-    nav = new PracticeRobotNav(calibration,drive);
+    nav = new PracticeRobotNav(wiring, calibration,drive);
     intake = new DummyIntake();
     launcher = new RollerLauncherCompetition(wiring, calibration);
   }

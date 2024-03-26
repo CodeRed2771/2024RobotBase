@@ -10,8 +10,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.ArmedSubsystem;
 
-public abstract class NavSubsystem extends SubsystemBase {
+public abstract class NavSubsystem extends ArmedSubsystem {
   protected NavSubsystem() {
     super();
   }
