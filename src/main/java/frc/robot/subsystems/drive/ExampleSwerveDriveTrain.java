@@ -28,7 +28,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   private double wheel_position_offset = 24.0/2;  // Wheel base measured.
   private double wheel_position_offset_radius;
 
-  private final double turn_angle_degree_offset = 90/160;
+  private final double turn_angle_degree_offset = 160/160;
   // Max Angle rate in Rad = (Max linear speed / Circumference (2PI *R)) for rotations * 2PI (for Radians)
   // Max Angle Rate = Max speed / radius
   private double kMaxAngleRate;
