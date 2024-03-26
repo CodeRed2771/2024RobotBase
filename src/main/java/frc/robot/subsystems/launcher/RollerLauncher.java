@@ -18,16 +18,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-/** Add your docs 
- * When load is command - run loader motor until note is in loader position
- * stop on sensor tells us we have note
- * hold then load for firing 
- * 
- * call prime to get motors up to speed 
- * 
- * Fire runs load for time if isPrimed until sensor says otherwise
- * 
- * 
+/**
+ * Add your docs When load is command - run loader motor until note is in loader position stop on sensor tells us we
+ * have note hold then load for firing call prime to get motors up to speed Fire runs load for time if isPrimed until
+ * sensor says otherwise
  */
 public class RollerLauncher extends LauncherSubsystem {
     protected CANSparkFlex upperShooterMotor;
@@ -39,14 +33,14 @@ public class RollerLauncher extends LauncherSubsystem {
 
     protected SparkPIDController upperPIDCtrl = null;
     protected SparkPIDController lowerPIDCtrl = null;
-    
+
     protected RelativeEncoder upperEncoder = null;
     protected RelativeEncoder lowerEncoder = null;
 
     public double kP, kI, kD, kIz, kFF;
-    
+
     public double kMaxOutput, kMinOutput, maxRPM;
-    
+
     private double upperSpeedCmd = 0;
     private double lowerSpeedCmd = 0;
     private double speedTolerance = 300;
@@ -56,37 +50,11 @@ public class RollerLauncher extends LauncherSubsystem {
 
     protected int notePresentThreshold;
 
-    public enum LauncherSpeeds {
-        OFF(0,45),
-        AMP(750, 120), // max back
-        SAFE_ZONE(3400, 30),
-        SUBWOOFER(2900, 51),
-        CLIMB(0, 80),
-        STOW(0,10),
-        MAX_ANGLE(0, 75);
-
-        private double speed;
-        private double angle;
-        
-        private LauncherSpeeds(double newSpeed, double newAngle) {
-            speed = newSpeed;
-            angle = newAngle;
-        }
-
-        public double getSpeed() {
-            return speed;
-        }
-        public double getAngle() {
-            // we want this to convert to encoder ticks
-            return angle;
-        }
-    }
-  
     private int STOP_DELAY;
     private int loaderStopDelay = 0;
     private int loaderFireStopDelay = 0;
 
-    public RollerLauncher(Map<String,Integer> wiring, Map<String,Double> calibration) {
+    public RollerLauncher(Map<String, Integer> wiring, Map<String, Double> calibration) {
         super();
 
         notePresentThreshold = calibration.getOrDefault("note threshold", 1700.0).intValue();
@@ -98,10 +66,11 @@ public class RollerLauncher extends LauncherSubsystem {
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
         loadState = LoaderState.Stopped;
-        
+
         int motorId = wiring.get("intakeMotorId");
 
         intakeMotor = new CANSparkMax(motorId, MotorType.kBrushless);
+        intakeMotor.setInverted(true);
 
         launcherLED = new BlinkinLED(wiring.get("launcher led"));
 
@@ -111,9 +80,9 @@ public class RollerLauncher extends LauncherSubsystem {
         Timer.delay(0.5);
 
         upperDirection = calibration.getOrDefault("upper launcher direction", -1.0);
-        upperShooterMotor.setInverted(upperDirection<0);
+        upperShooterMotor.setInverted(upperDirection < 0);
         lowerDirection = calibration.getOrDefault("lower launcher direction", -1.0);
-        lowerShooterMotor.setInverted(lowerDirection<0);
+        lowerShooterMotor.setInverted(lowerDirection < 0);
 
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();
@@ -121,12 +90,12 @@ public class RollerLauncher extends LauncherSubsystem {
         upperEncoder = upperShooterMotor.getEncoder();
         lowerEncoder = lowerShooterMotor.getEncoder();
 
-        kP = .0002 ; 
+        kP = .0014;
         kI = 0;
-        kD = 0.01; 
-        kIz = 0; 
-        kFF = 0.000170; 
-        kMaxOutput = 1; 
+        kD = 0.01;
+        kIz = 0;
+        kFF = 0.000170;
+        kMaxOutput = 1;
         kMinOutput = -1;
         maxRPM = 5700;
 
@@ -178,12 +147,12 @@ public class RollerLauncher extends LauncherSubsystem {
     public void load(double power) {
         super.load(power);
 
-        loaderMotor.set(power*1.10);
+        loaderMotor.set(power * 1.10);
         intakeMotor.set(-power);
     }
 
     public void stopShooter() {
-        prime(LauncherSpeeds.OFF);
+        prime(0);
     }
 
     public boolean isLoaded() {
@@ -198,14 +167,12 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void fire() {
-        if (isPrimed())
-            {
+        if (isPrimed()) {
             loadState = LoaderState.Firing;
             loaderFireStopDelay = STOP_DELAY;
 
             load(1); // run the loader which will put note into shooter
-            }  
-        else
+        } else
             stopLoader();
     }
 
@@ -223,37 +190,33 @@ public class RollerLauncher extends LauncherSubsystem {
         intakeMotor.set(0);
         loaderMotor.set(0);
     }
-    
+
     public void stopFireDelay() {
         stopLoader();
         loaderFireStopDelay = 0;
     }
 
-    public void prime(LauncherSpeeds commandSpeed) {
-        prime(commandSpeed.getSpeed());
+    public void prime(double speed, double bias) {
+        prime(speed);
+        setSpeedBias(bias);
     }
 
-    public void aim(LauncherSpeeds commandSpeed) {
-        aim(commandSpeed.getAngle());
-    }
-
-    @Override 
-    public void prime(double speed){
+    @Override
+    public void prime(double speed) {
 
         // in the future, set up so that the lower and upper motor power are set to a
         // slightly proportinal value to the
         // value fed into the function.
         upperSpeedCmd = -speed;
-        if (Math.abs(speed)>100)
-            lowerSpeedCmd = (speed) *(1+motorSpeedBias);
-        else  
+        if (Math.abs(speed) > 100)
+            lowerSpeedCmd = (speed) * (1 + motorSpeedBias);
+        else
             lowerSpeedCmd = 0;
 
         upperPIDCtrl.setReference(upperSpeedCmd, CANSparkMax.ControlType.kVelocity);
         lowerPIDCtrl.setReference(lowerSpeedCmd, CANSparkMax.ControlType.kVelocity);
     }
 
-    
     public void setSpeedBias(double newBias) {
         motorSpeedBias = newBias;
     }
@@ -267,7 +230,7 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public boolean isUnloading() {
-        if(loadState == LoaderState.Unloading) {
+        if (loadState == LoaderState.Unloading) {
             return true;
         }
         return false;
@@ -290,29 +253,28 @@ public class RollerLauncher extends LauncherSubsystem {
             stopLoader();
 
             loaderFireStopDelay--;
-        } else 
-            if (loaderFireStopDelay > 0)
+        } else if (loaderFireStopDelay > 0)
             loaderFireStopDelay--;
 
-        if(!isPrimed())
+        if (!isPrimed())
             launcherLED.blink(0.5);
         else
             launcherLED.blink(1);
-            
-        if(isLoaded())
+
+        if (isLoaded())
             launcherLED.set(LEDColors.GREEN);
-        else if(loadState == LoaderState.Loading)
+        else if (loadState == LoaderState.Loading)
             launcherLED.set(LEDColors.YELLOW);
         else
             launcherLED.set(LEDColors.RED);
 
         SmartDashboard.putNumber("FIRE STOP DELAY", loaderFireStopDelay);
         SmartDashboard.putString("LOADER STATE", loadState.toString());
-        
-        
+
+        SmartDashboard.putNumber("shooter bias", motorSpeedBias);
         SmartDashboard.putNumber("shooter speed", lowerShooterMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter SetPoint", lowerSpeedCmd);
-                    // read PID coefficients from SmartDashboard
+        // read PID coefficients from SmartDashboard
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
@@ -322,15 +284,36 @@ public class RollerLauncher extends LauncherSubsystem {
         double min = SmartDashboard.getNumber("Min Output", 0);
 
         // if PID coefficients on SmartDashboard have changed, write new values to controller
-        if((p != kP)) { upperPIDCtrl.setP(p); lowerPIDCtrl.setP(p); kP = p; }
-        if((i != kI)) { upperPIDCtrl.setI(i); lowerPIDCtrl.setI(i); kI = i; }
-        if((d != kD)) { upperPIDCtrl.setD(d); lowerPIDCtrl.setD(d); kD = d; }
-        if((iz != kIz)) { upperPIDCtrl.setIZone(iz); lowerPIDCtrl.setIZone(iz);kIz = iz; }
-        if((ff != kFF)) { upperPIDCtrl.setFF(ff); lowerPIDCtrl.setFF(ff); kFF = ff; }
-        if((max != kMaxOutput) || (min != kMinOutput)) { 
+        if ((p != kP)) {
+            upperPIDCtrl.setP(p);
+            lowerPIDCtrl.setP(p);
+            kP = p;
+        }
+        if ((i != kI)) {
+            upperPIDCtrl.setI(i);
+            lowerPIDCtrl.setI(i);
+            kI = i;
+        }
+        if ((d != kD)) {
+            upperPIDCtrl.setD(d);
+            lowerPIDCtrl.setD(d);
+            kD = d;
+        }
+        if ((iz != kIz)) {
+            upperPIDCtrl.setIZone(iz);
+            lowerPIDCtrl.setIZone(iz);
+            kIz = iz;
+        }
+        if ((ff != kFF)) {
+            upperPIDCtrl.setFF(ff);
+            lowerPIDCtrl.setFF(ff);
+            kFF = ff;
+        }
+        if ((max != kMaxOutput) || (min != kMinOutput)) {
             upperPIDCtrl.setOutputRange(min, max);
-            lowerPIDCtrl.setOutputRange(min, max);  
-            kMinOutput = min; kMaxOutput = max; 
+            lowerPIDCtrl.setOutputRange(min, max);
+            kMinOutput = min;
+            kMaxOutput = max;
         }
     }
 }

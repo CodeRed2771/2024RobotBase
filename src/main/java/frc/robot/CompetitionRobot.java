@@ -26,14 +26,14 @@ public class CompetitionRobot extends CrescendoBot {
      * around
      */
     // CANBUS Device ID
-    wiring.put("A turn", 2);
-    wiring.put("A drive", 1);
-    wiring.put("B turn", 8);
-    wiring.put("B drive", 5);
-    wiring.put("C turn", 6);
-    wiring.put("C drive", 7);
-    wiring.put("D turn", 4);
-    wiring.put("D drive", 3);
+    wiring.put("FL turn", 2);
+    wiring.put("FL drive", 1);
+    wiring.put("BR turn", 8);
+    wiring.put("BR drive", 5);
+    wiring.put("BL turn", 6);
+    wiring.put("BL drive", 7);
+    wiring.put("FR turn", 4);
+    wiring.put("FR drive", 3);
 
     wiring.put("upper launcher",  20);
     wiring.put("lower launcher",  21);
@@ -44,20 +44,30 @@ public class CompetitionRobot extends CrescendoBot {
     wiring.put("intakeMotorId", 16);
 
     // Analog Input
-    wiring.put("A turn enc", 1);
-    wiring.put("B turn enc", 0);
-    wiring.put("C turn enc", 2);
-    wiring.put("D turn enc", 3);
+    wiring.put("FL turn enc", 1);
+    wiring.put("BR turn enc", 0);
+    wiring.put("BL turn enc", 2);
+    wiring.put("FR turn enc", 3);
 
     // DIO Port
     wiring.put("aim encoder",  0);
 
     //PWM wiring
     wiring.put("launcher led", 0);
+    wiring.put("nav led", 1);
 
     /* Tuning/calibration parameters that are robot specific go here */
     // Drive
     calibration.put("wheel base",23.5);
+
+    /* Only adjust scale calibration after verifying the wheel alignment is good and accurate */
+    double wheel_avg_error = 234.0 / 257.0; // Actual travel / Reported travel
+    double drive_fwd_bias = 0.0; // Pull to right / distance travelled
+    double drive_strafe_bias = 0.0; // pull to front / distance strafed
+    calibration.put("FL wheel scale error", wheel_avg_error * (1 + drive_fwd_bias) * (1 - drive_strafe_bias) );
+    calibration.put("BR wheel scale error", wheel_avg_error * (1 - drive_fwd_bias) * (1 + drive_strafe_bias) );
+    calibration.put("BL wheel scale error", wheel_avg_error * (1 + drive_fwd_bias) * (1 + drive_strafe_bias) );
+    calibration.put("FR wheel scale error", wheel_avg_error * (1 - drive_fwd_bias) * (1 - drive_strafe_bias) );
 
     // Launcher
     calibration.put("upper launcher direction", 1.0);
@@ -84,7 +94,7 @@ public class CompetitionRobot extends CrescendoBot {
 
     /* Set all of the subsystems */
     drive = new ExampleSwerveDriveTrain(wiring, calibration);
-    nav = new PracticeRobotNav(calibration,drive);
+    nav = new PracticeRobotNav(wiring,calibration,drive);
     intake = new DummyIntake();
     launcher = new RollerLauncherCompetition(wiring, calibration);
     climber = new Climber(wiring, calibration);

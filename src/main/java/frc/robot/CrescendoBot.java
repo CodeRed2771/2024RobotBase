@@ -15,8 +15,8 @@ import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
 import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.launcher.RollerLauncher;
-import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 import frc.robot.subsystems.nav.Crescendo;
 import frc.robot.subsystems.nav.PracticeRobotNav;
 import frc.robot.subsystems.nav.Crescendo.PointsOfInterest;
@@ -45,7 +45,7 @@ public class CrescendoBot extends DefaultRobot {
   /* Be sure to register all subsystems after they are created */
   public ExampleSwerveDriveTrain drive; // Changed from protected to public for autos
   public IntakeSubsystem intake; // Changed from protected to public for autos
-  public RollerLauncher launcher; // Changed from protected to public for autos
+  public RollerLauncherCompetition launcher; // Changed from protected to public for autos
   public PracticeRobotNav nav; // Changed from protected to public for autos
   public Climber climber; 
 
@@ -196,7 +196,7 @@ public class CrescendoBot extends DefaultRobot {
       } else {
         
         if(speed > 0.1) {
-          launcher.aim(LauncherSpeeds.CLIMB);
+          launcher.aim(LauncherPresets.CLIMB);
         }
         climber.lift(speed, false);
       }
@@ -270,6 +270,10 @@ public class CrescendoBot extends DefaultRobot {
     
     SmartDashboard.putBoolean("Heading hold", bHeadingHold);
     SmartDashboard.putBoolean("Camera Enable", nav.isCameraEnabed());
+    SmartDashboard.putNumber("AMP angle", aim);
+    SmartDashboard.putNumber("AMP power", speed);
+    SmartDashboard.putNumber("AMP bias", bias);
+
   }
 
   @Override
@@ -280,6 +284,11 @@ public class CrescendoBot extends DefaultRobot {
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
     nav.setCameraEnable(SmartDashboard.getBoolean("Camera Enable", nav.isCameraEnabed()));
+
+    aim = SmartDashboard.getNumber("AMP angle", aim);
+    speed = SmartDashboard.getNumber("AMP power", speed);
+    bias = SmartDashboard.getNumber("AMP bias", bias);
+
   }
 
   @Override
@@ -356,21 +365,20 @@ public class CrescendoBot extends DefaultRobot {
     drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
   }
 
-  private double speed = 0;
-  private double bias = 0;
+  private double speed = LauncherPresets.AMP.getSpeed();
+  private double aim =  LauncherPresets.AMP.getAngle();
+  private double bias = LauncherPresets.AMP.getBias();
 
   public void runLauncher(Gamepad gp) {
     if (gp.getXButton()) {
-      launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SAFE_ZONE);
+      launcher.aim(LauncherPresets.SAFE_ZONE);
     } else if(gp.getAButton()) {
-      launcher.setSpeedBias(0);
-      launcher.prime(LauncherSpeeds.SUBWOOFER);
+      launcher.aim(LauncherPresets.SUBWOOFER);
     } else if(gp.getBButton()) {
-      launcher.setSpeedBias(-.40);
-      launcher.prime(LauncherSpeeds.AMP);
+      launcher.aim(aim);
+      launcher.prime(speed,bias);
     } else if(gp.getYButton()) {
-      launcher.prime(LauncherSpeeds.OFF);
+      launcher.aim(LauncherPresets.OFF);
     } 
     // else if(bAutoAimEnabled){
     //   launcher.aim(autoAimAngle);

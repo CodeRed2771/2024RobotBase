@@ -107,17 +107,17 @@ public class LimeLightPoseEstimator extends Limelight {
 
         if(getTargetCountFromNTData(data) >= 2)
         {
-            xyStds = 0.5;
+            xyStds = 0.5*METERS_TO_INCHES;
             degStds = 6;
         }
         else if(getTargetAreaFromNTData(data) >= 0.8)
         {
-            xyStds = 1.0;
+            xyStds = 1.0*METERS_TO_INCHES;
             degStds = 12;
         }
         else if(getTargetAreaFromNTData(data) >= area_threshold)
         {
-            xyStds = 2.0;
+            xyStds = 2.0*METERS_TO_INCHES;
             degStds = 30;
         }
 

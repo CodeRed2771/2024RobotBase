@@ -5,7 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import frc.robot.subsystems.launcher.RollerLauncher;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition;
 
 public class LauncherTestRobot extends CrescendoBot {
 
@@ -13,7 +13,7 @@ public class LauncherTestRobot extends CrescendoBot {
   @SuppressWarnings("this-escape")
   public LauncherTestRobot() {
     super();
-    launcher = new RollerLauncher(wiring, calibration);
+    launcher = new RollerLauncherCompetition(wiring, calibration);
   }
 
     /** This function is called periodically during operator control. */

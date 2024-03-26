@@ -16,7 +16,7 @@ import frc.robot.CrescendoBot;
   Drives back and aligns with subwoofer
   Primes & shoots the other note
  */
-import frc.robot.subsystems.launcher.RollerLauncher.LauncherSpeeds;
+import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 
 public class AutoSpeaker2 extends AutoBaseClass {
@@ -44,7 +44,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
         if(position == 'C') {
         switch (getCurrentStep()) {
             case 0:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(1500);
               break;
             case 1:
@@ -57,7 +57,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.stopFireDelay();
-              myRobot.launcher.prime(LauncherSpeeds.OFF);
+              myRobot.launcher.aim(LauncherPresets.OFF);
               myRobot.drive.driveFixedPositionOffsetInches(60,0);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
@@ -70,7 +70,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 6:
-              myRobot.launcher.prime(LauncherSpeeds.SUBWOOFER);
+              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               myRobot.drive.driveFixedPositionOffsetInches(-60,0);
               setTimerAndAdvanceStep(4000);
               break;

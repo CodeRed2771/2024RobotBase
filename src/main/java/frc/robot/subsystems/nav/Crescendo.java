@@ -45,15 +45,15 @@ public class Crescendo {
                                                                 new Rotation3d(0,0,Math.toRadians(180))).inverse();
 
     public enum PointsOfInterest {
-        FEEDER_LEFT(0),
-        FEEDER_CENTER(1),
-        FEEDER_RIGHT(2),
-        AMP(3),
-        SUBWOOFER_LEFT(4),
-        SUBWOOFER_CENTER(5),
-        SUBWOOFER_RIGHT(6),
-        SPEAKER(7),
-        SAFE_ZONE(8),
+        SAFE_ZONE(0),
+        FEEDER_LEFT(1),
+        FEEDER_CENTER(2),
+        FEEDER_RIGHT(3),
+        AMP(4),
+        SUBWOOFER_LEFT(5),
+        SUBWOOFER_CENTER(6),
+        SUBWOOFER_RIGHT(7),
+        SPEAKER(8),
         TRAP_CENTER(9),
         TRAP_FEEDER_SIDE(10),
         TRAP_AMP_SIDE(11);

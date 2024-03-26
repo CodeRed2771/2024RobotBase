@@ -29,7 +29,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
   private CANSparkFlex m_driveMotor;
   private CANSparkMax m_turningMotor;
 
-  double wheel_radius;
+  double wheel_radius = 2.0;
 
   /**
    * A RelativeEncoder object is constructed using the GetEncoder() method on an existing CANSparkMax object. The
@@ -74,8 +74,9 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     this.setName(moduleID);
 
     this.moduleID = moduleID;
-    
-    wheel_radius = calibration.getOrDefault(moduleID + " wheel radius", 2.0);
+
+    wheel_radius = calibration.getOrDefault(moduleID + " wheel radius", wheel_radius);
+    wheel_radius *= calibration.getOrDefault(moduleID + " wheel scale error", 1.0);
 
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveMotor = new CANSparkFlex(wiring.get( moduleID + " drive"), MotorType.kBrushless);

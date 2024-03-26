@@ -54,10 +54,10 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
       m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     // Circumference in cm to Radius in inches
-    m_frontLeft = new NewSwerveModuleVortex(wiring, calibration, "A"); // Front right
-    m_backRight = new NewSwerveModuleVortex(wiring, calibration,"B"); // Back left
-    m_backLeft = new NewSwerveModuleVortex(wiring, calibration, "C"); // Back right
-    m_frontRight = new NewSwerveModuleVortex(wiring, calibration, "D"); // Front left
+    m_frontLeft = new NewSwerveModuleVortex(wiring, calibration, "FL"); // Front right
+    m_backRight = new NewSwerveModuleVortex(wiring, calibration,"BR"); // Back left
+    m_backLeft = new NewSwerveModuleVortex(wiring, calibration, "BL"); // Back right
+    m_frontRight = new NewSwerveModuleVortex(wiring, calibration, "FR"); // Front left
 
     Calibration.loadSwerveCalibration();
     setTurnOffsets( Calibration.getTurnZeroPos('A'), 
