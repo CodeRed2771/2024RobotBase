@@ -195,7 +195,7 @@ public class CrescendoBot extends DefaultRobot {
         climber.reset();
       } else {
         
-        if(speed > 0.1) {
+        if(Math.abs(speed) > 0.1) {
           launcher.aim(LauncherPresets.CLIMB);
         }
         climber.lift(speed, false);
@@ -393,6 +393,7 @@ public class CrescendoBot extends DefaultRobot {
       launcher.load(.25);
     }
     else if (gp.getDPadLeft()) {
+      launcher.aim(LauncherPresets.PICKUP);
       launcher.unload();
     } else if(gp.getDPadDown()) {
       launcher.stopLoader();
