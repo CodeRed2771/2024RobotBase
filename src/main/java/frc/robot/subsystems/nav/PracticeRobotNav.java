@@ -130,15 +130,6 @@ public class PracticeRobotNav extends NavSubsystem {
         computeNoteNudge();
     }
 
-    @Override
-    protected void doArm(){
-        nav_led.blink(1.0);
-    }
-    @Override
-    protected void doDisarm(){
-        nav_led.blink(0.5);
-    }
-
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
@@ -197,12 +188,13 @@ public class PracticeRobotNav extends NavSubsystem {
         if(limelight_tracker_present && gamePieceTracker.isTracking()) {
             double limit = 0.25;
             double kp = limit/5.0; // limit divided by angle which max power is applied
-    
+            nav_led.blink(0.5);
             yawNoteNudge = kp*(0- gamePieceTracker.getBearingToTargetDegrees());
             yawNoteNudge = Math.min(yawNoteNudge,limit);
             yawNoteNudge = Math.max(yawNoteNudge,-limit);
             yawNoteNudge = -yawNoteNudge;
         } else {
+            nav_led.blink(1.0);
             yawNoteNudge = 0.0;
         }
     }
