@@ -143,7 +143,12 @@ public class LimeLightPoseEstimator extends Limelight {
     public Pose3d getEstimatedPosition() {
         return last_fieldPoseEstimate;
     }
-
+    
+    public boolean isValid()
+    {
+        return last_fieldPoseEstimate_Valid;
+    }
+    
     private boolean isValidPosition(Translation3d position){
         boolean valid =  Crescendo.isValidPosition(position.toTranslation2d()) &&
                MathUtil.isNear(0,position.getZ(), 12*4.0); // near the ground
