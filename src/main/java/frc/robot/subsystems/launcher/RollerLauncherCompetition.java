@@ -151,9 +151,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
         prime(preset.getSpeed(),preset.getBias());
         aim(preset.getAngle());
     }
-    public void stopShooter() {
-        aim(LauncherPresets.OFF);
-    }
+
     public boolean isPrimed() {
         boolean speedTracking = super.isPrimed();
         boolean aimTracking = true;
