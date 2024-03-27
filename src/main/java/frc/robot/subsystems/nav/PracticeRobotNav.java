@@ -58,9 +58,9 @@ public class PracticeRobotNav extends NavSubsystem {
             enableCamera();
         }
 
-        limelight_tracker_present = calibration.getOrDefault("limelight_tracker present",0.0)>0.5;
+        limelight_tracker_present = calibration.getOrDefault("limelight-tracker present",0.0)>0.5;
         if(limelight_tracker_present){
-            gamePieceTracker = new LimeLightGamePieceTracker("limelight_tracker",calibration);
+            gamePieceTracker = new LimeLightGamePieceTracker("limelight-tracker",calibration);
         }
         gyro = new NavXGyro(SPI.Port.kMXP);
 
