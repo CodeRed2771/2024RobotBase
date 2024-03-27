@@ -386,6 +386,7 @@ public class CrescendoBot extends DefaultRobot {
     // }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
+      launcher.aim(LauncherPresets.PICKUP);
       launcher.load(.45);
     }
     else if (gp.getDPadUp()){

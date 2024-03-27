@@ -28,8 +28,9 @@ import com.revrobotics.SparkPIDController;
 public class RollerLauncherCompetition extends RollerLauncher {
 
     public enum LauncherPresets {
-        OFF(0,45,0),
-        AMP(1350, 102,-0.85), // max back
+        OFF(0,30,0),
+        AMP(750, 95,0), // max back
+        PICKUP(0, 40, 0),
         SAFE_ZONE(3400, 25,0),
         SUBWOOFER(2600, 46,0), //was 2900
         CLIMB(0, 80,0),
@@ -95,7 +96,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimBias = calibration.getOrDefault("aim bias", aimBias);
 
         aimMotor = new CANSparkMax(wiring.get("aim"), MotorType.kBrushless);
-    
+        aimMotor.setSmartCurrentLimit(10);
         aimAbsoluteEncoder = new DutyCycleEncoder(wiring.get("aim encoder"));
         aimEncoder =  aimMotor.getEncoder();
 
