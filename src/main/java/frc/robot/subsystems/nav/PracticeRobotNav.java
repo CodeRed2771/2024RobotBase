@@ -176,17 +176,17 @@ public class PracticeRobotNav extends NavSubsystem {
     public void computeNoteNudge() {
         if(limelight_tracker_present && gamePieceTracker.isTracking()) {
             double limit = 0.25;
-            double kp = limit/5.0; // limit divided by angle which max power is applied
+            double kp = limit/10.0; // limit divided by angle which max power is applied
     
             yawNoteNudge = kp*(0- gamePieceTracker.getBearingToTargetDegrees());
             yawNoteNudge = Math.min(yawNoteNudge,limit);
             yawNoteNudge = Math.max(yawNoteNudge,-limit);
-            yawNoteNudge = -yawNoteNudge;
+            // yawNoteNudge = -yawNoteNudge;
         } else {
             yawNoteNudge = 0.0;
         }
     }
-
+    
     public double yawRotationNudge() {
         return yawRotationNudge;
     }

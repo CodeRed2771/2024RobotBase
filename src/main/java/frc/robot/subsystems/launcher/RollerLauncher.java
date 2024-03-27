@@ -5,6 +5,7 @@
 package frc.robot.subsystems.launcher;
 
 import java.util.Map;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -17,6 +18,7 @@ import frc.robot.libs.BlinkinLED.LEDColors;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 /**
  * Add your docs When load is command - run loader motor until note is in loader position stop on sensor tells us we
@@ -83,6 +85,9 @@ public class RollerLauncher extends LauncherSubsystem {
         upperShooterMotor.setInverted(upperDirection < 0);
         lowerDirection = calibration.getOrDefault("lower launcher direction", -1.0);
         lowerShooterMotor.setInverted(lowerDirection < 0);
+
+        upperShooterMotor.setIdleMode(IdleMode.kCoast);
+        lowerShooterMotor.setIdleMode(IdleMode.kCoast);
 
         upperPIDCtrl = upperShooterMotor.getPIDController();
         lowerPIDCtrl = lowerShooterMotor.getPIDController();

@@ -99,6 +99,8 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimAbsoluteEncoder = new DutyCycleEncoder(wiring.get("aim encoder"));
         aimEncoder =  aimMotor.getEncoder();
 
+        aimMotor.setSmartCurrentLimit(10);
+
         aimPIDController = aimMotor.getPIDController();
 
         aim_kP = .1/5 ; 
