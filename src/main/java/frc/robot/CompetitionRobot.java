@@ -61,15 +61,15 @@ public class CompetitionRobot extends CrescendoBot {
     calibration.put("wheel base",23.5);
 
     /* Only adjust scale calibration after verifying the wheel alignment is good and accurate */
-    double drive_actual = 1.0;
-    double drive_estimated = 1.0;
+    double drive_actual = 123.5;
+    double drive_estimated = 138.0;
     double wheel_avg_error = (drive_actual - drive_estimated)/drive_actual; // Actual travel / Reported travel
     double drive_fwd_bias = 0.0; // Pull to right / distance travelled
     double drive_strafe_bias = 0.0; // pull to front / distance strafed
-    calibration.put("FL wheel scale error", (1 - wheel_avg_error/2) * (1 + drive_fwd_bias) * (1 - drive_strafe_bias) );
-    calibration.put("BR wheel scale error", (1 - wheel_avg_error/2) * (1 - drive_fwd_bias) * (1 + drive_strafe_bias) );
-    calibration.put("BL wheel scale error", (1 - wheel_avg_error/2) * (1 + drive_fwd_bias) * (1 + drive_strafe_bias) );
-    calibration.put("FR wheel scale error", (1 - wheel_avg_error/2) * (1 - drive_fwd_bias) * (1 - drive_strafe_bias) );
+    calibration.put("FL wheel scale error", (1 + wheel_avg_error) * (1 + drive_fwd_bias) * (1 - drive_strafe_bias) );
+    calibration.put("BR wheel scale error", (1 + wheel_avg_error) * (1 - drive_fwd_bias) * (1 + drive_strafe_bias) );
+    calibration.put("BL wheel scale error", (1 + wheel_avg_error) * (1 + drive_fwd_bias) * (1 + drive_strafe_bias) );
+    calibration.put("FR wheel scale error", (1 + wheel_avg_error) * (1 - drive_fwd_bias) * (1 - drive_strafe_bias) );
 
     // Launcher
     calibration.put("upper launcher direction", 1.0);
