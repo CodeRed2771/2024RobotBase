@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -163,6 +164,8 @@ public class CrescendoBot extends DefaultRobot {
     climber.reset(); // added 3/12/24 - not tested yet
     launcher.reset();
 
+    climb_time = 0.0;
+
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
 
@@ -187,6 +190,7 @@ public class CrescendoBot extends DefaultRobot {
     runClimber(gamepad2);
   }
 
+  private double climb_time = 0;
     protected void runClimber(Gamepad gp) {
       double speed = MathUtil.applyDeadband(gp.getLeftY(), 0.05);
       // climber.lift(speed, true);
@@ -196,6 +200,7 @@ public class CrescendoBot extends DefaultRobot {
       } else {
         
         if(Math.abs(speed) > 0.1) {
+          climb_time += getPeriod();
           launcher.aim(LauncherPresets.CLIMB);
         }
         climber.lift(speed, false);
@@ -368,18 +373,31 @@ public class CrescendoBot extends DefaultRobot {
   private double speed = LauncherPresets.AMP.getSpeed();
   private double aim =  LauncherPresets.AMP.getAngle();
   private double bias = LauncherPresets.AMP.getBias();
+  private double last_slow_time = 0.0;
 
   public void runLauncher(Gamepad gp) {
+
+    if(nav.getVelInRobot().getNorm() < 48.0)
+      last_slow_time =  Timer.getFPGATimestamp();
+
+    if(false && (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle()) )
+      launcher.aim(LauncherPresets.OFF.getAngle());
+
     if (gp.getXButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.SAFE_ZONE);
     } else if(gp.getAButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.SUBWOOFER);
     } else if(gp.getBButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(aim);
       launcher.prime(speed,bias);
     } else if(gp.getYButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.OFF);
     } 
+
     // else if(bAutoAimEnabled){
     //   launcher.aim(autoAimAngle);
     //   launcher.prime(autoAimPower);
