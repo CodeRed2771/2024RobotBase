@@ -160,6 +160,13 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_backRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)));
   }
 
+  public void driveHoldWheels(){
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.0, m_frontLeft.getRotation()));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.0, m_frontRight.getRotation()));
+    m_backLeft.setDesiredState(new SwerveModuleState(0.0, m_backLeft.getRotation()));
+    m_backRight.setDesiredState(new SwerveModuleState(0.0, m_backRight.getRotation()));
+  }
+
   public void driveFixedRotatePosition(double degrees){
     double distance = (degrees/180.0 * Math.PI) * wheel_position_offset_radius;
 
