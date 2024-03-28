@@ -91,7 +91,7 @@ public class RollerLauncherCompetition extends RollerLauncher {
     }
 
     private double rawRollerRotationsToAngle(double raw_rotation){
-        return 360.0 * (ABS_FULL_FORWARD - raw_rotation);
+        return 360.0 * (ABS_FULL_FORWARD - raw_rotation) - aimBias;
     }
 
     public RollerLauncherCompetition(Map<String,Integer> wiring, Map<String,Double> calibration) {
