@@ -333,18 +333,20 @@ public class CrescendoBot extends DefaultRobot {
       setHeadingHoldAngle(getAngle());
     }
 
-    if(gp.getAButton()) {
+    /*
+    if(false && gp.getAButton()) {
       bAutoAimEnabled = true;
-      // autoEstimateAim();
+      autoEstimateAim();
     } else {
       bAutoAimEnabled = false;
     }
 
-    if(gp.getYButton()) {
+    if(false && gp.getYButton()) {
       noteNudge = true;
     } else {
       noteNudge = false;
     }
+  */
   }
 
   private void autoEstimateAim(){
@@ -397,11 +399,10 @@ public class CrescendoBot extends DefaultRobot {
       last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.OFF);
     } 
-
-    // else if(bAutoAimEnabled){
-    //   launcher.aim(autoAimAngle);
-    //   launcher.prime(autoAimPower);
-    // }
+    else if(bAutoAimEnabled){
+      launcher.aim(autoAimAngle);
+      launcher.prime(autoAimPower);
+    }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
       launcher.aim(LauncherPresets.PICKUP);
