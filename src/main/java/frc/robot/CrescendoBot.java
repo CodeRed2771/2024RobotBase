@@ -224,6 +224,17 @@ public class CrescendoBot extends DefaultRobot {
     double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
+    if(gp.getStartButtonPressed())
+    {
+      nav.zeroYaw();
+      setHeadingHoldAngle(getAngle());
+    }
+
+    if(gp.getXButton())
+    {
+      rotate += MathUtil.clamp(getAngle()/120,-0.5,0.5);
+    }
+
     if(bAutoAimEnabled) {
       rotate+=nav.yawRotationNudge();
     } else if(noteNudge) {
@@ -262,6 +273,11 @@ public class CrescendoBot extends DefaultRobot {
   public void disabledPeriodic(){
     super.disabledPeriodic();
       handleTuneParams();
+
+    if(gamepad1.getStartButtonPressed())
+    {
+      nav.zeroYaw();
+    }
   }
 
   protected void setHeadingHoldAngle(double angle){
@@ -335,12 +351,6 @@ public class CrescendoBot extends DefaultRobot {
       rotateSpeedGain = 1.0;
     }
 
-    if(gp.getXButton())
-    {
-      nav.zeroYaw();
-      setHeadingHoldAngle(getAngle());
-    }
-
     /*
     if(false && gp.getAButton()) {
       bAutoAimEnabled = true;
@@ -377,7 +387,10 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void driveSpeedControl(Translation2d driveCmd, double rotate) {
     driveCmd = driveCmd.times(driveSpeedGain);
-    drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
+    if((driveCmd.getNorm()+Math.abs(rotate)) < 0.05)
+      drive.driveHoldWheels();
+    else
+      drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = LauncherPresets.AMP.getSpeed();

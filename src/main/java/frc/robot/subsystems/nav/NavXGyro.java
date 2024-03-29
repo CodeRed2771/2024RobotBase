@@ -75,6 +75,9 @@ public class NavXGyro {
     public double yaw() {
         return mGyro.getYaw();
     }
+    public double yaw_rate(){
+        return mGyro.getRate();
+    }
     /***
      * 
      * @param desiredPosition - desired 0 to 360 position

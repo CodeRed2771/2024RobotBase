@@ -84,7 +84,6 @@ public class PracticeRobotNav extends NavSubsystem {
 
     @Override
     public void reset(Pose2d init_pose) {
-        gyro.reset();
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
         distance_travelled = 0;
 
@@ -102,6 +101,9 @@ public class PracticeRobotNav extends NavSubsystem {
     @Override
     public double getAngle() {
         return gyro.getAngle();
+    }
+    public double getAngleRate(){
+        return gyro.yaw_rate();
     }
 
     @Override
