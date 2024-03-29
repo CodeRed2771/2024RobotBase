@@ -27,8 +27,6 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   // +Y = out right side of robot
   private double wheel_base = 24.0;  // Wheel base measured.
   private double wheel_position_offset_radius;
-
-  private final double turn_angle_degree_offset = 160/160;
   // Max Angle rate in Rad = (Max linear speed / Circumference (2PI *R)) for rotations * 2PI (for Radians)
   // Max Angle Rate = Max speed / radius
   private double kMaxAngleRate;
@@ -170,7 +168,7 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
   }
 
   public void driveFixedRotatePosition(double degrees){
-    double distance = (degrees/180.0 * Math.PI) * wheel_position_offset_radius * turn_angle_degree_offset;
+    double distance = (degrees/180.0 * Math.PI) * wheel_position_offset_radius;
 
     m_frontLeft.commandSwervePositionOffset(new SwerveModulePosition(distance, Rotation2d.fromDegrees(-45.0)));
     m_frontRight.commandSwervePositionOffset(new SwerveModulePosition(-distance, Rotation2d.fromDegrees(45.0)));
