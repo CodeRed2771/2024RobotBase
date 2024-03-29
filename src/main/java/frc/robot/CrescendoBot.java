@@ -232,7 +232,7 @@ public class CrescendoBot extends DefaultRobot {
 
     if(gp.getXButton())
     {
-      rotate += MathUtil.clamp(-getAngle()/45,-0.5,0.5);
+      rotate += MathUtil.clamp(-getAngle()/60,-0.5,0.5);
     }
 
     if(bAutoAimEnabled) {
@@ -274,7 +274,7 @@ public class CrescendoBot extends DefaultRobot {
     super.disabledPeriodic();
       handleTuneParams();
 
-    if(gamepad1.getXButton())
+    if(gamepad1.getStartButtonPressed())
     {
       nav.zeroYaw();
     }
