@@ -63,7 +63,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
             case 4:
               myRobot.launcher.aim(LauncherPresets.OFF);
               myRobot.launcher.stop();
-              setTimerAndAdvanceStep(7000); // wait till end of auto so we don't get in the way
+              setTimerAndAdvanceStep(3000); // wait till end of auto so we don't get in the way
               break;
             case 5:
               // if (DriverStation.getMatchTime() <= 4) // make sure we get going within 4 seconds left
