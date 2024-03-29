@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
@@ -40,6 +42,9 @@ public class PracticeRobotNav extends NavSubsystem {
 
     private double max_camera_speed = 50.0;
     private BlinkinLED nav_led;
+    private double distance_travelled = 0;
+    private double last_wheel_pos = 0;
+    private boolean camera_valid = false;
 
     private boolean bUseCamera = true;
     public boolean isCameraEnabed() { return bUseCamera; }
@@ -58,9 +63,9 @@ public class PracticeRobotNav extends NavSubsystem {
             enableCamera();
         }
 
-        limelight_tracker_present = calibration.getOrDefault("limelight_tracker present",0.0)>0.5;
+        limelight_tracker_present = calibration.getOrDefault("limelight-tracker present",0.0)>0.5;
         if(limelight_tracker_present){
-            gamePieceTracker = new LimeLightGamePieceTracker("limelight_tracker",calibration);
+            gamePieceTracker = new LimeLightGamePieceTracker("limelight-tracker",calibration);
         }
         gyro = new NavXGyro(SPI.Port.kMXP);
 
@@ -81,6 +86,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public void reset(Pose2d init_pose) {
         gyro.reset();
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
+        distance_travelled = 0;
 
         if(limelight_present){
             Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
@@ -101,6 +107,10 @@ public class PracticeRobotNav extends NavSubsystem {
     @Override
     public Pose2d getPoseInField() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public Translation2d getVelInRobot(){
+        return gyro.getVelocity3d().toTranslation2d();
     }
 
     private void updateTestPoint(String prefix, Pose2d pose) {
@@ -125,15 +135,6 @@ public class PracticeRobotNav extends NavSubsystem {
         computeNoteNudge();
     }
 
-    @Override
-    protected void doArm(){
-        nav_led.blink(1.0);
-    }
-    @Override
-    protected void doDisarm(){
-        nav_led.blink(0.5);
-    }
-
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
         SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
@@ -143,23 +144,38 @@ public class PracticeRobotNav extends NavSubsystem {
         if(limelight_present)
             SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
 
-        if(!limelight.isTracking()) nav_led.set(LEDColors.GREEN);
+        if(camera_valid ) nav_led.set(LEDColors.GREEN);
         else if(isNavValid()) nav_led.set(LEDColors.BLUE);
         else nav_led.set(LEDColors.YELLOW);
     }
 
     public void updateRobotPosition() {
 
-        poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry());
+        SwerveModulePosition[] odom = driveTrain.getOdomotry();
+        Pose3d camera_pose =  limelight.getEstimatedPosition();
+        double cam_error;
+        
+        distance_travelled += Math.abs(last_wheel_pos - odom[1].distanceMeters); // it really is inches
+        last_wheel_pos = odom[1].distanceMeters;
+        
+        poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), odom);
 
         if(limelight_present && bUseCamera && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
+            camera_pose =  limelight.getEstimatedPosition();
+            cam_error = camera_pose.toPose2d().minus(poseEstimator.getEstimatedPosition()).getTranslation().getNorm();
+
+            if(cam_error <= 12.0) distance_travelled = 0.0;
+            camera_valid = cam_error <= 24.0 && limelight.isValid();
+
             limelight.checkUpdatePoseEstimator(poseEstimator);
         }
+
+        if(camera_valid && distance_travelled < 5.0*12.0) camera_valid = false;
     }
 
     public void computeYawNudge(Target target) {
         Pose2d curPos = getPoseInFieldInches();
-        if(isNavValid() && curPos.getTranslation().getNorm() <= 500.0 ){
+        if(isNavValid() && curPos.getTranslation().getX() <= 300.0 ){
             Transform2d currentTarget = getTargetOffset(target);
             updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
             double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
@@ -174,15 +190,17 @@ public class PracticeRobotNav extends NavSubsystem {
         }
     }
     public void computeNoteNudge() {
+        gamePieceTracker.update();
         if(limelight_tracker_present && gamePieceTracker.isTracking()) {
-            double limit = 0.25;
-            double kp = limit/5.0; // limit divided by angle which max power is applied
-    
+            double limit = 0.35;
+            double kp = limit/45.0; // limit divided by angle which max power is applied
+            nav_led.blink(0.5);
             yawNoteNudge = kp*(0- gamePieceTracker.getBearingToTargetDegrees());
             yawNoteNudge = Math.min(yawNoteNudge,limit);
             yawNoteNudge = Math.max(yawNoteNudge,-limit);
-            yawNoteNudge = -yawNoteNudge;
+            yawNoteNudge = yawNoteNudge;
         } else {
+            nav_led.blink(1.0);
             yawNoteNudge = 0.0;
         }
     }
@@ -196,7 +214,8 @@ public class PracticeRobotNav extends NavSubsystem {
     };
     
     public boolean isNavValid() {
-        return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation());
+        return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation()) && 
+               (distance_travelled <= 20.0 * 12.0);
     }
 
     public Pose3d getTargetPoseField(Target target){

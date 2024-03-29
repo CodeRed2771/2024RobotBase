@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -163,6 +164,9 @@ public class CrescendoBot extends DefaultRobot {
     climber.reset(); // added 3/12/24 - not tested yet
     launcher.reset();
 
+    climb_time = 0.0;
+    climbing = false;
+
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
 
@@ -187,16 +191,25 @@ public class CrescendoBot extends DefaultRobot {
     runClimber(gamepad2);
   }
 
+  private boolean climbing = false;
+  private double climb_time = 0;
+  private double kP_climb = 1.0;
     protected void runClimber(Gamepad gp) {
-      double speed = MathUtil.applyDeadband(gp.getLeftY(), 0.05);
+      double speed = kP_climb * MathUtil.applyDeadband(gp.getLeftY(), 0.05);
       // climber.lift(speed, true);
       if(gp.getRightBumper()) {
+        climbing = true;
         climber.lift(speed, true);
         climber.reset();
       } else {
         
-        if(speed > 0.1) {
-          launcher.aim(LauncherPresets.CLIMB);
+        if(Math.abs(speed) > 0.1) {
+          climbing = true;
+          climb_time += getPeriod();
+        }
+        else 
+        {
+          climbing = false;
         }
         climber.lift(speed, false);
       }
@@ -328,18 +341,20 @@ public class CrescendoBot extends DefaultRobot {
       setHeadingHoldAngle(getAngle());
     }
 
-    if(gp.getAButton()) {
+    /*
+    if(false && gp.getAButton()) {
       bAutoAimEnabled = true;
-      // autoEstimateAim();
+      autoEstimateAim();
     } else {
       bAutoAimEnabled = false;
     }
 
-    if(gp.getYButton()) {
+    if(false && gp.getYButton()) {
       noteNudge = true;
     } else {
       noteNudge = false;
     }
+  */
   }
 
   private void autoEstimateAim(){
@@ -368,30 +383,47 @@ public class CrescendoBot extends DefaultRobot {
   private double speed = LauncherPresets.AMP.getSpeed();
   private double aim =  LauncherPresets.AMP.getAngle();
   private double bias = LauncherPresets.AMP.getBias();
+  private double last_slow_time = 0.0;
 
   public void runLauncher(Gamepad gp) {
+
+    if(nav.getVelInRobot().getNorm() < 48.0)
+      last_slow_time =  Timer.getFPGATimestamp();
+
+    if(false && (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle()) )
+      launcher.aim(LauncherPresets.OFF.getAngle());
+
+    if( climbing ){
+      launcher.aim(LauncherPresets.CLIMB);
+    } else 
     if (gp.getXButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.SAFE_ZONE);
     } else if(gp.getAButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.SUBWOOFER);
     } else if(gp.getBButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(aim);
       launcher.prime(speed,bias);
     } else if(gp.getYButton()) {
+      last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.OFF);
     } 
-    // else if(bAutoAimEnabled){
-    //   launcher.aim(autoAimAngle);
-    //   launcher.prime(autoAimPower);
-    // }
+    else if(bAutoAimEnabled){
+      launcher.aim(autoAimAngle);
+      launcher.prime(autoAimPower);
+    }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
+      launcher.aim(LauncherPresets.PICKUP);
       launcher.load(.45);
     }
     else if (gp.getDPadUp()){
       launcher.load(.25);
     }
     else if (gp.getDPadLeft()) {
+      launcher.aim(LauncherPresets.PICKUP);
       launcher.unload();
     } else if(gp.getDPadDown()) {
       launcher.stopLoader();

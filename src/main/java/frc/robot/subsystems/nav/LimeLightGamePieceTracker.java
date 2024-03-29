@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.LimelightHelpers;
 
 public class LimeLightGamePieceTracker extends Limelight {
@@ -25,12 +26,15 @@ public class LimeLightGamePieceTracker extends Limelight {
 
     public void update() {
         if( isNetTableValid() ) {
+            SmartDashboard.putBoolean("note tracking", true);
             last_tx = LimelightHelpers.getTX(net_table_name);
             last_ty = LimelightHelpers.getTY(net_table_name);
             last_note_estimate = estimateNotePosition(last_tx, last_ty);
             updateTimestamp((LimelightHelpers.getLatency_Capture(net_table_name) + 
                             LimelightHelpers.getLatency_Pipeline(net_table_name))/1000.0);
         }
+        else
+            SmartDashboard.putBoolean("note tracking", false);
     }
     
     public boolean isNetTableValid() {
