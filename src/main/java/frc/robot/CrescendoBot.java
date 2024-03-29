@@ -243,7 +243,7 @@ public class CrescendoBot extends DefaultRobot {
 
     if(! MathUtil.isNear(0.0,Math.abs(rotate),0.01))
     {
-      setHeadingHoldAngle(getAngle()+15.0*rotate);
+      setHeadingHoldAngle(getAngle());
     }
 
     if(bHeadingHold){
