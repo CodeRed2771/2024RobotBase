@@ -232,7 +232,7 @@ public class CrescendoBot extends DefaultRobot {
 
     if(gp.getXButton())
     {
-      rotate += MathUtil.clamp(-getAngle()/60,-0.5,0.5);
+      rotate += MathUtil.clamp(getAngle()/120,-0.5,0.5);
     }
 
     if(bAutoAimEnabled) {
@@ -387,7 +387,10 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void driveSpeedControl(Translation2d driveCmd, double rotate) {
     driveCmd = driveCmd.times(driveSpeedGain);
-    drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
+    if((driveCmd.getNorm()+Math.abs(rotate)) < 0.05)
+      drive.driveHoldWheels();
+    else
+      drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
   }
 
   private double speed = LauncherPresets.AMP.getSpeed();
