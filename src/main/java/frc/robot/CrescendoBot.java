@@ -224,6 +224,13 @@ public class CrescendoBot extends DefaultRobot {
     double rotate = calculatedProfileYawCmd(-gp.getRightX());
     driveCmd = calculateProfiledDriveCommand(driveCmd);
 
+    if(gp.getStartButtonPressed())
+    {
+      nav.zeroYaw();
+      setHeadingHoldAngle(getAngle());
+    }
+
+
     if(bAutoAimEnabled) {
       rotate+=nav.yawRotationNudge();
     } else if(noteNudge) {
@@ -262,6 +269,11 @@ public class CrescendoBot extends DefaultRobot {
   public void disabledPeriodic(){
     super.disabledPeriodic();
       handleTuneParams();
+
+    if(gamepad1.getXButton())
+    {
+      nav.zeroYaw();
+    }
   }
 
   protected void setHeadingHoldAngle(double angle){
@@ -333,12 +345,6 @@ public class CrescendoBot extends DefaultRobot {
     } else {
       driveSpeedGain = 1.0;
       rotateSpeedGain = 1.0;
-    }
-
-    if(gp.getXButton())
-    {
-      nav.zeroYaw();
-      setHeadingHoldAngle(getAngle());
     }
 
     /*
