@@ -5,6 +5,9 @@
 package frc.robot.subsystems.auto;
 
 import java.util.Optional;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +28,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
   private char position = 'C';
   private Optional<Alliance> alliance;
   final double DRIVE_TOLERANCE = 0.75;
+  Translation2d noteDrive;
 
   public AutoSpeaker2(CrescendoBot robot, char position) {
     super();
@@ -58,7 +62,9 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 4:
               myRobot.launcher.stopFireDelay();
               myRobot.launcher.aim(LauncherPresets.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(60,0);
+              noteDrive = new Translation2d(60,0);
+              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(0*MathUtil.clamp(myRobot.nav.getNoteAngle(),-15,15)));
+              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;
@@ -71,7 +77,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-60,0);
+              myRobot.drive.driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -142,7 +148,9 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 8:
               myRobot.launcher.load(0.45);
-              myRobot.drive.driveFixedPositionOffsetInches(65,0);
+              noteDrive = new Translation2d(65,0);
+              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(0*MathUtil.clamp(myRobot.nav.getNoteAngle(),-15,15)));
+              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 9:
@@ -153,7 +161,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 10:
-              myRobot.drive.driveFixedPositionOffsetInches(-67,0);
+              myRobot.drive.driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 11:
@@ -194,7 +202,12 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 17:
               break;
             case 18:
-              myRobot.drive.driveFixedPositionOffsetInches(30, 80);
+
+              if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue))
+                myRobot.drive.driveFixedPositionOffsetInches(30, -100);
+              else
+                myRobot.drive.driveFixedPositionOffsetInches(30, 100);
+
               setTimerAndAdvanceStep(5000);
               break;
             case 19:

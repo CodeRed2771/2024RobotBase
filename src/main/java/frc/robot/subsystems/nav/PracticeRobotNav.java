@@ -207,6 +207,15 @@ public class PracticeRobotNav extends NavSubsystem {
         }
     }
 
+    public double getNoteAngle(){
+        double ang = 0;
+        if(limelight_tracker_present && gamePieceTracker.isTracking()) {
+            ang = gamePieceTracker.getBearingToTargetDegrees();
+        }
+
+        return ang;
+    }
+
     public double yawRotationNudge() {
         return yawRotationNudge;
     }

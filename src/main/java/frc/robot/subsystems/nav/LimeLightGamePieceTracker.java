@@ -21,12 +21,12 @@ public class LimeLightGamePieceTracker extends Limelight {
         LimelightHelpers.setLEDMode_ForceOff(network_table_key);
         LimelightHelpers.setPipelineIndex(network_table_key,LimelightPipeline.NoteTracker.toInt());
 
-        area_threshold = calibration.getOrDefault("area threshold", 0.5);
+        area_threshold = calibration.getOrDefault("area threshold", 0.0);
     } 
 
     public void update() {
         if( isNetTableValid() ) {
-            SmartDashboard.putBoolean("note tracking", true);
+            SmartDashboard.putBoolean("note tracking", isTracking());
             last_tx = LimelightHelpers.getTX(net_table_name);
             last_ty = LimelightHelpers.getTY(net_table_name);
             last_note_estimate = estimateNotePosition(last_tx, last_ty);
@@ -35,6 +35,8 @@ public class LimeLightGamePieceTracker extends Limelight {
         }
         else
             SmartDashboard.putBoolean("note tracking", false);
+
+            SmartDashboard.putNumber("note angle", last_tx);
     }
     
     public boolean isNetTableValid() {
