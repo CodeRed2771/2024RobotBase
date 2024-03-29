@@ -165,6 +165,7 @@ public class CrescendoBot extends DefaultRobot {
     launcher.reset();
 
     climb_time = 0.0;
+    climbing = false;
 
     restoreRobotToDefaultState();
     fieldCentricDriveMode(true);
@@ -190,18 +191,25 @@ public class CrescendoBot extends DefaultRobot {
     runClimber(gamepad2);
   }
 
+  private boolean climbing = false;
   private double climb_time = 0;
+  private double kP_climb = 1.0;
     protected void runClimber(Gamepad gp) {
-      double speed = MathUtil.applyDeadband(gp.getLeftY(), 0.05);
+      double speed = kP_climb * MathUtil.applyDeadband(gp.getLeftY(), 0.05);
       // climber.lift(speed, true);
       if(gp.getRightBumper()) {
+        climbing = true;
         climber.lift(speed, true);
         climber.reset();
       } else {
         
         if(Math.abs(speed) > 0.1) {
+          climbing = true;
           climb_time += getPeriod();
-          launcher.aim(LauncherPresets.CLIMB);
+        }
+        else 
+        {
+          climbing = false;
         }
         climber.lift(speed, false);
       }
@@ -385,6 +393,9 @@ public class CrescendoBot extends DefaultRobot {
     if(false && (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle()) )
       launcher.aim(LauncherPresets.OFF.getAngle());
 
+    if( climbing ){
+      launcher.aim(LauncherPresets.CLIMB);
+    } else 
     if (gp.getXButton()) {
       last_slow_time =  Timer.getFPGATimestamp();
       launcher.aim(LauncherPresets.SAFE_ZONE);
