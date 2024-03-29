@@ -102,6 +102,9 @@ public class PracticeRobotNav extends NavSubsystem {
     public double getAngle() {
         return gyro.getAngle();
     }
+    public double getAngleRate(){
+        return gyro.yaw_rate();
+    }
 
     @Override
     public Pose2d getPoseInField() {
