@@ -28,7 +28,7 @@ import com.revrobotics.SparkPIDController;
 public class RollerLauncherCompetition extends RollerLauncher {
 
     public enum LauncherPresets {
-        OFF(0,30,0),
+        OFF(0,25,0),
         AMP(750, 95,0), // max back
         PICKUP(0, 38, 0),
         SAFE_ZONE(3100, 33,0),
