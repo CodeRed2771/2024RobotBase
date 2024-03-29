@@ -230,6 +230,10 @@ public class CrescendoBot extends DefaultRobot {
       setHeadingHoldAngle(getAngle());
     }
 
+    if(gp.getXButton())
+    {
+      rotate += MathUtil.clamp(-getAngle()/45,-0.5,0.5);
+    }
 
     if(bAutoAimEnabled) {
       rotate+=nav.yawRotationNudge();
