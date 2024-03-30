@@ -144,6 +144,8 @@ public class PracticeRobotNav extends NavSubsystem {
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
         updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
 
+        SmartDashboard.putNumber("travel", distance_travelled);
+
         if(limelight_present)
             SmartDashboard.putBoolean("Sees April Tag", limelight.isTracking());
 
@@ -246,7 +248,7 @@ public class PracticeRobotNav extends NavSubsystem {
         return targetPose;
     }
     public Transform2d getTargetOffset(Target target) {
-        return new Transform2d(getPoseInFieldInches(), getTargetPoseField(target).toPose2d());
+        return new Transform2d(getPoseInField(), getTargetPoseField(target).toPose2d());
     }
 
 }

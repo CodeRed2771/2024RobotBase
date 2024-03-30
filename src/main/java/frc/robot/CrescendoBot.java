@@ -182,7 +182,7 @@ public class CrescendoBot extends DefaultRobot {
     intake.arm();
     launcher.arm();
     drive.arm();
-    nav.reset();
+    // nav.reset();
     climber.reset(); // added 3/12/24 - not tested yet
     launcher.reset();
 
@@ -350,7 +350,7 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void restoreRobotToDefaultState() {
     drive.reset(); // sets encoders based on absolute encoder positions
-    nav.reset();
+    // nav.reset();
 
     setHeadingHoldAngle(getAngle());
 
@@ -376,7 +376,6 @@ public class CrescendoBot extends DefaultRobot {
     
     // if(gp.getAButton()) {
     //   bAutoAimEnabled = true;
-    //   autoEstimateAim();
     // } else {
     //   bAutoAimEnabled = false;
     // }
@@ -392,14 +391,22 @@ public class CrescendoBot extends DefaultRobot {
   private void autoEstimateAim(){
     Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
 
-    double range = target.toTranslation2d().minus(nav.getPosition()).getNorm();
+    double range = target.toTranslation2d().minus(nav.getPoseInField().getTranslation()).getNorm();
     double height = target.getZ() - 6.0; // offset for pivot point of launcher
 
     double angle = Math.toDegrees(Math.atan2(height,range));
   
-    autoAimAngle = angle + 0.2 * range;
+    autoAimAngle = angle + 0.02 * range;
 
     autoAimPower = 2450 + 5 * range;
+
+    SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
+    SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
+    SmartDashboard.putNumber("Auto Range", range);
+    SmartDashboard.putNumber("Auto Angle", angle);
+    SmartDashboard.putNumber("Auto Target X", target.getX());
+    SmartDashboard.putNumber("Auto Target Y", target.getY());
+    SmartDashboard.putNumber("Auto Target Z", target.getZ());
   }
 
   @Override
@@ -450,13 +457,20 @@ public class CrescendoBot extends DefaultRobot {
       last_LauncherCommand = LauncherPresets.OFF;
       launcher.aim(LauncherPresets.OFF);
     } 
-    else if(bAutoAimEnabled && nav.isNavValid()&&!(last_LauncherCommand == LauncherPresets.OFF && last_LauncherCommand == LauncherPresets.AMP)){
-      autoEstimateAim();
-      launcher.aim(autoAimAngle);
-      launcher.prime(autoAimPower);
+    else if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
+      if(nav.isNavValid()){
+        autoEstimateAim();
+        launcher.aim(autoAimAngle);
+        launcher.prime(autoAimPower);
+      }
+      else {
+        launcher.aim(last_LauncherCommand);
+      }
+
     }
 
     if (gp.getDPadRight() && !launcher.isLoaded()){
+      last_LauncherCommand = LauncherPresets.PICKUP;
       launcher.aim(LauncherPresets.PICKUP);
       launcher.load(.45);
     }
@@ -464,6 +478,7 @@ public class CrescendoBot extends DefaultRobot {
       launcher.load(.25);
     }
     else if (gp.getDPadLeft()) {
+      last_LauncherCommand = LauncherPresets.PICKUP;
       launcher.aim(LauncherPresets.PICKUP);
       launcher.unload();
     } else if(gp.getDPadDown()) {
