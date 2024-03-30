@@ -80,6 +80,7 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public void zeroYaw(){
         gyro.zeroYaw();
+        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), poseEstimator.getEstimatedPosition());
     }
 
     @Override
