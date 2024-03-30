@@ -15,7 +15,7 @@ public class Limelight {
     private double lastUpdate_timestamp = 0;
     private double latency_cal = 0.0;
     private double total_latency;
-    private double holdover_time;
+    protected double holdover_time;
 
     public enum LimelightPipeline {
         Unknown(-1),
@@ -58,7 +58,7 @@ public class Limelight {
         net_table_name = network_table_key;
         net_table = NetworkTableInstance.getDefault().getTable(network_table_key);
 
-        holdover_time = calibration.getOrDefault("note holdover", 0.25);
+        holdover_time = calibration.getOrDefault(network_table_key + " holdover", 0.25);
 
        this.cameraInstallationToRobotPose = new Transform3d(new Translation3d(calibration.getOrDefault(network_table_key + " X",0.0),
                                                                        calibration.getOrDefault(network_table_key + " Y",0.0),

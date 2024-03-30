@@ -18,6 +18,7 @@ public class LimeLightGamePieceTracker extends Limelight {
     public LimeLightGamePieceTracker(String network_table_key, Map<String,Double> calibration) {
         super(network_table_key,calibration);
 
+        holdover_time = 0.75;
         LimelightHelpers.setLEDMode_ForceOff(network_table_key);
         LimelightHelpers.setPipelineIndex(network_table_key,LimelightPipeline.NoteTracker.toInt());
 
@@ -26,7 +27,7 @@ public class LimeLightGamePieceTracker extends Limelight {
 
     public void update() {
         if( isNetTableValid() ) {
-            SmartDashboard.putBoolean("note tracking", isTracking());
+            SmartDashboard.putBoolean("note tracking", true);
             last_tx = LimelightHelpers.getTX(net_table_name);
             last_ty = LimelightHelpers.getTY(net_table_name);
             last_note_estimate = estimateNotePosition(last_tx, last_ty);
@@ -43,9 +44,9 @@ public class LimeLightGamePieceTracker extends Limelight {
         boolean valid = true;
         valid = valid && getPipeline() == LimelightPipeline.NoteTracker;
         valid = valid && LimelightHelpers.getTV(net_table_name); // valid targets seen
-        valid = valid && LimelightHelpers.getTA(net_table_name) > area_threshold; // Area of seen target
-        valid = valid && Math.abs(LimelightHelpers.getTX(net_table_name)) < 25.0; // Degrees off center
-        valid = valid && Math.abs(LimelightHelpers.getTY(net_table_name)) < 20.0; // Degrees off center
+        //valid = valid && LimelightHelpers.getTA(net_table_name) > area_threshold; // Area of seen target
+        valid = valid && Math.abs(LimelightHelpers.getTX(net_table_name)) < 27.0; // Degrees off center
+        valid = valid && Math.abs(LimelightHelpers.getTY(net_table_name)) < 25.0; // Degrees off center
         return valid;
     }
 

@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Calibration;
 
@@ -143,6 +144,14 @@ public class ExampleSwerveDriveTrain extends DriveSubsystem {
     m_frontRight.commandSwervePositionOffset(targetOffset);
     m_backLeft.commandSwervePositionOffset(targetOffset);
     m_backRight.commandSwervePositionOffset(targetOffset);
+  }
+
+  double settling_time=0;
+  public double timeAtFixedPosition(double allowedError){
+    if(!atFixedPosition(allowedError))
+      settling_time=Timer.getFPGATimestamp();
+    return Timer.getFPGATimestamp() - settling_time;
+
   }
 
   public boolean atFixedPosition(double allowedError){
