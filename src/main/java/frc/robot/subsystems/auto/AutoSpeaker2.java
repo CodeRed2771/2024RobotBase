@@ -117,7 +117,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 2:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(1000);
+              setTimerAndAdvanceStep(500);
               break;
             case 3:
               break;
@@ -143,7 +143,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               setTimerAndAdvanceStep(2000);
               break;
             case 7:
-              if(myRobot.drive.timeAtFixedPosition(DRIVE_TOLERANCE)>0.5)
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
                 advanceStep();
               break;
             case 8:
