@@ -63,7 +63,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               myRobot.launcher.stopFireDelay();
               myRobot.launcher.aim(LauncherPresets.OFF);
               noteDrive = new Translation2d(60,0);
-              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-MathUtil.clamp(myRobot.nav.getNoteAngle(),-30,30)));
+              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-1.5*MathUtil.clamp(myRobot.nav.getNoteAngle(),-30,30)));
               myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
@@ -149,7 +149,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 8:
               myRobot.launcher.load(0.45);
               noteDrive = new Translation2d(65,0);
-              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-MathUtil.clamp(myRobot.nav.getNoteAngle(),-25,25)));
+              noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-1.5*MathUtil.clamp(myRobot.nav.getNoteAngle(),-25,25)));
               myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;

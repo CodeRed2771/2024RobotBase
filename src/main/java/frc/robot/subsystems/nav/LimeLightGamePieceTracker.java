@@ -31,8 +31,7 @@ public class LimeLightGamePieceTracker extends Limelight {
             last_tx = LimelightHelpers.getTX(net_table_name);
             last_ty = LimelightHelpers.getTY(net_table_name);
             last_note_estimate = estimateNotePosition(last_tx, last_ty);
-            updateTimestamp((LimelightHelpers.getLatency_Capture(net_table_name) + 
-                            LimelightHelpers.getLatency_Pipeline(net_table_name))/1000.0);
+            updateTimestamp(0.0);
         }
         else
             SmartDashboard.putBoolean("note tracking", false);
