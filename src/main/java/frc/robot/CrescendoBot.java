@@ -5,7 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -105,6 +108,25 @@ public class CrescendoBot extends DefaultRobot {
     restoreRobotToDefaultState();
     autoSelected = m_chooser.getSelected();
     setHeadingHoldAngle(getAngle());
+
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+
+    if(alliance.get() == Alliance.Blue)
+      Crescendo.useBlueTargets();
+    else
+      Crescendo.useRedTargets();
+
+    switch(selectedPos){
+      case "L":
+        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_LEFT).toPose2d());
+        break;
+      case "R":
+        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_RIGHT).toPose2d());
+        break;
+      default:
+        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_CENTER).toPose2d());
+        break;
+    }
   
     SmartDashboard.putString("Auto Selected", autoSelected);
   
@@ -351,20 +373,20 @@ public class CrescendoBot extends DefaultRobot {
       rotateSpeedGain = 1.0;
     }
 
-    /*
-    if(false && gp.getAButton()) {
-      bAutoAimEnabled = true;
-      autoEstimateAim();
-    } else {
-      bAutoAimEnabled = false;
-    }
+    
+    // if(gp.getAButton()) {
+    //   bAutoAimEnabled = true;
+    //   autoEstimateAim();
+    // } else {
+    //   bAutoAimEnabled = false;
+    // }
 
-    if(false && gp.getYButton()) {
-      noteNudge = true;
-    } else {
-      noteNudge = false;
-    }
-  */
+    // if(false && gp.getYButton()) {
+    //   noteNudge = true;
+    // } else {
+    //   noteNudge = false;
+    // }
+  
   }
 
   private void autoEstimateAim(){
@@ -373,11 +395,11 @@ public class CrescendoBot extends DefaultRobot {
     double range = target.toTranslation2d().minus(nav.getPosition()).getNorm();
     double height = target.getZ() - 6.0; // offset for pivot point of launcher
 
-    double angle = Math.toDegrees(Math.atan(height/range));
+    double angle = Math.toDegrees(Math.atan2(height,range));
   
-    autoAimAngle = angle;
+    autoAimAngle = angle + 0.2 * range;
 
-    autoAimPower = 2412 + 7.8125 * range;
+    autoAimPower = 2450 + 5 * range;
   }
 
   @Override
@@ -397,9 +419,10 @@ public class CrescendoBot extends DefaultRobot {
   private double aim =  LauncherPresets.AMP.getAngle();
   private double bias = LauncherPresets.AMP.getBias();
   private double last_slow_time = 0.0;
+  private LauncherPresets last_LauncherCommand = LauncherPresets.OFF;
 
   public void runLauncher(Gamepad gp) {
-
+    
     if(nav.getVelInRobot().getNorm() < 48.0)
       last_slow_time =  Timer.getFPGATimestamp();
 
@@ -411,19 +434,24 @@ public class CrescendoBot extends DefaultRobot {
     } else 
     if (gp.getXButton()) {
       last_slow_time =  Timer.getFPGATimestamp();
+      last_LauncherCommand = LauncherPresets.SAFE_ZONE;
       launcher.aim(LauncherPresets.SAFE_ZONE);
     } else if(gp.getAButton()) {
       last_slow_time =  Timer.getFPGATimestamp();
+      last_LauncherCommand = LauncherPresets.SUBWOOFER;
       launcher.aim(LauncherPresets.SUBWOOFER);
     } else if(gp.getBButton()) {
       last_slow_time =  Timer.getFPGATimestamp();
+      last_LauncherCommand = LauncherPresets.AMP;
       launcher.aim(aim);
       launcher.prime(speed,bias);
     } else if(gp.getYButton()) {
       last_slow_time =  Timer.getFPGATimestamp();
+      last_LauncherCommand = LauncherPresets.OFF;
       launcher.aim(LauncherPresets.OFF);
     } 
-    else if(bAutoAimEnabled){
+    else if(bAutoAimEnabled && nav.isNavValid()&&!(last_LauncherCommand == LauncherPresets.OFF && last_LauncherCommand == LauncherPresets.AMP)){
+      autoEstimateAim();
       launcher.aim(autoAimAngle);
       launcher.prime(autoAimPower);
     }
@@ -446,6 +474,8 @@ public class CrescendoBot extends DefaultRobot {
 
     if (gp.getRightTriggerAxis() > .5) {
       launcher.fire();
+      bAutoAimEnabled = false;
+      last_LauncherCommand= LauncherPresets.OFF;
     }
   }
 
