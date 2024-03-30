@@ -122,7 +122,7 @@ public class NewSwerveModuleVortex extends SwerveModuleBase {
     driveGains.maxVel = 50.0;
     driveGains.maxAcc = 150.0;
 
-    drivePositionGains.kP = 0.0005;
+    drivePositionGains.kP = 0.0006;
     drivePositionGains.kI = 0.0000;
     drivePositionGains.kD = 0.00025;
     drivePositionGains.kIz = 3.0;

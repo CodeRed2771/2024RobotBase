@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -388,17 +389,18 @@ public class CrescendoBot extends DefaultRobot {
   
   }
 
-  private void autoEstimateAim(){
+  public void autoEstimateAim(){
     Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
-
-    double range = target.toTranslation2d().minus(nav.getPoseInField().getTranslation()).getNorm();
+    Translation2d aimer = new Translation2d(10,0);
+    Translation2d cur_pos = nav.getPoseInField().getTranslation().plus(aimer.rotateBy(new Rotation2d(nav.getAngle())));
+    double range = target.toTranslation2d().minus(cur_pos).getNorm();
     double height = target.getZ() - 6.0; // offset for pivot point of launcher
 
     double angle = Math.toDegrees(Math.atan2(height,range));
   
-    autoAimAngle = angle + 0.02 * range;
+    autoAimAngle = angle + 0.02 * range - 6.0;
 
-    autoAimPower = 2450 + 5 * range;
+    autoAimPower = 2450 + 7 * range;
 
     SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
     SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
@@ -407,6 +409,11 @@ public class CrescendoBot extends DefaultRobot {
     SmartDashboard.putNumber("Auto Target X", target.getX());
     SmartDashboard.putNumber("Auto Target Y", target.getY());
     SmartDashboard.putNumber("Auto Target Z", target.getZ());
+  }
+  public void autoCommandAngle()
+  {
+    launcher.aim(autoAimAngle);
+    launcher.prime(autoAimPower);
   }
 
   @Override

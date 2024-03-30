@@ -167,7 +167,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 11:
               if(myRobot.launcher.isLoaded())
                 myRobot.launcher.stopLoader();
-              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE*2)) {
                 advanceStep();
               }
               break;
@@ -181,19 +181,25 @@ public class AutoSpeaker2 extends AutoBaseClass {
               setTimerAndAdvanceStep(2000);
               break;
             case 13:
+              myRobot.autoEstimateAim();
+              myRobot.autoCommandAngle();
               if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
                 advanceStep();
               break;
             case 14:
-              myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-20,0);
+              myRobot.autoEstimateAim();
+              myRobot.autoCommandAngle();
+              // myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
+              // myRobot.drive.driveFixedPositionOffsetInches(-20,0);
               // myRobot.launcher.load(0.45);
-              setTimerAndAdvanceStep(2000);
+              //setTimerAndAdvanceStep(1000);
+              advanceStep();
               break;
             case 15:
-              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
-                advanceStep();
-              }
+              advanceStep();
+              // if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
+              //   advanceStep();
+              // }
               break;
             case 16:
               myRobot.launcher.fire();
