@@ -134,6 +134,11 @@ public class PracticeRobotNav extends NavSubsystem {
     public void periodic() {
         updateRobotPosition();
 
+        if(limelight_tracker_present && gamePieceTracker.isTracking())
+            nav_led.blink(0.5);
+        else
+            nav_led.blink(1.0);
+
         computeYawNudge(Target.SPEAKER);
         computeNoteNudge();
     }
@@ -196,26 +201,17 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     public void computeNoteNudge() {
         gamePieceTracker.update();
-        if(limelight_tracker_present && gamePieceTracker.isTracking()) {
-            double limit = 0.35;
-            double kp = limit/45.0; // limit divided by angle which max power is applied
-            nav_led.blink(0.5);
-            yawNoteNudge = kp*(0- gamePieceTracker.getBearingToTargetDegrees());
-            yawNoteNudge = Math.min(yawNoteNudge,limit);
-            yawNoteNudge = Math.max(yawNoteNudge,-limit);
-            yawNoteNudge = yawNoteNudge;
-        } else {
-            nav_led.blink(1.0);
-            yawNoteNudge = 0.0;
-        }
+        double limit = 0.35;
+        double kp = limit/45.0; // limit divided by angle which max power is applied
+        yawNoteNudge = kp*(0 - getBearingToNote());
+        yawNoteNudge = MathUtil.clamp(yawNoteNudge, -limit, limit);
     }
 
-    public double getNoteAngle(){
+    public double getBearingToNote(){
         double ang = 0;
         if(limelight_tracker_present && gamePieceTracker.isTracking()) {
             ang = gamePieceTracker.getBearingToTargetDegrees();
         }
-
         return ang;
     }
 
