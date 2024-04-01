@@ -403,7 +403,7 @@ public class CrescendoBot extends DefaultRobot {
   
     autoAimAngle = angle + 0.02 * range - 6.0;
 
-    autoAimPower = 2450 + 7 * range;
+    autoAimPower = 2450 + 5 * range;
 
     SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
     SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
