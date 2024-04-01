@@ -181,14 +181,12 @@ public class AutoSpeaker2 extends AutoBaseClass {
               setTimerAndAdvanceStep(2000);
               break;
             case 13:
-              myRobot.autoEstimateAim();
-              myRobot.autoCommandAngle();
+              myRobot.autoAimLauncherAtSpeaker();
               if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
                 advanceStep();
               break;
             case 14:
-              myRobot.autoEstimateAim();
-              myRobot.autoCommandAngle();
+              myRobot.autoAimLauncherAtSpeaker();
               // myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               // myRobot.drive.driveFixedPositionOffsetInches(-20,0);
               // myRobot.launcher.load(0.45);

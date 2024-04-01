@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.TuneablePIDControllerGains;
 import frc.robot.libs.HID.Gamepad;
@@ -391,7 +392,7 @@ public class CrescendoBot extends DefaultRobot {
   
   }
 
-  public void autoEstimateAim(){
+  public void autoAimLauncherAtSpeaker(){
     Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
     Translation2d aimer = new Translation2d(10,0);
     Translation2d cur_pos = nav.getPoseInField().getTranslation().plus(aimer.rotateBy(new Rotation2d(nav.getAngle())));
@@ -411,9 +412,7 @@ public class CrescendoBot extends DefaultRobot {
     SmartDashboard.putNumber("Auto Target X", target.getX());
     SmartDashboard.putNumber("Auto Target Y", target.getY());
     SmartDashboard.putNumber("Auto Target Z", target.getZ());
-  }
-  public void autoCommandAngle()
-  {
+
     launcher.aim(autoAimAngle);
     launcher.prime(autoAimPower);
   }
@@ -475,9 +474,7 @@ public class CrescendoBot extends DefaultRobot {
     } 
     else if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
       if(nav.isNavValid()){
-        autoEstimateAim();
-        launcher.aim(autoAimAngle);
-        launcher.prime(autoAimPower);
+        autoAimLauncherAtSpeaker();
       }
       else {
         launcher.aim(last_LauncherCommand);
