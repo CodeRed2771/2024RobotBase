@@ -251,7 +251,7 @@ public class CrescendoBot extends DefaultRobot {
     if(gp.getXButton()) {
       rotate += MathUtil.clamp(getAngle()/120,-0.5,0.5);
     }
-    if(bAutoAimEnabled) {
+    if(false && bAutoAimEnabled) {
       rotate += nav.yawRotationNudge();
     }
     if(noteNudge) {
@@ -371,13 +371,13 @@ public class CrescendoBot extends DefaultRobot {
 
     if(gp.getRightBumper()) {
       driveSpeedGain = 0.25;
-      rotateSpeedGain = 0.25;
+      rotateSpeedGain = 0.15;
     } else if (gp.getLeftBumper()) {
       driveSpeedGain = 0.6;
-      rotateSpeedGain = 0.6;
+      rotateSpeedGain = 0.3;
     } else {
       driveSpeedGain = 1.0;
-      rotateSpeedGain = 1.0;
+      rotateSpeedGain = 0.4;
     }
 
     
@@ -451,6 +451,7 @@ public class CrescendoBot extends DefaultRobot {
     return (Timer.getFPGATimestamp() - last_slow_time > lower_launcher_delay) && (launcher.getAngle() > LauncherPresets.OFF.getAngle());
   }
 
+  private boolean bFiring = false;
   public void runLauncher(Gamepad gp) {
 
     // if(shouldLowerLauncher())
@@ -471,7 +472,7 @@ public class CrescendoBot extends DefaultRobot {
     }
 
     if(gp.getBButton()) {
-      last_LauncherCommand = LauncherPresets.SAFE_ZONE;
+      last_LauncherCommand = LauncherPresets.AMP;
     }
     
     if(gp.getYButton()) {
@@ -496,8 +497,15 @@ public class CrescendoBot extends DefaultRobot {
 
     if (gp.getRightTriggerAxis() > .5) {
       launcher.fire();
-      last_LauncherCommand= LauncherPresets.OFF;
+      bFiring = true;
     }
+
+    if(bFiring && !launcher.isFiring()) {
+      last_LauncherCommand = LauncherPresets.OFF;
+    }
+    if(last_LauncherCommand == LauncherPresets.OFF)
+      bFiring = false;
+
 
     if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
       if(nav.isNavValid()){
@@ -506,16 +514,26 @@ public class CrescendoBot extends DefaultRobot {
       else if(last_LauncherCommand != null) {
         launcher.aim(last_LauncherCommand);
       }
+    } else {
+      launcher.aim(last_LauncherCommand);
     }
+  }
 
+  /* +Heading is to left in NEU, +bearing is right in robot frame */
+  public double computeHeadingNudge(double heading){
+    return computeBearingNudge(-(heading - nav.getAngle()));
   }
 
   public double computeNoteNudge() {
-    double yawNoteNudge;
+    return computeBearingNudge(nav.getBearingToNote());
+  }
+
+  public double computeBearingNudge(double bearing){
+    double nudge;
     double limit = 0.35;
     double kp = limit/45.0; // limit divided by angle which max power is applied
-    yawNoteNudge = kp*(0 - nav.getBearingToNote());
-    yawNoteNudge = MathUtil.clamp(yawNoteNudge, -limit, limit);
-    return yawNoteNudge;
+    nudge = kp*(bearing);
+    nudge = MathUtil.clamp(nudge, -limit, limit);
+    return nudge;
   }
 }

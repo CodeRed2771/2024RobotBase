@@ -31,8 +31,8 @@ public class RollerLauncherCompetition extends RollerLauncher {
         OFF(0,25,0),
         AMP(750, 95,0), // max back
         PICKUP(0, 38, 0),
-        SAFE_ZONE(3100, 33,0),
-        SUBWOOFER(2750, 49,0),
+        SAFE_ZONE(2700, 33,0),
+        SUBWOOFER(2500, 49,0),
         CLIMB(0, 80,0),
         STOW(0,10,0),
         MAX_ANGLE(0, 75,0);
