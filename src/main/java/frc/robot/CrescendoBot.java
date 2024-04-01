@@ -435,56 +435,50 @@ public class CrescendoBot extends DefaultRobot {
   private double bias = LauncherPresets.AMP.getBias();
 
   private double last_slow_time = 0.0;
+  private double lower_launcher_delay = 1.0;
   private LauncherPresets last_LauncherCommand = LauncherPresets.OFF;
   private void monitorSpeedLowerLauncher(){
     if(nav.getVelInRobot().getNorm() < 48.0)
       last_slow_time =  Timer.getFPGATimestamp();
   }
+  private void holdoffShouldLowerLauncher(double time){
+      last_slow_time =  Timer.getFPGATimestamp() + time - lower_launcher_delay;
 
+  }
   private boolean shouldLowerLauncher()
   {
-    return (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle());
+    return (Timer.getFPGATimestamp() - last_slow_time > lower_launcher_delay) && (launcher.getAngle() > LauncherPresets.OFF.getAngle());
   }
 
   public void runLauncher(Gamepad gp) {
 
     // if(shouldLowerLauncher())
     //   launcher.aim(LauncherPresets.OFF.getAngle());
-
     if( climbing ){
-      launcher.aim(LauncherPresets.CLIMB);
-    } else 
+      last_LauncherCommand = LauncherPresets.CLIMB;
+    }
+    
+    /* Target shooting the speaker from preset locations */
     if (gp.getXButton()) {
-      last_slow_time =  Timer.getFPGATimestamp();
+      bAutoAimEnabled = true;
       last_LauncherCommand = LauncherPresets.SAFE_ZONE;
-      launcher.aim(LauncherPresets.SAFE_ZONE);
     } else if(gp.getAButton()) {
-      last_slow_time =  Timer.getFPGATimestamp();
+      bAutoAimEnabled = true;
       last_LauncherCommand = LauncherPresets.SUBWOOFER;
-      launcher.aim(LauncherPresets.SUBWOOFER);
-    } else if(gp.getBButton()) {
-      last_slow_time =  Timer.getFPGATimestamp();
-      last_LauncherCommand = LauncherPresets.AMP;
-      launcher.aim(aim);
-      launcher.prime(speed,bias);
-    } else if(gp.getYButton()) {
-      last_slow_time =  Timer.getFPGATimestamp();
-      last_LauncherCommand = LauncherPresets.OFF;
-      launcher.aim(LauncherPresets.OFF);
-    } 
-    else if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
-      if(nav.isNavValid()){
-        autoAimLauncherAtSpeaker();
-      }
-      else {
-        launcher.aim(last_LauncherCommand);
-      }
-
+    } else {
+      bAutoAimEnabled = false;
     }
 
+    if(gp.getBButton()) {
+      last_LauncherCommand = LauncherPresets.SAFE_ZONE;
+    }
+    
+    if(gp.getYButton()) {
+      last_LauncherCommand = LauncherPresets.OFF;
+    } 
+    
     if (gp.getDPadRight() && !launcher.isLoaded()){
       last_LauncherCommand = LauncherPresets.PICKUP;
-      launcher.aim(LauncherPresets.PICKUP);
       launcher.load(.45);
     }
     else if (gp.getDPadUp()){
@@ -492,7 +486,6 @@ public class CrescendoBot extends DefaultRobot {
     }
     else if (gp.getDPadLeft()) {
       last_LauncherCommand = LauncherPresets.PICKUP;
-      launcher.aim(LauncherPresets.PICKUP);
       launcher.unload();
     } else if(gp.getDPadDown()) {
       launcher.stopLoader();
@@ -502,9 +495,18 @@ public class CrescendoBot extends DefaultRobot {
 
     if (gp.getRightTriggerAxis() > .5) {
       launcher.fire();
-      bAutoAimEnabled = false;
       last_LauncherCommand= LauncherPresets.OFF;
     }
+
+    if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
+      if(nav.isNavValid()){
+        autoAimLauncherAtSpeaker();
+      }
+      else if(last_LauncherCommand != null) {
+        launcher.aim(last_LauncherCommand);
+      }
+    }
+
   }
 
 }
