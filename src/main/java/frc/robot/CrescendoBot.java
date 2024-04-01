@@ -64,16 +64,17 @@ public class CrescendoBot extends DefaultRobot {
   protected boolean bHeadingHold = true;
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
-  protected TuneablePIDControllerGains headingGains = new TuneablePIDControllerGains("Hdg", headingController);
+  protected TuneablePIDControllerGains headingHoldGains = new TuneablePIDControllerGains("Hdg", headingController);
 
   /** Creates a new RobotContainer. */
   @SuppressWarnings("this-escape")
   public CrescendoBot() {
     super();
 
-    headingGains.setP(3.0);
-    headingGains.setI(0.0);
-    headingGains.setD(0.01);
+    headingHoldGains.setP(3.0 / 360.0);
+    headingHoldGains.setI(0.0 / 360.0);
+    headingHoldGains.setIz(0.0 / 360.0);
+    headingHoldGains.setD(0.01 / 360.0);
 
   }
 
@@ -272,6 +273,9 @@ public class CrescendoBot extends DefaultRobot {
       setHeadingHoldAngle(getAngle());
     }
 
+    rotate *= rotateSpeedGain;
+    driveCmd = driveCmd.times(driveSpeedGain);
+
     if(bHeadingHold){
       rotate += calculateHeadingHoldCommand();
     }
@@ -311,7 +315,8 @@ public class CrescendoBot extends DefaultRobot {
   }
 
   protected double calculateHeadingHoldCommand(){
-    double rotationError = MathUtil.inputModulus(headingCmd - nav.getAngle(),-180.0, 180.0) / 360.0;
+    double rotationError = MathUtil.inputModulus(headingCmd - nav.getAngle(),-180.0, 180.0);
+    rotationError = MathUtil.applyDeadband(rotationError, 0.1,180.0);
     return headingController.calculate(rotationError);
   }
 
@@ -320,7 +325,7 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   protected void postTuneParams(){
     super.postTuneParams();
-    headingGains.postTuneParams();
+    headingHoldGains.postTuneParams();
     launcher.postTuneParameters();
     
     SmartDashboard.putBoolean("Heading hold", bHeadingHold);
@@ -334,7 +339,7 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   protected void handleTuneParams(){
     super.handleTuneParams();
-    headingGains.handleTuneParams();
+    headingHoldGains.handleTuneParams();
     launcher.handleTuneParameters();
 
     bHeadingHold = SmartDashboard.getBoolean("Heading hold", bHeadingHold);
@@ -349,6 +354,7 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void postTelemetry(){
     nav.postTelemetry();
+    SmartDashboard.putNumber("Heading Hold Angle", headingCmd);
   }
 
   @Override
@@ -423,11 +429,10 @@ public class CrescendoBot extends DefaultRobot {
   /* By default just pass commands to the drive system */
   @Override
   public void driveSpeedControl(Translation2d driveCmd, double rotate) {
-    driveCmd = driveCmd.times(driveSpeedGain);
     if((driveCmd.getNorm()+Math.abs(rotate)) < 0.05)
       drive.driveHoldWheels();
     else
-      drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate*rotateSpeedGain,getPeriod());
+      drive.driveSpeedControl(driveCmd.getX(), driveCmd.getY(), rotate,getPeriod());
   }
 
   private double speed = LauncherPresets.AMP.getSpeed();
