@@ -182,7 +182,7 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void computeYawNudge(Target target) {
-        Pose2d curPos = getPoseInFieldInches();
+        Pose2d curPos = getPoseInField();
         if(isNavValid() && curPos.getTranslation().getX() <= 300.0 ){
             Transform2d currentTarget = getTargetOffset(target);
             updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
@@ -231,8 +231,21 @@ public class PracticeRobotNav extends NavSubsystem {
         }
         return targetPose;
     }
-    public Transform2d getTargetOffset(Target target) {
-        return new Transform2d(getPoseInField(), getTargetPoseField(target).toPose2d());
+
+    public double getBearingToTarget(Translation2d target){
+        Transform2d offset = getTargetOffset(target);
+        return offset.getTranslation().getAngle().getDegrees();
     }
 
+    public Transform2d getTargetOffset(Translation2d target){
+        return getTargetOffset(new Pose2d(target, new Rotation2d()));
+    }
+
+    public Transform2d getTargetOffset(Pose2d target){
+        return new Transform2d(getPoseInField(), target);
+    }
+
+    public Transform2d getTargetOffset(Target target) {
+        return getTargetOffset(getTargetPoseField(target).toPose2d());
+    }
 }

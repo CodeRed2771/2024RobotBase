@@ -66,11 +66,6 @@ public abstract class NavSubsystem extends ArmedSubsystem {
 
   public abstract Pose2d getPoseInField();
 
-  public Pose2d getPoseInFieldInches() {
-    Pose2d pos = getPoseInField();
-    return new Pose2d(pos.getTranslation().times(100/2.54),pos.getRotation());
-  }
-
   public Translation2d getPosition() {
       return getPoseInField().getTranslation();
   }
