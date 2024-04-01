@@ -32,11 +32,10 @@ public class LimeLightGamePieceTracker extends Limelight {
             last_ty = LimelightHelpers.getTY(net_table_name);
             last_note_estimate = estimateNotePosition(last_tx, last_ty);
             updateTimestamp(0.0);
-        }
-        else
+        } else {
             SmartDashboard.putBoolean("note tracking", false);
-
-            SmartDashboard.putNumber("note angle", last_tx);
+        }
+        SmartDashboard.putNumber("note angle", last_tx);
     }
     
     public boolean isNetTableValid() {

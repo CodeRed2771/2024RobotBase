@@ -36,7 +36,6 @@ public class PracticeRobotNav extends NavSubsystem {
     private boolean limelight_present = false;
     private boolean limelight_tracker_present = false;
     double yawRotationNudge;
-    double yawNoteNudge;
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
@@ -133,6 +132,7 @@ public class PracticeRobotNav extends NavSubsystem {
     @Override
     public void periodic() {
         updateRobotPosition();
+        gamePieceTracker.update();
 
         if(limelight_tracker_present && gamePieceTracker.isTracking())
             nav_led.blink(0.5);
@@ -140,12 +140,10 @@ public class PracticeRobotNav extends NavSubsystem {
             nav_led.blink(1.0);
 
         computeYawNudge(Target.SPEAKER);
-        computeNoteNudge();
     }
 
     public void postTelemetry(){
         SmartDashboard.putNumber("Gyro Angle", ((int) (gyro.getAngle() * 1000)) / 1000.0);
-        SmartDashboard.putNumber("Yaw Note Nudge", yawNoteNudge);
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
         updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
 
@@ -199,13 +197,6 @@ public class PracticeRobotNav extends NavSubsystem {
             yawRotationNudge = 0;
         }
     }
-    public void computeNoteNudge() {
-        gamePieceTracker.update();
-        double limit = 0.35;
-        double kp = limit/45.0; // limit divided by angle which max power is applied
-        yawNoteNudge = kp*(0 - getBearingToNote());
-        yawNoteNudge = MathUtil.clamp(yawNoteNudge, -limit, limit);
-    }
 
     public double getBearingToNote(){
         double ang = 0;
@@ -219,10 +210,7 @@ public class PracticeRobotNav extends NavSubsystem {
         return yawRotationNudge;
     }
 
-    public double noteYawNudge() {
-        return yawNoteNudge;
-    };
-    
+
     public boolean isNavValid() {
         return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation()) && 
                (distance_travelled <= 20.0 * 12.0);

@@ -256,7 +256,7 @@ public class CrescendoBot extends DefaultRobot {
       rotate += nav.yawRotationNudge();
     }
     if(noteNudge) {
-      rotate += nav.noteYawNudge();
+      rotate += computeNoteNudge();
     }
 
     /* Apply speed augmentation settings */
@@ -511,4 +511,12 @@ public class CrescendoBot extends DefaultRobot {
 
   }
 
+  public double computeNoteNudge() {
+    double yawNoteNudge;
+    double limit = 0.35;
+    double kp = limit/45.0; // limit divided by angle which max power is applied
+    yawNoteNudge = kp*(0 - nav.getBearingToNote());
+    yawNoteNudge = MathUtil.clamp(yawNoteNudge, -limit, limit);
+    return yawNoteNudge;
+  }
 }
