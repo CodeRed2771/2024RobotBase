@@ -92,6 +92,8 @@ public class CrescendoBot extends DefaultRobot {
     super.robotPeriodic();
 
     postTelemetry();
+
+    monitorSpeedLowerLauncher();
   }
 
   @Override
@@ -432,16 +434,23 @@ public class CrescendoBot extends DefaultRobot {
   private double speed = LauncherPresets.AMP.getSpeed();
   private double aim =  LauncherPresets.AMP.getAngle();
   private double bias = LauncherPresets.AMP.getBias();
+
   private double last_slow_time = 0.0;
   private LauncherPresets last_LauncherCommand = LauncherPresets.OFF;
-
-  public void runLauncher(Gamepad gp) {
-    
+  private void monitorSpeedLowerLauncher(){
     if(nav.getVelInRobot().getNorm() < 48.0)
       last_slow_time =  Timer.getFPGATimestamp();
+  }
 
-    if(false && (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle()) )
-      launcher.aim(LauncherPresets.OFF.getAngle());
+  private boolean shouldLowerLauncher()
+  {
+    return (Timer.getFPGATimestamp() - last_slow_time > 1.0) && (launcher.getAngle() > LauncherPresets.OFF.getAngle());
+  }
+
+  public void runLauncher(Gamepad gp) {
+
+    // if(shouldLowerLauncher())
+    //   launcher.aim(LauncherPresets.OFF.getAngle());
 
     if( climbing ){
       launcher.aim(LauncherPresets.CLIMB);
