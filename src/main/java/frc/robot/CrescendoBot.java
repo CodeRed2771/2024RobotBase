@@ -12,9 +12,9 @@ import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.TuneablePIDControllerGains;
 import frc.robot.libs.HID.Gamepad;
@@ -31,7 +31,6 @@ import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.auto.AutoSpeaker2;
-import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.climber.Climber;
 
 public class CrescendoBot extends DefaultRobot {
@@ -312,12 +311,13 @@ public class CrescendoBot extends DefaultRobot {
   }
 
   protected double calculateHeadingHoldCommand(){
-    double rotationError = MathUtil.inputModulus(headingCmd - nav.getAngle(),-180.0, 180.0);
-    rotationError = MathUtil.applyDeadband(rotationError, 0.1,180.0);
+    double rotationError = MathUtil.applyDeadband(getTurnToHeading(headingCmd), 0.1,180.0);
     return headingController.calculate(rotationError);
   }
 
-
+  public double getTurnToHeading(double goal){
+    return  MathUtil.inputModulus(goal - nav.getAngle(),-180.0, 180.0);
+  }
 
   @Override
   protected void postTuneParams(){
@@ -395,17 +395,16 @@ public class CrescendoBot extends DefaultRobot {
   
   }
 
-  public void autoAimLauncherAtSpeaker(){
+  public void autoPrimeLauncherToSpeaker(){
     Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
     Translation2d aimer = new Translation2d(10,0);
     Translation2d cur_pos = nav.getPoseInField().getTranslation().plus(aimer.rotateBy(new Rotation2d(nav.getAngle())));
+
     double range = target.toTranslation2d().minus(cur_pos).getNorm();
     double height = target.getZ() - 6.0; // offset for pivot point of launcher
-
     double angle = Math.toDegrees(Math.atan2(height,range));
   
     autoAimAngle = angle + 0.02 * range - 6.0;
-
     autoAimPower = 2450 + 5 * range;
 
     SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
@@ -502,7 +501,7 @@ public class CrescendoBot extends DefaultRobot {
 
     if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
       if(nav.isNavValid()){
-        autoAimLauncherAtSpeaker();
+        autoPrimeLauncherToSpeaker();
       }
       else if(last_LauncherCommand != null) {
         launcher.aim(last_LauncherCommand);
