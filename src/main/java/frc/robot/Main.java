@@ -15,8 +15,6 @@ public final class Main {
 
   public enum RobotType{
     Dummy,
-    IntakeTest,
-    PracticeBot,
     TankBot,
     CompetitionRobot,
     None
@@ -36,12 +34,6 @@ public final class Main {
     switch (botType) {
       case CompetitionRobot:
         RobotBase.startRobot(CompetitionRobot::new);
-        break;
-      case PracticeBot:
-        RobotBase.startRobot(ElegantPolyBot::new);
-        break;
-      case IntakeTest:
-        RobotBase.startRobot(IntakeTestRobot::new);
         break;
       case TankBot:
         RobotBase.startRobot(TankBot::new);
