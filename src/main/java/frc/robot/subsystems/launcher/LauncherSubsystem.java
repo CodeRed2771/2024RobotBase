@@ -36,6 +36,6 @@ public abstract class LauncherSubsystem extends ArmedSubsystem {
   public boolean isPrimed() {return true;}
   public boolean isFiring() {return false;}
   public boolean isUnloading() {return false;}
-  public void fire() {}
+  public void fire() {loadState = LoaderState.Firing;}
   public void reset() {}
 }

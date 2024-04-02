@@ -138,7 +138,8 @@ public class RollerLauncherCompetition extends RollerLauncher {
 
     @Override
     public void load(double power) {
-
+        loadState = LoaderState.Loading;
+        
         loaderMotor.set(-power*2.00);
         intakeMotor.set(-power);
     }

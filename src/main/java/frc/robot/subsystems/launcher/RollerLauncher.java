@@ -59,7 +59,7 @@ public class RollerLauncher extends LauncherSubsystem {
         super();
 
         notePresentThreshold = calibration.getOrDefault("note threshold", 1700.0).intValue();
-        STOP_DELAY = calibration.getOrDefault("intake stop delay", 100.0).intValue();
+        STOP_DELAY = calibration.getOrDefault("fire stop delay", 100.0).intValue();
 
         upperShooterMotor = new CANSparkFlex(wiring.get("upper launcher"), MotorType.kBrushless);
         lowerShooterMotor = new CANSparkFlex(wiring.get("lower launcher"), MotorType.kBrushless);
@@ -170,13 +170,10 @@ public class RollerLauncher extends LauncherSubsystem {
     }
 
     public void fire() {
-        if (isPrimed()) {
-            loadState = LoaderState.Firing;
-            loaderFireStopDelay = STOP_DELAY;
+        loaderFireStopDelay = STOP_DELAY;
+        load(1); // run the loader which will put note into shooter
 
-            load(1); // run the loader which will put note into shooter
-        } else
-            stopLoader();
+        super.fire();
     }
 
     public void unload() {
@@ -243,9 +240,7 @@ public class RollerLauncher extends LauncherSubsystem {
     public void periodic() {
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay <= 0) {
-                intakeMotor.set(0);
-                loaderMotor.set(0);
-                loadState = LoaderState.Stopped;
+                stopLoader();
             } else {
                 loaderStopDelay--;
             }
@@ -266,7 +261,7 @@ public class RollerLauncher extends LauncherSubsystem {
 
         if (isLoaded())
             launcherLED.set(LEDColors.GREEN);
-        else if (loadState == LoaderState.Loading)
+        else if (loadState == LoaderState.Loading || loadState == LoaderState.Unloading)
             launcherLED.set(LEDColors.YELLOW);
         else
             launcherLED.set(LEDColors.RED);
