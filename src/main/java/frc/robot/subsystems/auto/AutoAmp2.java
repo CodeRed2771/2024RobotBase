@@ -21,12 +21,10 @@ import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 public class AutoAmp2 extends AutoBaseClass {
 
-  CrescendoBot myRobot;
   byte multiplier = 1;
 
   public AutoAmp2(CrescendoBot robot) {
-    super();
-    myRobot = robot;
+    super(robot);
   }
   public void start() {
 		super.start();

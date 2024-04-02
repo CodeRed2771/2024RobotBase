@@ -27,13 +27,11 @@ public class AutoShootAndLeave extends AutoBaseClass {
   private Optional<Alliance> alliance;
 
   public AutoShootAndLeave(CrescendoBot robot) {
-    super();
-    myRobot = robot;
+    super(robot);
   }
 
   public AutoShootAndLeave(CrescendoBot robot, char position) {
-    super();
-    myRobot = robot;
+    super(robot);
     this.position = position;
   }
 

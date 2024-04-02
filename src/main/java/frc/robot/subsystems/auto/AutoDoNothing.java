@@ -5,16 +5,11 @@
 package frc.robot.subsystems.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.DefaultRobot;
-import frc.robot.CrescendoBot;
 
 public class AutoDoNothing extends AutoBaseClass {
 
-  CrescendoBot myRobot;
-  private int drivenTicks = 0;
-
   public AutoDoNothing() {
-    super();
+    super(null);
   }
   public void start() {
 		super.start();

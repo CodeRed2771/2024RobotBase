@@ -21,14 +21,12 @@ import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 public class AutoSpeaker3 extends AutoBaseClass {
 
-  CrescendoBot myRobot;
   private char position = 'C';
   private Optional<Alliance> alliance;
   final double DRIVE_TOLERANCE = 0.75;
 
   public AutoSpeaker3(CrescendoBot robot, char position) {
-    super();
-    myRobot = robot;
+    super(robot);
     this.position = position;
   }
   public void start() {

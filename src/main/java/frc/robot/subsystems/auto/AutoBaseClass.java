@@ -3,6 +3,7 @@ package frc.robot.subsystems.auto;
 import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.CrescendoBot;
 import frc.robot.libs.Timer;
 
 public abstract class AutoBaseClass {
@@ -10,6 +11,7 @@ public abstract class AutoBaseClass {
     private Position mRobotPosition;
     private boolean mIsRunning = false;
     private Direction mDirection;
+    protected CrescendoBot myRobot;
 
     public static enum Direction {
         LEFT, RIGHT
@@ -19,8 +21,10 @@ public abstract class AutoBaseClass {
         LEFT, CENTER, RIGHT
     };
 
-    public AutoBaseClass() {
+    public AutoBaseClass(CrescendoBot robot) {
         mAutoTimer = new Timer();
+
+        myRobot = robot;
     }
 
     public abstract void periodic();
