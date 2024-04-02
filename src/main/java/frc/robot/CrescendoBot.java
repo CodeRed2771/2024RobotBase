@@ -109,7 +109,7 @@ public class CrescendoBot extends DefaultRobot {
     launcher.arm();
     drive.arm();
     nav.reset();
-
+    nav.disableCamera();
     restoreRobotToDefaultState();
     autoSelected = m_chooser.getSelected();
 
@@ -293,6 +293,8 @@ public class CrescendoBot extends DefaultRobot {
     intake.disarm();
     launcher.disarm();
     drive.disarm();
+    nav.enableCamera();
+
 
     postTuneParams();
   }
