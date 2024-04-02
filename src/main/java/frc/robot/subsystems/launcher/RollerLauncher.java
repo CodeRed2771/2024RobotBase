@@ -254,11 +254,6 @@ public class RollerLauncher extends LauncherSubsystem {
         } else if (loaderFireStopDelay > 0)
             loaderFireStopDelay--;
 
-        if (!isPrimed())
-            launcherLED.blink(0.5);
-        else
-            launcherLED.blink(1);
-
         if (isLoaded())
             launcherLED.set(LEDColors.GREEN);
         else if (loadState == LoaderState.Loading || loadState == LoaderState.Unloading)
