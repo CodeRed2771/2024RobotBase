@@ -1,6 +1,10 @@
 package frc.robot.subsystems.auto;
 
 import java.util.Optional;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.CrescendoBot;
@@ -11,6 +15,7 @@ public abstract class AutoBaseClass {
     private Position mRobotPosition;
     private boolean mIsRunning = false;
     private Direction mDirection;
+    protected Pose2d targetPose;
     protected CrescendoBot myRobot;
 
     public static enum Direction {
@@ -25,6 +30,7 @@ public abstract class AutoBaseClass {
         mAutoTimer = new Timer();
 
         myRobot = robot;
+        targetPose = robot.nav.getPoseInField();    
     }
 
     public abstract void periodic();
@@ -71,8 +77,27 @@ public abstract class AutoBaseClass {
     }
 
     // DRIVE COMMAND!!
+    protected void driveFixedPositionOffsetInches(double xInches, double yInches){
+        targetPose = targetPose.plus(new Transform2d(xInches,yInches, new Rotation2d()));
+        Translation2d nextMove = getDriveTranslation2d();
+        myRobot.drive.driveFixedPositionOffsetInches(nextMove.getX(),nextMove.getY());
+    }
 
     // TURN TO HEADING COMMAND!!
+    protected void driveFixedRotatePosition(double angle){
+        targetPose = targetPose.plus(new Transform2d(0,0,Rotation2d.fromDegrees(angle)));
+        myRobot.drive.driveFixedRotatePosition(getDriveRotation());
+    }
+
+    protected Translation2d getDriveTranslation2d()
+    {
+        return myRobot.nav.getTargetOffset(targetPose).getTranslation();
+    }
+
+    protected double getDriveRotation()
+    {
+        return myRobot.nav.getTargetOffset(targetPose).getRotation().getDegrees();
+    }
 
     // DRIVE COMPLETED COMMAND!!
 
