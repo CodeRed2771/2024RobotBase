@@ -61,6 +61,7 @@ public class CrescendoBot extends DefaultRobot {
   protected double autoAimPower = 0;
 
   protected boolean bHeadingHold = true;
+  protected boolean bGoingUnder = false;
   protected double headingCmd;
   protected PIDController headingController = new PIDController(0,0,0);
   protected TuneablePIDControllerGains headingHoldGains = new TuneablePIDControllerGains("Hdg", headingController);
@@ -380,7 +381,11 @@ public class CrescendoBot extends DefaultRobot {
       rotateSpeedGain = 0.4;
     }
 
-    
+    if(gp.getRightTriggerAxis() > .5){
+      bGoingUnder = true;
+    } else {
+      bGoingUnder = false;
+    }
     // if(gp.getAButton()) {
     //   bAutoAimEnabled = true;
     // } else {
@@ -405,7 +410,7 @@ public class CrescendoBot extends DefaultRobot {
     double angle = Math.toDegrees(Math.atan2(height,range));
   
     autoAimAngle = angle + 0.02 * range - 6.0;
-    autoAimPower = 2450 + 5 * range;
+    autoAimPower = 2150 + 5 * range;
 
     SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
     SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
@@ -507,7 +512,10 @@ public class CrescendoBot extends DefaultRobot {
       bFiring = false;
 
 
-    if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
+    if(bGoingUnder) {
+      launcher.prime(last_LauncherCommand.getSpeed());
+      launcher.aim(LauncherPresets.OFF.getAngle());
+    } else if(bAutoAimEnabled && ( last_LauncherCommand == LauncherPresets.SUBWOOFER || last_LauncherCommand == LauncherPresets.SAFE_ZONE)){
       if(nav.isNavValid()){
         autoPrimeLauncherToSpeaker();
       }
