@@ -200,10 +200,15 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public double getBearingToNote(){
         double ang = 0;
-        if(limelight_tracker_present && gamePieceTracker.isTracking()) {
+        if(isTrackingNote()) {
             ang = gamePieceTracker.getBearingToTargetDegrees();
         }
         return ang;
+    }
+
+    public boolean isTrackingNote()
+    {
+        return limelight_tracker_present && gamePieceTracker.isTracking();
     }
 
     public double yawRotationNudge() {
