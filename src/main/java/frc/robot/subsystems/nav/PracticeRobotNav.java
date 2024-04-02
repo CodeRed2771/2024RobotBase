@@ -39,6 +39,10 @@ public class PracticeRobotNav extends NavSubsystem {
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
+    private double allowed_travel_since_pos_sync = 60.0 * 12.0;
+    private double camera_update_tolerance = 2.0*12.0;
+    private double camera_valid_distance = 2*12.0;
+
     private double max_camera_speed = 50.0;
     private BlinkinLED nav_led;
     private double distance_travelled = 0;
@@ -46,7 +50,7 @@ public class PracticeRobotNav extends NavSubsystem {
     private boolean camera_valid = false;
 
     private boolean bUseCamera = true;
-    public boolean isCameraEnabed() { return bUseCamera; }
+    public boolean isCameraEnabed() { return bUseCamera && limelight_present; }
     public void setCameraEnable(boolean bUseCamera) { this.bUseCamera = bUseCamera; }
     public void enableCamera() { setCameraEnable(true); }
     public void disableCamera() { setCameraEnable(false); }
@@ -85,7 +89,9 @@ public class PracticeRobotNav extends NavSubsystem {
     public void reset(Pose2d init_pose) {
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
         distance_travelled = 0;
+    }
 
+    public void initializeFieldData(){
         if(limelight_present){
             Optional<Alliance> myAlliance = DriverStation.getAlliance(); 
             if(myAlliance.isPresent() && myAlliance.get() == Alliance.Red){
@@ -94,6 +100,7 @@ public class PracticeRobotNav extends NavSubsystem {
                 limelight.useBlueTargets();
             }
         }
+
     }
 
     /* TODO: Remove this after poseEstimator is working well */
@@ -130,8 +137,10 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     @Override
     public void periodic() {
-        updateRobotPosition();
+        if(isCameraEnabed()) limelight.update();
         gamePieceTracker.update();
+
+        updateRobotPosition();
 
         if(limelight_tracker_present && gamePieceTracker.isTracking())
             nav_led.blink(0.5);
@@ -157,7 +166,7 @@ public class PracticeRobotNav extends NavSubsystem {
     public void updateRobotPosition() {
 
         SwerveModulePosition[] odom = driveTrain.getOdomotry();
-        Pose3d camera_pose =  limelight.getEstimatedPosition();
+        Pose3d camera_pose;
         double cam_error;
         
         distance_travelled += Math.abs(last_wheel_pos - odom[1].distanceMeters); // it really is inches
@@ -165,17 +174,26 @@ public class PracticeRobotNav extends NavSubsystem {
         
         poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), odom);
 
-        if(limelight_present && bUseCamera && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
+        if( isCameraEnabed() && limelight.isValid() && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
             camera_pose =  limelight.getEstimatedPosition();
             cam_error = camera_pose.toPose2d().minus(poseEstimator.getEstimatedPosition()).getTranslation().getNorm();
 
-            if(cam_error <= 12.0) distance_travelled = 0.0;
-            camera_valid = cam_error <= 24.0 && limelight.isValid();
+            if(cam_error >= camera_update_tolerance){
+                reset(limelight.getLimelightPositionInField());
+                cam_error = 0;
+            } else {
+                limelight.checkUpdatePoseEstimator(poseEstimator);
+            }
 
-            limelight.checkUpdatePoseEstimator(poseEstimator);
+            if(cam_error <= camera_valid_distance){
+                distance_travelled = 0.0;
+                camera_valid = true;
+            }
+            else
+                camera_valid = false;
         }
 
-        if(camera_valid && distance_travelled < 5.0*12.0) camera_valid = false;
+        if(camera_valid && distance_travelled >= camera_update_tolerance) camera_valid = false;
     }
 
     public double getBearingToNote(){
@@ -193,7 +211,7 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public boolean isNavValid() {
         return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation()) && 
-               (distance_travelled <= 20.0 * 12.0);
+               (distance_travelled <= allowed_travel_since_pos_sync);
     }
 
     public double getBearingToTarget(Pose3d target){

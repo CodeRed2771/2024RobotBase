@@ -45,6 +45,7 @@ public class LimeLightPoseEstimator extends Limelight {
         Translation3d new_pos;
         Rotation3d new_rotation;
         Pose3d new_pose;
+        last_fieldPoseEstimate_Valid = false;
 
         currentPipeline = getPipeline();
         if(currentPipeline == LimelightPipeline.AprilTag) {
@@ -69,6 +70,7 @@ public class LimeLightPoseEstimator extends Limelight {
                 updateTimestamp(getLatencyFromNTData(data));
             }
         }
+        SmartDashboard.putBoolean("Camera Pose", last_fieldPoseEstimate_Valid);
     }
 
     private double getLatencyFromNTData(double[] data){
@@ -125,9 +127,6 @@ public class LimeLightPoseEstimator extends Limelight {
     }
 
     public void checkUpdatePoseEstimator(SwerveDrivePoseEstimator poseEstimator){
-
-        update();
-        SmartDashboard.putBoolean("Camera Pose", last_fieldPoseEstimate_Valid);
         if(last_fieldPoseEstimate_Valid)
             poseEstimator.addVisionMeasurement(last_fieldPoseEstimate.toPose2d(),getTimeOfMeasurement(),last_fieldPoseStandardDevs);
 
@@ -153,7 +152,7 @@ public class LimeLightPoseEstimator extends Limelight {
         boolean valid =  Crescendo.isValidPosition(position.toTranslation2d()) &&
                MathUtil.isNear(0,position.getZ(), 12*4.0); // near the ground
 
-        SmartDashboard.putBoolean("C Pos Valid", valid);
+        SmartDashboard.putBoolean("Cam Pos Valid", valid);
         return valid;
     }
 
@@ -163,7 +162,7 @@ public class LimeLightPoseEstimator extends Limelight {
         valid = valid && rotation.getX() >= -15*Math.PI/180.0;
         valid = valid && rotation.getY() <= 15*Math.PI/180.0;
         valid = valid && rotation.getY() >= -15*Math.PI/180.0;
-        SmartDashboard.putBoolean("C Rot Valid", valid);
+        SmartDashboard.putBoolean("Cam Rot Valid", valid);
         return valid;
     }
 
@@ -173,7 +172,7 @@ public class LimeLightPoseEstimator extends Limelight {
         valid = valid && getTargetCountFromNTData(data) >= 1; // Tag count
         valid = valid && getTargetDistanceFromNTData(data) <= 10; // Average Tag distance
         valid = valid && getTargetAreaFromNTData(data) >= area_threshold;
-        SmartDashboard.putBoolean("C Meta Valid", valid);
+        SmartDashboard.putBoolean("Cam Meta Valid", valid);
         return valid;
 
     }

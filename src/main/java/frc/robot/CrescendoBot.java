@@ -99,6 +99,16 @@ public class CrescendoBot extends DefaultRobot {
     monitorSpeedLowerLauncher();
   }
 
+  public void initializeFieldData(){
+    nav.initializeFieldData();
+
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if(alliance.get() == Alliance.Blue)
+      Crescendo.useBlueTargets();
+    else
+      Crescendo.useRedTargets();
+  }
+
   @Override
   public void autonomousInit() {
     String selectedPos = positionChooser.getSelected();
@@ -110,16 +120,10 @@ public class CrescendoBot extends DefaultRobot {
     launcher.arm();
     drive.arm();
     nav.reset();
+    initializeFieldData();
 
     restoreRobotToDefaultState();
     autoSelected = m_chooser.getSelected();
-
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-
-    if(alliance.get() == Alliance.Blue)
-      Crescendo.useBlueTargets();
-    else
-      Crescendo.useRedTargets();
 
     switch(selectedPos){
       case "L":
@@ -189,6 +193,8 @@ public class CrescendoBot extends DefaultRobot {
     drive.arm();
     climber.reset(); // added 3/12/24 - not tested yet
     launcher.reset();
+    initializeFieldData();
+
 
     climb_time = 0.0;
     climbing = false;
