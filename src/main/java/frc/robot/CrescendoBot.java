@@ -62,8 +62,9 @@ public class CrescendoBot extends DefaultRobot {
 
   protected boolean bHeadingHold = true;
   protected boolean bGoingUnder = false;
-  protected double headingCmd;
+  protected double headingHoldAngle;
   protected PIDController headingController = new PIDController(0,0,0);
+  private double headingHoldLimit = 0.2;
   protected TuneablePIDControllerGains headingHoldGains = new TuneablePIDControllerGains("Hdg", headingController);
 
   /** Creates a new RobotContainer. */
@@ -186,7 +187,6 @@ public class CrescendoBot extends DefaultRobot {
     intake.arm();
     launcher.arm();
     drive.arm();
-    // nav.reset();
     climber.reset(); // added 3/12/24 - not tested yet
     launcher.reset();
 
@@ -248,28 +248,32 @@ public class CrescendoBot extends DefaultRobot {
     driveCmd = calculateProfiledDriveCommand(driveCmd);
     double rotate = calculatedProfileYawCmd(-gp.getRightX());
 
-    /* Apply any commanded automatic aim operations */
-    if(gp.getXButton()) {
-      rotate += MathUtil.clamp(getAngle()/120,-0.5,0.5);
-    }
-    if(false && bAutoAimEnabled) {
-      rotate += nav.yawRotationNudge();
-    }
-    if(noteNudge) {
-      rotate += computeNoteNudge();
-    }
-
     /* Apply speed augmentation settings */
     driveCmd = driveCmd.times(driveSpeedGain);
     rotate *= rotateSpeedGain;
 
-    /* Grab the last heading reading as the rotate command is released */
-    if(! MathUtil.isNear(0.0,Math.abs(rotate),0.01)) {
-      setHeadingHoldAngle(getAngle());
+    /* Apply any commanded automatic aim operations */
+    if(gp.getXButton()) {
+      rotate += computeHeadingTurnControl(0.0);
+    }
+    if(gp.getBButton()) {
+      if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+        rotate += computeHeadingTurnControl(90.0);
+      else
+        rotate += computeHeadingTurnControl(-90.0);
+    }
+    if(gp.getAButton() && nav.isNavValid()) {
+      rotate += computeTurnController(nav.getBearingToTarget(Crescendo.getPose3d(PointsOfInterest.SPEAKER)) + 180);
+    }
+    if(gp.getYButton() && !nav.isTrackingNote()) {
+      rotate += computeTurnController(nav.getBearingToNote());
     }
 
-    if(bHeadingHold){
-      rotate += calculateHeadingHoldCommand();
+    /* Grab the last heading reading as the rotate command is released */
+    if (!MathUtil.isNear(0.0, Math.abs(rotate), 0.01)) {
+      headingHoldAngle = getAngle();
+    } else {
+      rotate += computeHeadingTurnControl(headingHoldAngle);
     }
 
     /* Apply the command to the drive system */
@@ -282,7 +286,7 @@ public class CrescendoBot extends DefaultRobot {
 
     if(gp.getStartButtonPressed()) {
       nav.zeroYaw();
-      setHeadingHoldAngle(getAngle());
+      headingHoldAngle = getAngle();
     }
   }
 
@@ -307,16 +311,13 @@ public class CrescendoBot extends DefaultRobot {
     }
   }
 
-  protected void setHeadingHoldAngle(double angle){
-    headingCmd = angle;
+  protected double computeTurnController(double bearing){
+    bearing = MathUtil.inputModulus(bearing,-180.0, 180.0);
+    double rotationError = MathUtil.applyDeadband(bearing, 0.1,180.0);
+    return MathUtil.clamp(headingController.calculate(rotationError),-headingHoldLimit,headingHoldLimit);
   }
 
-  protected double calculateHeadingHoldCommand(){
-    double rotationError = MathUtil.applyDeadband(getTurnToHeading(headingCmd), 0.1,180.0);
-    return headingController.calculate(rotationError);
-  }
-
-  public double getTurnToHeading(double goal){
+  public double getBearingToHeading(double goal){
     return  MathUtil.inputModulus(goal - nav.getAngle(),-180.0, 180.0);
   }
 
@@ -352,30 +353,28 @@ public class CrescendoBot extends DefaultRobot {
   @Override
   public void postTelemetry(){
     nav.postTelemetry();
-    SmartDashboard.putNumber("Heading Hold Angle", headingCmd);
+    SmartDashboard.putNumber("Heading Hold Angle", headingHoldAngle);
   }
 
   @Override
   public void restoreRobotToDefaultState() {
     drive.reset(); // sets encoders based on absolute encoder positions
-    // nav.reset();
 
-    setHeadingHoldAngle(getAngle());
+    headingHoldAngle = getAngle();
 
     super.restoreRobotToDefaultState();
   }
   boolean bAutoAimEnabled = false;
-  boolean noteNudge = false;
   protected void adjustDriveSpeed(Gamepad gp){
     if(gp.getDPadUp()) fieldCentricDriveMode(true);
     if(gp.getDPadDown()) fieldCentricDriveMode(false);
 
     if(gp.getRightBumper()) {
       driveSpeedGain = 0.25;
-      rotateSpeedGain = 0.15;
+      rotateSpeedGain = 0.10;
     } else if (gp.getLeftBumper()) {
       driveSpeedGain = 0.6;
-      rotateSpeedGain = 0.3;
+      rotateSpeedGain = 0.25;
     } else {
       driveSpeedGain = 1.0;
       rotateSpeedGain = 0.4;
@@ -386,18 +385,6 @@ public class CrescendoBot extends DefaultRobot {
     } else {
       bGoingUnder = false;
     }
-    // if(gp.getAButton()) {
-    //   bAutoAimEnabled = true;
-    // } else {
-    //   bAutoAimEnabled = false;
-    // }
-
-    // if(false && gp.getYButton()) {
-    //   noteNudge = true;
-    // } else {
-    //   noteNudge = false;
-    // }
-  
   }
 
   public void autoPrimeLauncherToSpeaker(){
@@ -528,20 +515,8 @@ public class CrescendoBot extends DefaultRobot {
   }
 
   /* +Heading is to left in NEU, +bearing is right in robot frame */
-  public double computeHeadingNudge(double heading){
-    return computeBearingNudge(-(heading - nav.getAngle()));
+  public double computeHeadingTurnControl(double heading){
+    return computeTurnController(getBearingToHeading(heading));
   }
 
-  public double computeNoteNudge() {
-    return computeBearingNudge(nav.getBearingToNote());
-  }
-
-  public double computeBearingNudge(double bearing){
-    double nudge;
-    double limit = 0.35;
-    double kp = limit/45.0; // limit divided by angle which max power is applied
-    nudge = kp*(bearing);
-    nudge = MathUtil.clamp(nudge, -limit, limit);
-    return nudge;
-  }
 }

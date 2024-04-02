@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.BlinkinLED;
 import frc.robot.libs.BlinkinLED.LEDColors;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
+import frc.robot.subsystems.nav.Crescendo.PointsOfInterest;
 
 /** Add your docs here. */
 public class PracticeRobotNav extends NavSubsystem {
@@ -35,7 +36,6 @@ public class PracticeRobotNav extends NavSubsystem {
     private LimeLightGamePieceTracker gamePieceTracker;
     private boolean limelight_present = false;
     private boolean limelight_tracker_present = false;
-    double yawRotationNudge;
     private SwerveDrivePoseEstimator poseEstimator;
     private ExampleSwerveDriveTrain driveTrain;
 
@@ -70,7 +70,6 @@ public class PracticeRobotNav extends NavSubsystem {
 
         poseEstimator = new SwerveDrivePoseEstimator(driveTrain.getKinematics(),
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
-        useRedTargets();
 
         nav_led = new BlinkinLED(wiring.get("nav led"));
 
@@ -138,8 +137,6 @@ public class PracticeRobotNav extends NavSubsystem {
             nav_led.blink(0.5);
         else
             nav_led.blink(1.0);
-
-        computeYawNudge(Target.SPEAKER);
     }
 
     public void postTelemetry(){
@@ -181,23 +178,6 @@ public class PracticeRobotNav extends NavSubsystem {
         if(camera_valid && distance_travelled < 5.0*12.0) camera_valid = false;
     }
 
-    public void computeYawNudge(Target target) {
-        Pose2d curPos = getPoseInField();
-        if(isNavValid() && curPos.getTranslation().getX() <= 300.0 ){
-            Transform2d currentTarget = getTargetOffset(target);
-            updateTestPoint("Nudge",new Pose2d(currentTarget.getTranslation(), currentTarget.getRotation()));
-            double goal = 180.0 - currentTarget.getTranslation().getAngle().getDegrees();
-            double limit = 0.45;
-            double kp = limit/10.0; // limit divided by angle which max power is applied
-
-            yawRotationNudge = kp*MathUtil.inputModulus(goal,-180.0,180.0);
-            yawRotationNudge = MathUtil.clamp(yawRotationNudge,-limit, limit);
-            yawRotationNudge = -yawRotationNudge;
-        } else {
-            yawRotationNudge = 0;
-        }
-    }
-
     public double getBearingToNote(){
         double ang = 0;
         if(isTrackingNote()) {
@@ -211,30 +191,13 @@ public class PracticeRobotNav extends NavSubsystem {
         return limelight_tracker_present && gamePieceTracker.isTracking();
     }
 
-    public double yawRotationNudge() {
-        return yawRotationNudge;
-    }
-
-
     public boolean isNavValid() {
         return Crescendo.isValidPosition(poseEstimator.getEstimatedPosition().getTranslation()) && 
                (distance_travelled <= 20.0 * 12.0);
     }
 
-    public Pose3d getTargetPoseField(Target target){
-        Pose3d targetPose;
-        switch (target) {
-            case AMP:
-                targetPose = targetPositions.ampPose;
-                break;
-            case SPEAKER:
-                targetPose = targetPositions.speakerPose;
-                break;
-            default:
-                targetPose = new Pose3d();
-                break;
-        }
-        return targetPose;
+    public double getBearingToTarget(Pose3d target){
+        return getBearingToTarget(target.getTranslation().toTranslation2d());
     }
 
     public double getBearingToTarget(Translation2d target){
@@ -248,9 +211,5 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public Transform2d getTargetOffset(Pose2d target){
         return new Transform2d(getPoseInField(), target);
-    }
-
-    public Transform2d getTargetOffset(Target target) {
-        return getTargetOffset(getTargetPoseField(target).toPose2d());
     }
 }
