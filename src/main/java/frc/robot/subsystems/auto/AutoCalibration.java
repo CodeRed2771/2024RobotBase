@@ -12,12 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoCalibration extends AutoBaseClass {
 
-  CrescendoBot myRobot;
-
   public AutoCalibration(CrescendoBot robot) {
-    super();
-    myRobot = robot;
+    super(robot);
   }
+
   public void periodic() {
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
