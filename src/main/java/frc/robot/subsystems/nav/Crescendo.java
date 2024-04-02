@@ -67,32 +67,32 @@ public class Crescendo {
 
     private static final Pose3d[] Blue_POIs = {
         new Pose3d(new Translation3d(121,161.5,0), new Rotation3d(0,0,180)), // Safe zone
-        new Pose3d(new Translation3d(637.21,34.79,0), new Rotation3d(0,0,120)), // Feeder Left
-        new Pose3d(new Translation3d(615.445,22.235,0), new Rotation3d(0,0,120)), // Feeder Center
-        new Pose3d(new Translation3d(593.68,9.68,0), new Rotation3d(0,0,120)), // Feeder Right
-        new Pose3d(new Translation3d(72.5,323,26), new Rotation3d(0,0,270)), // AMP
+        new Pose3d(new Translation3d(637.21,288.21,0), new Rotation3d(0,0,300)), // Feeder Left
+        new Pose3d(new Translation3d(615.445,300.765,0), new Rotation3d(0,0,300)), // Feeder Center
+        new Pose3d(new Translation3d(593.68,313.32,0), new Rotation3d(0,0,300)), // Feeder Right
+        new Pose3d(new Translation3d(72.5,0,26), new Rotation3d(0,0,270)), // AMP
         new Pose3d(new Translation3d(32,151,0), new Rotation3d(0,0,60)), // Subwoofer Left
         new Pose3d(new Translation3d(47.5,104.58,0), new Rotation3d(0,0,0)), // Subwoofer Center
         new Pose3d(new Translation3d(32,59,0), new Rotation3d(0,0,-60)), // Subwoofer Right
         new Pose3d(new Translation3d(5,104.58,80), new Rotation3d(0,0,180)), // Speaker
         new Pose3d(new Translation3d(209.48,161.62,56.5), new Rotation3d(0,0,0)), // Trap Center
-        new Pose3d(new Translation3d(182.73,177.1,56.5), new Rotation3d(0,0,120)), // Trap AMP
-        new Pose3d(new Translation3d(182.73,146.19,56.5), new Rotation3d(0,0,240)), // Trap Feeder
+        new Pose3d(new Translation3d(182.73,145.9,56.5), new Rotation3d(0,0,300)), // Trap AMP
+        new Pose3d(new Translation3d(182.73,176.81,56.5), new Rotation3d(0,0,60)), // Trap Feeder
     };
 
     private static final Pose3d[] Red_POIs = {
         new Pose3d(new Translation3d(121,161.5,0), new Rotation3d(0,0,0)), // Safe zone
-        new Pose3d(new Translation3d(637.21,288.21,0), new Rotation3d(0,0,300)), // Feeder Left
-        new Pose3d(new Translation3d(615.445,300.765,0), new Rotation3d(0,0,300)), // Feeder Center
-        new Pose3d(new Translation3d(593.68,313.32,0), new Rotation3d(0,0,300)), // Feeder Right
-        new Pose3d(new Translation3d(72.5,0,26), new Rotation3d(0,0,90)), // AMP
+        new Pose3d(new Translation3d(637.21,34.79,0), new Rotation3d(0,0,120)), // Feeder Left
+        new Pose3d(new Translation3d(615.445,22.235,0), new Rotation3d(0,0,120)), // Feeder Center
+        new Pose3d(new Translation3d(593.68,9.68,0), new Rotation3d(0,0,120)), // Feeder Right
+        new Pose3d(new Translation3d(72.5,323,26), new Rotation3d(0,0,90)), // AMP
         new Pose3d(new Translation3d(32,264,0), new Rotation3d(0,0,60)), // Subwoofer Left
         new Pose3d(new Translation3d(47.5,218.42,0), new Rotation3d(0,0,0)), // Subwoofer Center
         new Pose3d(new Translation3d(32,172,0), new Rotation3d(0,0,-60)), // Subwoofer Right
         new Pose3d(new Translation3d(5,218.42,80), new Rotation3d(0,0,0)), // Speaker
         new Pose3d(new Translation3d(209.48,161.38,56.5), new Rotation3d(0,0,180)), // Trap Center
-        new Pose3d(new Translation3d(182.73,145.9,56.5), new Rotation3d(0,0,300)), // Trap AMP
-        new Pose3d(new Translation3d(182.73,176.81,56.5), new Rotation3d(0,0,60)), // Trap Feeder
+        new Pose3d(new Translation3d(182.73,177.1,56.5), new Rotation3d(0,0,120)), // Trap AMP
+        new Pose3d(new Translation3d(182.73,146.19,56.5), new Rotation3d(0,0,240)), // Trap Feeder
     };
 
     public static Pose3d getBluePOI(PointsOfInterest poi){return Blue_POIs[poi.toInt()];}
