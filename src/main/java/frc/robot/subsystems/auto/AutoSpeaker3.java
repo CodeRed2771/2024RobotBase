@@ -56,9 +56,9 @@ public class AutoSpeaker3 extends AutoBaseClass {
               myRobot.launcher.stopFireDelay();
               myRobot.launcher.aim(LauncherPresets.OFF);
               if(position == 'A')
-                myRobot.drive.driveFixedPositionOffsetInches(48,-57);
+                driveFixedPositionOffsetInches(48,-57);
               else
-                myRobot.drive.driveFixedPositionOffsetInches(48, 57);
+                driveFixedPositionOffsetInches(48, 57);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;
@@ -72,9 +72,9 @@ public class AutoSpeaker3 extends AutoBaseClass {
             case 6:
               myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               if(position == 'A')
-                myRobot.drive.driveFixedPositionOffsetInches(48,57);
+                driveFixedPositionOffsetInches(48,57);
               else
-                myRobot.drive.driveFixedPositionOffsetInches(48, -57);
+                driveFixedPositionOffsetInches(48, -57);
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -91,7 +91,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
             case 9:
               break;
             case 10:
-              myRobot.drive.driveFixedPositionOffsetInches(60, 0);
+              driveFixedPositionOffsetInches(60, 0);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;
@@ -102,7 +102,7 @@ public class AutoSpeaker3 extends AutoBaseClass {
                 advanceStep();
               break;
             case 12:
-              myRobot.drive.driveFixedPositionOffsetInches(60, 0);
+              driveFixedPositionOffsetInches(60, 0);
               myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
               setTimerAndAdvanceStep(-4000);
               break;

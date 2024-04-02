@@ -62,7 +62,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               myRobot.launcher.aim(LauncherPresets.OFF);
               noteDrive = new Translation2d(60,0);
               noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-1.5*MathUtil.clamp(myRobot.nav.getBearingToNote(),-30,30)));
-              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
+              driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(4000);
               break;
@@ -75,7 +75,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
-              myRobot.drive.driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
+              driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -92,7 +92,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 9:
               break;
             case 10:
-              myRobot.drive.driveFixedPositionOffsetInches(80, 0);
+              driveFixedPositionOffsetInches(80, 0);
               setTimerAndAdvanceStep(5000);
               break;
             case 11:
@@ -122,7 +122,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 4:
               myRobot.launcher.stopFireDelay();
               myRobot.launcher.aim(LauncherPresets.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(20,0);
+              driveFixedPositionOffsetInches(20,0);
               myRobot.launcher.load(0.45);
               setTimerAndAdvanceStep(2000);
               break;
@@ -133,10 +133,10 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 6:
               if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                myRobot.drive.driveFixedRotatePosition(60);
+                driveFixedRotatePosition(60);
               }
               else {
-                myRobot.drive.driveFixedRotatePosition(-60);
+                driveFixedRotatePosition(-60);
               }
               setTimerAndAdvanceStep(2000);
               break;
@@ -148,7 +148,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               myRobot.launcher.load(0.45);
               noteDrive = new Translation2d(65,0);
               noteDrive = noteDrive.rotateBy(Rotation2d.fromDegrees(-1.5*MathUtil.clamp(myRobot.nav.getBearingToNote(),-25,25)));
-              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
+              driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 9:
@@ -159,7 +159,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 10:
-              myRobot.drive.driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
+              driveFixedPositionOffsetInches(-noteDrive.getX(),-noteDrive.getY());
               setTimerAndAdvanceStep(4000);
               break;
             case 11:
@@ -171,10 +171,10 @@ public class AutoSpeaker2 extends AutoBaseClass {
               break;
             case 12:
               if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                myRobot.drive.driveFixedRotatePosition(-60);
+                driveFixedRotatePosition(-60);
               }
               else {
-                myRobot.drive.driveFixedRotatePosition(60);
+                driveFixedRotatePosition(60);
               }
               setTimerAndAdvanceStep(2000);
               break;
@@ -186,7 +186,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 14:
               myRobot.autoPrimeLauncherToSpeaker();
               // myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
-              // myRobot.drive.driveFixedPositionOffsetInches(-20,0);
+              // driveFixedPositionOffsetInches(-20,0);
               // myRobot.launcher.load(0.45);
               //setTimerAndAdvanceStep(1000);
               advanceStep();
@@ -206,9 +206,9 @@ public class AutoSpeaker2 extends AutoBaseClass {
             case 18:
 
               if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue))
-                myRobot.drive.driveFixedPositionOffsetInches(30, -100);
+                driveFixedPositionOffsetInches(30, -100);
               else
-                myRobot.drive.driveFixedPositionOffsetInches(30, 100);
+                driveFixedPositionOffsetInches(30, 100);
 
               setTimerAndAdvanceStep(5000);
               break;

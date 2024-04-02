@@ -43,7 +43,7 @@ public class AutoAmp2 extends AutoBaseClass {
                 multiplier = -1;
               myRobot.launcher.aim(LauncherPresets.AMP);
               myRobot.launcher.setSpeedBias(0.25);
-              myRobot.drive.driveFixedPositionOffsetInches(8*multiplier, -19);
+              driveFixedPositionOffsetInches(8*multiplier, -19);
               setTimerAndAdvanceStep(2000);
               break;
             case 1:
@@ -56,7 +56,7 @@ public class AutoAmp2 extends AutoBaseClass {
               break;
             case 4:
               myRobot.launcher.aim(LauncherPresets.OFF);
-              myRobot.drive.driveFixedPositionOffsetInches(30*multiplier,20);
+              driveFixedPositionOffsetInches(30*multiplier,20);
               myRobot.launcher.load(0.25);
               setTimerAndAdvanceStep(4000);
               break;
@@ -70,7 +70,7 @@ public class AutoAmp2 extends AutoBaseClass {
             case 6:
               myRobot.launcher.aim(LauncherPresets.AMP);
               myRobot.launcher.setSpeedBias(0.25);
-              myRobot.drive.driveFixedPositionOffsetInches(-30*multiplier,-20);
+              driveFixedPositionOffsetInches(-30*multiplier,-20);
               setTimerAndAdvanceStep(6000);
               break;
             case 7:
