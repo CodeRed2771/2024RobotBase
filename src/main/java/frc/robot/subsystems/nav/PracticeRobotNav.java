@@ -189,8 +189,6 @@ public class PracticeRobotNav extends NavSubsystem {
                 distance_travelled = 0.0;
                 camera_valid = true;
             }
-            else
-                camera_valid = false;
         }
 
         if(camera_valid && distance_travelled >= camera_update_tolerance) camera_valid = false;
