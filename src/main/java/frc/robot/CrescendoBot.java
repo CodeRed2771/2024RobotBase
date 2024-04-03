@@ -11,15 +11,14 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.TuneablePIDControllerGains;
 import frc.robot.libs.HID.Gamepad;
 import frc.robot.subsystems.drive.ExampleSwerveDriveTrain;
-import frc.robot.subsystems.intake.DummyIntake;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.launcher.RollerLauncherCompetition;
 import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
@@ -394,16 +393,18 @@ public class CrescendoBot extends DefaultRobot {
   }
 
   public void autoPrimeLauncherToSpeaker(){
-    Translation3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).getTranslation();
-    Translation2d aimer = new Translation2d(10,0);
-    Translation2d cur_pos = nav.getPoseInField().getTranslation().plus(aimer.rotateBy(new Rotation2d(nav.getAngle())));
+    Transform3d aimer = new Transform3d(10,0,6,new Rotation3d()); // offset for pivot point of launcher
+    Pose3d cur_pos = new Pose3d(nav.getPoseInField());
+    cur_pos = cur_pos.transformBy(aimer);
 
-    double range = target.toTranslation2d().minus(cur_pos).getNorm();
-    double height = target.getZ() - 6.0; // offset for pivot point of launcher
+    Transform3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).minus(cur_pos);
+
+    double range = target.getTranslation().toTranslation2d().getNorm();
+    double height = target.getZ(); // offset for pivot point of launcher
     double angle = Math.toDegrees(Math.atan2(height,range));
   
-    autoAimAngle = angle + 0.02 * range - 6.0;
-    autoAimPower = 2150 + 5 * range;
+    autoAimAngle = angle + 0.02 * range - 0.0;
+    autoAimPower = 2350 + 3 * range;
 
     SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
     SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
