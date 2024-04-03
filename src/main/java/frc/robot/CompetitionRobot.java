@@ -51,6 +51,8 @@ public class CompetitionRobot extends CrescendoBot {
 
     // DIO Port
     wiring.put("aim encoder",  0);
+    wiring.put("left load switch", 1);
+    wiring.put("right load switch", 2);
 
     //PWM wiring
     wiring.put("launcher led", 0);

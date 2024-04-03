@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.BlinkinLED;
+import frc.robot.libs.LimitSwitch;
+import frc.robot.libs.UpDownFilter;
 import frc.robot.libs.BlinkinLED.LEDColors;
 
 import com.revrobotics.CANSparkMax;
@@ -29,6 +31,11 @@ public class RollerLauncher extends LauncherSubsystem {
     protected CANSparkFlex lowerShooterMotor;
     protected CANSparkMax loaderMotor;
     protected AnalogInput loadSensor;
+
+    protected LimitSwitch intakeLimitSwitchLeft;
+    protected LimitSwitch intakeLimitSwitchRight;
+    protected UpDownFilter notePresetFilter;
+
     protected CANSparkMax intakeMotor;
     protected BlinkinLED launcherLED;
 
@@ -66,6 +73,11 @@ public class RollerLauncher extends LauncherSubsystem {
         loaderMotor = new CANSparkMax(wiring.get("launcher loader"), MotorType.kBrushless);
 
         loadSensor = new AnalogInput(wiring.get("load sensor"));
+
+        intakeLimitSwitchLeft = new LimitSwitch(wiring.get("left load switch"), true);
+        intakeLimitSwitchRight = new LimitSwitch(wiring.get("right load switch"), true);
+        notePresetFilter = new UpDownFilter(1, 1, 3);
+
         loadState = LoaderState.Stopped;
 
         int motorId = wiring.get("intakeMotorId");
@@ -162,7 +174,7 @@ public class RollerLauncher extends LauncherSubsystem {
         // value goes down as object gets closer to sensor
         SmartDashboard.putNumber("Note Sensor", loadSensor.getAverageValue());
         SmartDashboard.putBoolean("Is Loaded", loadSensor.getAverageValue() < notePresentThreshold);
-        return loadSensor.getAverageValue() < notePresentThreshold;
+        return (loadSensor.getAverageValue() < notePresentThreshold) || notePresetFilter.get();
     }
 
     public boolean isFiring() {
@@ -238,6 +250,7 @@ public class RollerLauncher extends LauncherSubsystem {
 
     @Override
     public void periodic() {
+        notePresetFilter.update(intakeLimitSwitchLeft.isPressed() || intakeLimitSwitchRight.isPressed());
         if (loadState == LoaderState.Stopping) {
             if (loaderStopDelay <= 0) {
                 stopLoader();
