@@ -150,7 +150,7 @@ public class CrescendoBot extends DefaultRobot {
         mAutoProgram = new AutoShootAndLeave(this, robotPosition);
         break;
       default:
-        mAutoProgram = new AutoDoNothing();
+        mAutoProgram = new AutoDoNothing(this);
         break;
     }
     mAutoProgram.start();
