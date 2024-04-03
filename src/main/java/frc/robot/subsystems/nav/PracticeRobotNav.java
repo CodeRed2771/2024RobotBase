@@ -81,12 +81,16 @@ public class PracticeRobotNav extends NavSubsystem {
     }
 
     public void zeroYaw(){
-        gyro.zeroYaw();
+        gyro.setAngleAdjustment(0.0);
+        gyro.setAngleAdjustment(MathUtil.inputModulus(gyro.getAngle(), -180, 180));
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), poseEstimator.getEstimatedPosition());
     }
 
     @Override
     public void reset(Pose2d init_pose) {
+        gyro.setAngleAdjustment(0.0);
+        gyro.setAngleAdjustment(MathUtil.inputModulus(init_pose.getRotation().getDegrees()-gyro.getAngle(), -180, 180));
+
         poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
         distance_travelled = 0;
     }

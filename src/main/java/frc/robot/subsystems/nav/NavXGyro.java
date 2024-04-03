@@ -105,6 +105,14 @@ public class NavXGyro {
         mGyro.zeroYaw();
     }
 
+    public double getAngleAdjustment(){
+        return mGyro.getAngleAdjustment();
+    }
+
+    public void setAngleAdjustment(double angle){
+        mGyro.setAngleAdjustment(angle);
+    }
+
     public void reset() {
         mGyro.reset();
         pitchAdjust = mGyro.getPitch(); // reads the pitch while at rest on flat surface
