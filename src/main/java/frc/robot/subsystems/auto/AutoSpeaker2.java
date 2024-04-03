@@ -31,6 +31,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
   private Translation2d target;
   final double DRIVE_TOLERANCE = 0.75;
   Translation2d noteDrive;
+  private double bearingToSpeaker = 0;
 
   public AutoSpeaker2(CrescendoBot robot, char position) {
     super(robot);
@@ -45,6 +46,8 @@ public class AutoSpeaker2 extends AutoBaseClass {
   }
   public void periodic() {
     target = myRobot.nav.getTargetOffset(myRobot.nav.getTargetPoseField(Target.SPEAKER).toPose2d()).getTranslation();
+    bearingToSpeaker = MathUtil.inputModulus(myRobot.nav.getBearingToTarget(target)+180, -180, 180);
+    SmartDashboard.putNumber("Speaker Bearing", bearingToSpeaker);
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         if(position == 'C') {
@@ -180,13 +183,12 @@ public class AutoSpeaker2 extends AutoBaseClass {
               // else {
               //   driveFixedRotatePosition(60);
               // }
-              double angle = MathUtil.inputModulus(myRobot.nav.getBearingToTarget(target)+180, -180, 180);
-              driveFixedRotatePosition(angle);
+              driveFixedRotatePosition(-bearingToSpeaker);
               setTimerAndAdvanceStep(2000);
               break;
             case 13:
               myRobot.autoPrimeLauncherToSpeaker();
-              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
+              if(myRobot.drive.timeAtFixedPosition(DRIVE_TOLERANCE) > 0.25)
                 advanceStep();
               break;
             case 14:
