@@ -34,6 +34,7 @@ public class BlinkinLED extends SubsystemBase {
     super();
     led = new PWM(channel);
     set(LEDColors.OFF);
+    blink(1);
   }
 
   public void set(LEDColors color) {
