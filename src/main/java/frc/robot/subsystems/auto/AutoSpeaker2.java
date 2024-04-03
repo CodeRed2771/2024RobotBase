@@ -7,6 +7,7 @@ package frc.robot.subsystems.auto;
 import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,12 +21,14 @@ import frc.robot.CrescendoBot;
   Primes & shoots the other note
  */
 import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
+import frc.robot.subsystems.nav.PracticeRobotNav.Target;
 
 
 public class AutoSpeaker2 extends AutoBaseClass {
 
   private char position = 'C';
   private Optional<Alliance> alliance;
+  private Translation2d target;
   final double DRIVE_TOLERANCE = 0.75;
   Translation2d noteDrive;
 
@@ -41,6 +44,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
     super.stop();
   }
   public void periodic() {
+    target = myRobot.nav.getTargetOffset(myRobot.nav.getTargetPoseField(Target.SPEAKER).toPose2d()).getTranslation();
     if (isRunning()) {
         SmartDashboard.putNumber("Auto Step", getCurrentStep());
         if(position == 'C') {
@@ -170,12 +174,14 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 12:
-              if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                driveFixedRotatePosition(-60);
-              }
-              else {
-                driveFixedRotatePosition(60);
-              }
+              // if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
+              //   driveFixedRotatePosition(-60);
+              // }
+              // else {
+              //   driveFixedRotatePosition(60);
+              // }
+              double angle = MathUtil.inputModulus(myRobot.nav.getBearingToTarget(target)+180, -180, 180);
+              driveFixedRotatePosition(angle);
               setTimerAndAdvanceStep(2000);
               break;
             case 13:
