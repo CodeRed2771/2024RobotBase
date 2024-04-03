@@ -63,7 +63,7 @@ public class CrescendoBot extends DefaultRobot {
   protected boolean bGoingUnder = false;
   protected double headingHoldAngle;
   protected PIDController headingController = new PIDController(0,0,0);
-  private double headingHoldLimit = 0.2;
+  private double headingHoldLimit = 0.25;
   protected TuneablePIDControllerGains headingHoldGains = new TuneablePIDControllerGains("Hdg", headingController);
 
   /** Creates a new RobotContainer. */
@@ -71,7 +71,7 @@ public class CrescendoBot extends DefaultRobot {
   public CrescendoBot() {
     super();
 
-    headingHoldGains.setP(3.0 / 360.0);
+    headingHoldGains.setP(5.0 / 360.0);
     headingHoldGains.setI(0.0 / 360.0);
     headingHoldGains.setIz(0.0 / 360.0);
     headingHoldGains.setD(0.01 / 360.0);
