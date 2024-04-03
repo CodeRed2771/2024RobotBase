@@ -303,6 +303,7 @@ public class CrescendoBot extends DefaultRobot {
     launcher.disarm();
     drive.disarm();
 
+    last_LauncherCommand = LauncherPresets.OFF;
     postTuneParams();
   }
 
