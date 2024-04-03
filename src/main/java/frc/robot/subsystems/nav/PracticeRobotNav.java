@@ -182,12 +182,7 @@ public class PracticeRobotNav extends NavSubsystem {
             camera_pose =  limelight.getEstimatedPosition();
             cam_error = camera_pose.toPose2d().minus(poseEstimator.getEstimatedPosition()).getTranslation().getNorm();
 
-            if(cam_error >= camera_update_tolerance){
-                reset(limelight.getLimelightPositionInField());
-                cam_error = 0;
-            } else {
-                limelight.checkUpdatePoseEstimator(poseEstimator);
-            }
+            limelight.checkUpdatePoseEstimator(poseEstimator);
 
             if(cam_error <= camera_valid_distance){
                 distance_travelled = 0.0;
