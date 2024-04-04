@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.BlinkinLED;
 import frc.robot.libs.BlinkinLED.LEDColors;
@@ -42,6 +43,7 @@ public class PracticeRobotNav extends NavSubsystem {
     private double allowed_travel_since_pos_sync = 60.0 * 12.0;
     private double camera_update_tolerance = 2.0*12.0;
     private double camera_valid_distance = 2*12.0;
+    Field2d report;
 
     private double max_camera_speed = 50.0;
     private BlinkinLED nav_led;
@@ -76,7 +78,9 @@ public class PracticeRobotNav extends NavSubsystem {
          new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), new Pose2d());
 
         nav_led = new BlinkinLED(wiring.get("nav led"));
-
+        report = new Field2d();
+        SmartDashboard.putData("Field", report);
+        
         reset();
     }
 
@@ -157,6 +161,7 @@ public class PracticeRobotNav extends NavSubsystem {
         updateTestPoint("Nav", poseEstimator.getEstimatedPosition());
         updateTestPoint("Gyro Rates", new Pose3d(gyro.getVelocity3d(),gyro.getRotation()));
 
+        report.setRobotPose(getPoseInField());
         SmartDashboard.putNumber("travel", distance_travelled);
 
         if(limelight_present)
