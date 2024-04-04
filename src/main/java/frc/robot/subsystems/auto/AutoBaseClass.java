@@ -85,7 +85,7 @@ public abstract class AutoBaseClass {
 
     // TURN TO HEADING COMMAND!!
     protected void driveFixedRotatePosition(double angle){
-        targetPose = targetPose.plus(new Transform2d(0,0,Rotation2d.fromDegrees(angle)));
+        targetPose = targetPose.plus(new Transform2d(0,0,Rotation2d.fromDegrees(-angle)));
         myRobot.drive.driveFixedRotatePosition(getDriveRotation());
     }
 
