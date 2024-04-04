@@ -126,11 +126,11 @@ public class CrescendoBot extends DefaultRobot {
     autoSelected = m_chooser.getSelected();
 
     switch(selectedPos){
-      case "L":
-        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_LEFT).toPose2d());
+      case "A":
+        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_AMP).toPose2d());
         break;
-      case "R":
-        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_RIGHT).toPose2d());
+      case "S":
+        nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_SOURCE).toPose2d());
         break;
       default:
         nav.reset(Crescendo.getPose3d(Crescendo.PointsOfInterest.SUBWOOFER_CENTER).toPose2d());

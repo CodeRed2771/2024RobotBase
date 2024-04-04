@@ -21,6 +21,8 @@ import frc.robot.CrescendoBot;
   Primes & shoots the other note
  */
 import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
+import frc.robot.subsystems.nav.Crescendo;
+import frc.robot.subsystems.nav.Crescendo.PointsOfInterest;
 import frc.robot.subsystems.nav.PracticeRobotNav.Target;
 
 
@@ -45,7 +47,7 @@ public class AutoSpeaker2 extends AutoBaseClass {
     super.stop();
   }
   public void periodic() {
-    target = myRobot.nav.getTargetOffset(myRobot.nav.getTargetPoseField(Target.SPEAKER).toPose2d()).getTranslation();
+    target = myRobot.nav.getTargetOffset(Crescendo.getPose3d(PointsOfInterest.SPEAKER).toPose2d()).getTranslation();
     bearingToSpeaker = MathUtil.inputModulus(myRobot.nav.getBearingToTarget(target)+180, -180, 180);
     SmartDashboard.putNumber("Speaker Bearing", bearingToSpeaker);
     if (isRunning()) {
@@ -139,11 +141,11 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 6:
-              if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-                driveFixedRotatePosition(60);
+              if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Red)) {
+                driveFixedRotatePosition(55);
               }
               else {
-                driveFixedRotatePosition(-60);
+                driveFixedRotatePosition(-55);
               }
               setTimerAndAdvanceStep(2000);
               break;
@@ -177,13 +179,12 @@ public class AutoSpeaker2 extends AutoBaseClass {
               }
               break;
             case 12:
-              // if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Blue)) {
-              //   driveFixedRotatePosition(-60);
-              // }
-              // else {
-              //   driveFixedRotatePosition(60);
-              // }
-              driveFixedRotatePosition(-bearingToSpeaker);
+              if((position == 'A' && alliance.get()==Alliance.Blue) || (position == 'S' && alliance.get()==Alliance.Red)) {
+                driveFixedRotatePosition(-55);
+              }
+              else {
+                driveFixedRotatePosition(55);
+              }
               setTimerAndAdvanceStep(2000);
               break;
             case 13:
