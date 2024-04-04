@@ -198,4 +198,19 @@ public class RollerLauncherCompetition extends RollerLauncher {
         aimBias = SmartDashboard.getNumber("Aim Bias",aimBias);
     }
 
+
+    public void autoAimLauncher(double range, double height){
+        double angle = Math.toDegrees(Math.atan2(height,range));
+
+        double autoAimAngle = angle + 0.02 * range - 0.0;
+        double autoAimPower = 2350 + 3 * range;
+    
+        SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
+        SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
+        SmartDashboard.putNumber("Auto Range", range);
+        SmartDashboard.putNumber("Auto Angle", angle);
+    
+        aim(autoAimAngle);
+        prime(autoAimPower);
+    }
 }

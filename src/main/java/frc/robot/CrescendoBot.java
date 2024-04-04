@@ -56,9 +56,6 @@ public class CrescendoBot extends DefaultRobot {
   protected double driveSpeedGain = 1.0;
   protected double rotateSpeedGain = 0.4;
   
-  protected double autoAimAngle = 0;
-  protected double autoAimPower = 0;
-
   protected boolean bHeadingHold = true;
   protected boolean bGoingUnder = false;
   protected double headingHoldAngle;
@@ -402,23 +399,13 @@ public class CrescendoBot extends DefaultRobot {
 
     Transform3d target = Crescendo.getPose3d(PointsOfInterest.SPEAKER).minus(cur_pos);
 
-    double range = target.getTranslation().toTranslation2d().getNorm();
-    double height = target.getZ(); // offset for pivot point of launcher
-    double angle = Math.toDegrees(Math.atan2(height,range));
-  
-    autoAimAngle = angle + 0.02 * range - 0.0;
-    autoAimPower = 2350 + 3 * range;
-
-    SmartDashboard.putNumber("Auto Aim Angle", autoAimAngle);
-    SmartDashboard.putNumber("Auto Aim Power", autoAimPower);
-    SmartDashboard.putNumber("Auto Range", range);
-    SmartDashboard.putNumber("Auto Angle", angle);
     SmartDashboard.putNumber("Auto Target X", target.getX());
     SmartDashboard.putNumber("Auto Target Y", target.getY());
     SmartDashboard.putNumber("Auto Target Z", target.getZ());
 
-    launcher.aim(autoAimAngle);
-    launcher.prime(autoAimPower);
+    double range = target.getTranslation().toTranslation2d().getNorm();
+    double height = target.getZ(); // offset for pivot point of launcher
+    launcher.autoAimLauncher(range, height);
   }
 
   @Override
