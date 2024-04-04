@@ -57,9 +57,9 @@ public class LimeLightPoseEstimator extends Limelight {
             SmartDashboard.putNumber("Camera X", new_pose.getX());
             SmartDashboard.putNumber("Camera Y", new_pose.getY());
             SmartDashboard.putNumber("Camera Z", new_pose.getZ());
-            SmartDashboard.putNumber("Camera R", new_pose.getRotation().getX());
-            SmartDashboard.putNumber("Camera P", new_pose.getRotation().getY());
-            SmartDashboard.putNumber("Camera Y", new_pose.getRotation().getZ());
+            SmartDashboard.putNumber("Camera Roll", Math.toDegrees(new_pose.getRotation().getX()));
+            SmartDashboard.putNumber("Camera Pitch", Math.toDegrees(new_pose.getRotation().getY()));
+            SmartDashboard.putNumber("Camera Yaw", Math.toDegrees(new_pose.getRotation().getZ()));
 
             if(isValidMetadata(data) && isValidPosition(new_pose.getTranslation()) && isValidRotation(new_pose.getRotation()))
             {

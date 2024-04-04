@@ -118,7 +118,6 @@ public class CrescendoBot extends DefaultRobot {
     intake.arm();
     launcher.arm();
     drive.arm();
-    nav.reset();
     initializeFieldData();
 
     nav.disableCamera();
