@@ -22,7 +22,6 @@ import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 
 public class AutoShootAndLeave extends AutoBaseClass {
 
-  CrescendoBot myRobot;
   private char position = 'C';
   private Optional<Alliance> alliance;
 
@@ -69,12 +68,12 @@ public class AutoShootAndLeave extends AutoBaseClass {
               break;
             case 6:
               if (position=='C')
-                driveFixedPositionOffsetInches(60,0);
+              myRobot.drive.driveFixedPositionOffsetInches(60,0);
               else 
                 if (position=='A') //amp side
-                  driveFixedPositionOffsetInches(50, -12);
+                  myRobot.drive.driveFixedPositionOffsetInches(50, -12);
                 else 
-                  driveFixedPositionOffsetInches(90, 15); // drive further on source side
+                  myRobot.drive.driveFixedPositionOffsetInches(90, 15); // drive further on source side
               setTimerAndAdvanceStep(4000);
               break;
             case 7:
@@ -96,17 +95,17 @@ public class AutoShootAndLeave extends AutoBaseClass {
               if (position=='A') // amp
                 if (alliance.get()==Alliance.Blue) 
                   // go to the right to leave
-                  driveFixedPositionOffsetInches(15, -75);
+                  myRobot.drive.driveFixedPositionOffsetInches(15, -75);
                 else 
                   // go to the left to leave
-                  driveFixedPositionOffsetInches(15, 75);
+                  myRobot.drive.driveFixedPositionOffsetInches(15, 75);
               else // source side
                 if (alliance.get()==Alliance.Blue) 
                   // go to the left to leave
-                  driveFixedPositionOffsetInches(18, 75);
+                  myRobot.drive.driveFixedPositionOffsetInches(18, 75);
                 else 
                   // go to the right to leave
-                  driveFixedPositionOffsetInches(18, -75);
+                  myRobot.drive.driveFixedPositionOffsetInches(18, -75);
 
               setTimerAndAdvanceStep(4000);
               break;
@@ -119,7 +118,7 @@ public class AutoShootAndLeave extends AutoBaseClass {
               setStep(97);
               break;
             case 97:
-              driveFixedPositionOffsetInches(8, 0);
+              myRobot.drive.driveFixedPositionOffsetInches(8, 0);
               setTimerAndAdvanceStep(2500);
               break;
             case 98:
