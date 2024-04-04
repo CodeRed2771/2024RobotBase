@@ -82,12 +82,16 @@ public class PracticeRobotNav extends NavSubsystem {
 
     public void zeroYaw(){
         gyro.zeroYaw();
-        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), poseEstimator.getEstimatedPosition());
+        gyro.setAngleAdjustment( 0 );
+        gyro.setAngleAdjustment(-gyro.getAngle());
+        poseEstimator.resetPosition(new Rotation2d(-gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), poseEstimator.getEstimatedPosition());
     }
 
     @Override
     public void reset(Pose2d init_pose) {
-        poseEstimator.resetPosition(new Rotation2d(gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
+        gyro.setAngleAdjustment( 0 );
+        gyro.setAngleAdjustment(-gyro.getAngle()-init_pose.getRotation().getDegrees());
+        poseEstimator.resetPosition(new Rotation2d(-gyro.getGyroAngleInRad()), driveTrain.getOdomotry(), init_pose);
         distance_travelled = 0;
     }
 
@@ -172,7 +176,7 @@ public class PracticeRobotNav extends NavSubsystem {
         distance_travelled += Math.abs(last_wheel_pos - odom[1].distanceMeters); // it really is inches
         last_wheel_pos = odom[1].distanceMeters;
         
-        poseEstimator.update(new Rotation2d(gyro.getGyroAngleInRad()), odom);
+        poseEstimator.update(new Rotation2d(-gyro.getGyroAngleInRad()), odom);
 
         if( isCameraEnabed() && limelight.isValid() && gyro.getVelocity3d().getNorm() <= max_camera_speed) {
             camera_pose =  limelight.getEstimatedPosition();

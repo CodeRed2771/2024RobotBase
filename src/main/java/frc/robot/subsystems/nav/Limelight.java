@@ -66,7 +66,6 @@ public class Limelight {
                                                      new Rotation3d(Math.toRadians(calibration.getOrDefault(network_table_key + " roll",0.0)),
                                                                     Math.toRadians(calibration.getOrDefault(network_table_key + " pitch",0.0)),
                                                                     Math.toRadians(calibration.getOrDefault(network_table_key + " yaw",0.0)))).inverse();
-        cameraInstallationToRobotPose = cameraInstallationToRobotPose.plus(new Transform3d(new Translation3d(), new Rotation3d(Math.PI,0,0))); // account for NWU vs NED
         latency_cal = calibration.getOrDefault(network_table_key + "latency", 0.02);
     } 
 
