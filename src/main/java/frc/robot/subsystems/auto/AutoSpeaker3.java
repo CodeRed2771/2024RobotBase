@@ -54,13 +54,13 @@ public class AutoSpeaker3 extends AutoBaseClass {
         switch (getCurrentStep()) {
             case 0:
               myRobot.launcher.aim(LauncherPresets.SUBWOOFER);
-              setTimerAndAdvanceStep(750);
+              setTimerAndAdvanceStep(1500);
               break;
             case 1:
               break;
             case 2:
               myRobot.launcher.fire();
-              setTimerAndAdvanceStep(750);
+              setTimerAndAdvanceStep(1000);
               break;
             case 3:
               break;
@@ -82,56 +82,72 @@ public class AutoSpeaker3 extends AutoBaseClass {
               break;
             case 6:
               myRobot.launcher.autoAimLauncher(116.0, 74.0);
-              setTimerAndAdvanceStep(750);
+              setTimerAndAdvanceStep(1500);
               break;
             case 7:
-              myRobot.launcher.fire();
-              setTimerAndAdvanceStep(750);
               break;
             case 8:
-              if(alliance.get()==Alliance.Blue) {
-                myRobot.drive.driveFixedRotatePosition(-45);
-              }
-              else {
-                myRobot.drive.driveFixedRotatePosition(45);
-              }
-
+              myRobot.launcher.fire();
+              setTimerAndAdvanceStep(1000);
               break;
             case 9:
-              if(alliance.get()==Alliance.Blue) {
-                noteDrive = new Translation2d(0,-48).rotateBy(Rotation2d.fromDegrees(-45));
-              }
-              else {
-                noteDrive = new Translation2d(0,48).rotateBy(Rotation2d.fromDegrees(45));
-              }
-              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
-              myRobot.launcher.load(0.45);
-              setTimerAndAdvanceStep(5000);
               break;
             case 10:
-              if(myRobot.launcher.isLoaded() || myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
-                advanceStep();
-              break;
-            case 11:
+              myRobot.launcher.stopFireDelay();
               if(alliance.get()==Alliance.Blue) {
-                myRobot.drive.driveFixedRotatePosition(-15);
+                myRobot.drive.driveFixedRotatePosition(60);
               }
               else {
-                myRobot.drive.driveFixedRotatePosition(15);
+                myRobot.drive.driveFixedRotatePosition(-60);
+              }
+              setTimerAndAdvanceStep(1500);
+              break;
+            case 11:
+            if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
+                advanceStep();
               }
               break;
             case 12:
-              myRobot.launcher.aim(LauncherPresets.SAFE_ZONE);
-              setTimerAndAdvanceStep(1000);
+              if(alliance.get()==Alliance.Blue) {
+                noteDrive = new Translation2d(0,-58).rotateBy(Rotation2d.fromDegrees(60));
+              }
+              else {
+                noteDrive = new Translation2d(0,58).rotateBy(Rotation2d.fromDegrees(-60));
+              }
+              myRobot.drive.driveFixedPositionOffsetInches(noteDrive.getX(),noteDrive.getY());
+              myRobot.launcher.load(0.45);
+              setTimerAndAdvanceStep(3000);
               break;
             case 13:
+              if(myRobot.launcher.isLoaded())
+                myRobot.launcher.stopLoader();
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE))
+                advanceStep();
               break;
             case 14:
+              myRobot.launcher.stopLoader();
+              if(alliance.get()==Alliance.Blue) {
+                myRobot.drive.driveFixedRotatePosition(-30);
+              }
+              else {
+                myRobot.drive.driveFixedRotatePosition(30);
+              }
+              myRobot.launcher.aim(LauncherPresets.SAFE_ZONE);
+              setTimerAndAdvanceStep(1500);
+              break;
+            case 15:
+              if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
+                advanceStep();
+              }
+              break;
+            case 16:
               myRobot.launcher.fire();
               setTimerAndAdvanceStep(1000);
               break;
-            case 15:
-              myRobot.launcher.stop();
+            case 17:
+              break;
+            default:
+              myRobot.launcher.stopFireDelay();
               stop();
               break;
             }
