@@ -196,10 +196,9 @@ public class AutoSpeaker2 extends AutoBaseClass {
               // driveFixedPositionOffsetInches(-20,0);
               // myRobot.launcher.load(0.45);
               //setTimerAndAdvanceStep(1000);
-              advanceStep();
+              setTimerAndAdvanceStep(1500);
               break;
             case 15:
-              advanceStep();
               // if(myRobot.drive.atFixedPosition(DRIVE_TOLERANCE)) {
               //   advanceStep();
               // }
