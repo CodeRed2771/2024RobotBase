@@ -30,6 +30,7 @@ import frc.robot.subsystems.auto.AutoCalibration;
 import frc.robot.subsystems.auto.AutoDoNothing;
 import frc.robot.subsystems.auto.AutoShootAndLeave;
 import frc.robot.subsystems.auto.AutoSpeaker2;
+import frc.robot.subsystems.auto.AutoSpeaker3;
 import frc.robot.subsystems.climber.Climber;
 
 public class CrescendoBot extends DefaultRobot {
@@ -38,6 +39,7 @@ public class CrescendoBot extends DefaultRobot {
   SendableChooser<String> positionChooser;
   String autoSelected;
   private static final String autoShoot2 = "Auto Shoot 2";
+  private static final String autoShoot3 = "Auto Shoot 3";
   private static final String autoShootAndLeave = "Auto Shoot and Leave";
   private static final String autoDoNothing = "Do Nothing";
   private static final String kCalibration = "Cal Auto";
@@ -142,6 +144,9 @@ public class CrescendoBot extends DefaultRobot {
       case autoShoot2:
         mAutoProgram = new AutoSpeaker2(this, robotPosition);
         break;
+      case autoShoot3:
+        mAutoProgram = new AutoSpeaker3(this, robotPosition);
+        break;
       case autoShootAndLeave:
         mAutoProgram = new AutoShootAndLeave(this, robotPosition);
         break;
@@ -171,6 +176,7 @@ public class CrescendoBot extends DefaultRobot {
     m_chooser.addOption(kCalibration, kCalibration);
     m_chooser.addOption(autoShoot2, autoShoot2);
     m_chooser.addOption(autoShootAndLeave, autoShootAndLeave);
+    m_chooser.addOption(autoShoot3,autoShoot3);
 
     SmartDashboard.putData("Auto choices", m_chooser);
 }

@@ -23,8 +23,6 @@ import frc.robot.CrescendoBot;
 import frc.robot.subsystems.launcher.RollerLauncherCompetition.LauncherPresets;
 import frc.robot.subsystems.nav.Crescendo;
 import frc.robot.subsystems.nav.Crescendo.PointsOfInterest;
-import frc.robot.subsystems.nav.PracticeRobotNav.Target;
-
 
 public class AutoSpeaker2 extends AutoBaseClass {
 
