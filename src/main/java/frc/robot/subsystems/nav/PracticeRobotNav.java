@@ -145,7 +145,9 @@ public class PracticeRobotNav extends NavSubsystem {
     }
     @Override
     public void periodic() {
+        try{
         if(isCameraEnabed()) limelight.update();
+        } catch (Exception e){disableCamera();}
         gamePieceTracker.update();
 
         updateRobotPosition();
